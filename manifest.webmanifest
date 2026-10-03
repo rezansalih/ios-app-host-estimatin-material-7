@@ -1,0 +1,15 @@
+{
+  "name": "Construction Material Estimator",
+  "short_name": "Material Estimator",
+  "description": "Offline construction material quantity and cost estimator.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080d18",
+  "theme_color": "#0a101f",
+  "orientation": "portrait-primary",
+  "lang": "en",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
