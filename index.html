@@ -1699,7 +1699,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            lucide.createIcons();
+            window.lucide?.createIcons?.();
 
             const mobileCalculate = document.getElementById('mobile-calculate');
             const mobileReset = document.getElementById('mobile-reset');
@@ -2046,7 +2046,7 @@
                 toggle.addEventListener('click', () => {
                     container.classList.toggle('hidden');
                     icon.setAttribute('data-lucide', container.classList.contains('hidden') ? 'chevron-down' : 'chevron-up');
-                    lucide.createIcons();
+                    window.lucide?.createIcons?.();
                 });
 
                 const numWindows = document.getElementById(`${type}-num-windows`);
@@ -2215,7 +2215,7 @@
                 clearBtn.textContent = translations[localStorage.getItem('language') || 'en'].clearHistory;
                 clearBtn.addEventListener('click', clearHistory);
                 historyContainer.appendChild(clearBtn);
-                lucide.createIcons();
+                window.lucide?.createIcons?.();
             };
             
             const clearHistory = () => { calculationHistory = []; localStorage.removeItem('calculationHistory'); renderHistory(); };
@@ -2447,7 +2447,7 @@
                     setTimeout(() => {
                         saveHistoryBtn.innerHTML = originalText;
                         saveHistoryBtn.classList.remove('btn-success');
-                        lucide.createIcons();
+                        window.lucide?.createIcons?.();
                     }, 2000);
                 }
             });
@@ -2613,7 +2613,7 @@
                          </div>
                      </div>`;
                 resultDiv.classList.remove('hidden');
-                lucide.createIcons();
+                window.lucide?.createIcons?.();
                 errorBox.classList.add('hidden');
                 
                 // Smooth scroll to the result
@@ -2784,7 +2784,7 @@
                          </div>
                     </div>`;
                 resultDiv.classList.remove('hidden');
-                lucide.createIcons();
+                window.lucide?.createIcons?.();
                 errorBox.classList.add('hidden');
                 
                 // Smooth scroll to the result
@@ -2954,7 +2954,7 @@
                          </div>
                      </div>`;
                 resultDiv.classList.remove('hidden');
-                lucide.createIcons();
+                window.lucide?.createIcons?.();
                 errorBox.classList.add('hidden');
                 
                 // Smooth scroll to the result
@@ -3259,7 +3259,7 @@
                 const resultDiv = document.getElementById('steel-result');
                 resultDiv.innerHTML = resultsHTML;
                 resultDiv.classList.remove('hidden');
-                lucide.createIcons();
+                window.lucide?.createIcons?.();
                 errorBox.classList.add('hidden');
                 
                 // Smooth scroll to the result
@@ -3343,7 +3343,7 @@
                         </div>
                     </div>`;
                 resultDiv.classList.remove('hidden');
-                lucide.createIcons();
+                window.lucide?.createIcons?.();
                 errorBox.classList.add('hidden');
                 
                 // Smooth scroll to the result

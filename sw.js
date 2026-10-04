@@ -9,7 +9,14 @@ const APP_SHELL = [
 ];
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE_NAME).then(async cache => {
+    await Promise.all(APP_SHELL.map(async asset => {
+      try {
+        const response = await fetch(asset, { cache: 'no-cache' });
+        if (response.ok) await cache.put(asset, response);
+      } catch (_) { /* Keep installing even when an optional asset is unavailable. */ }
+    }));
+  }).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', event => {
