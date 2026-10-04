@@ -493,6 +493,26 @@
         .light-mode .card, .light-mode .metric-card { background: #fff; border-color: #d9e2ec; }
         .light-mode .pro-input { background: #fff; border-color: #cbd7e5; color: #1f2b3b; }
         .light-mode .header-title { color: #203047; }
+        @media (max-width: 640px) {
+            body, body.light-mode { background: #f5f7fb; color: #26364a; }
+            .app-header { border-bottom-color: #dfe6ef; }
+            .header-title, .light-mode .header-title { color: #203047; text-shadow: none; }
+            .app-header select, .light-mode .pro-input { background: #fff; border-color: #cbd7e5; color: #26364a; }
+            .calculator-nav { display: grid !important; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .4rem; border: 0; }
+            .tab-btn, .light-mode .tab-btn { min-height: 46px; border: 1px solid #d7e0eb !important; border-radius: 12px !important; background: #fff; color: #52657c; box-shadow: 0 2px 7px rgba(35,55,80,.06); }
+            .tab-btn.tab-active { border-color: #d99f3d !important; background: #fff4dc; color: #9a6515 !important; box-shadow: 0 3px 9px rgba(217,159,61,.16); }
+            .tab-content > h2 { color: #203047; font-size: 1.3rem; letter-spacing: -.02em; }
+            .tab-content > .mb-2 { color: #52657c; }
+            .tab-content [role="radiogroup"] label { background: #fff; border-color: #d7e0eb; color: #344860; }
+            .tab-content > .card, .light-mode .card { background: #fff; border-color: #dce4ee; box-shadow: 0 4px 14px rgba(35,55,80,.06); }
+            .tab-content .card h3 { color: #29415e; }
+            .tab-content label { color: #52657c; }
+            .pro-input { background: #f8fafc; border-color: #cbd7e5; color: #26364a; }
+            .pro-input:focus { background: #fff; border-color: #d99f3d; box-shadow: 0 0 0 3px rgba(217,159,61,.16); }
+            .mobile-sticky-footer { background: rgba(255,255,255,.96); border-top-color: #dce4ee; box-shadow: 0 -4px 18px rgba(35,55,80,.1); }
+            .mobile-sticky-footer .btn-primary { background: #d99f3d; color: #172235; }
+            .mobile-sticky-footer .btn-secondary { background: #e8eef5; color: #344860; }
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -1939,7 +1959,7 @@
             languageSelector.addEventListener('change', (e) => changeLanguage(e.target.value));
             
             const savedLang = localStorage.getItem('language') || 'en';
-            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(max-width: 640px)').matches ? 'light' : 'dark');
             languageSelector.value = savedLang;
             changeLanguage(savedLang);
             setTheme(savedTheme);
