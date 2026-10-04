@@ -366,6 +366,7 @@
         .mobile-guide { display: none; align-items: center; gap: .45rem; margin: 0 0 .65rem; padding: .6rem .75rem; border: 1px solid rgba(99,102,241,.25); border-radius: 10px; background: rgba(49,46,129,.18); color: #c7d2fe; font-size: .78rem; line-height: 1.35; }
         .mobile-guide svg { flex: 0 0 auto; color: #a5b4fc; }
         .calculator-nav { position: relative; }
+        .mobile-workspace-bar { display: none; }
         #global-settings-wrapper:not(.hidden) { position: fixed; inset: 0; z-index: 1200; display: block; overflow-y: auto; padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left)); background: rgba(2,6,23,.78); backdrop-filter: blur(8px); }
         #global-settings-wrapper:not(.hidden) > .card { max-width: 720px; margin: 6vh auto 0; box-shadow: 0 24px 80px rgba(0,0,0,.42); }
         /* Critical local fallback: keeps layout usable when a host has not uploaded vendor/. */
@@ -512,6 +513,23 @@
             .mobile-sticky-footer { background: rgba(255,255,255,.96); border-top-color: #dce4ee; box-shadow: 0 -4px 18px rgba(35,55,80,.1); }
             .mobile-sticky-footer .btn-primary { background: #d99f3d; color: #172235; }
             .mobile-sticky-footer .btn-secondary { background: #e8eef5; color: #344860; }
+            .app-shell { max-width: 640px !important; }
+            .app-header { padding: .7rem .75rem !important; margin-inline: -.15rem; border: 1px solid #dce4ee; border-radius: 16px; background: rgba(255,255,255,.88); box-shadow: 0 5px 18px rgba(35,55,80,.07); }
+            .brand-mark { box-shadow: 0 5px 12px rgba(217,159,61,.2); }
+            .calculator-nav { margin-top: .8rem; margin-bottom: .55rem !important; padding: .25rem; border-radius: 15px; background: #e9eff6; }
+            .tab-btn, .light-mode .tab-btn { min-height: 48px; border-radius: 11px !important; background: transparent; border-color: transparent !important; box-shadow: none; font-weight: 800; }
+            .tab-btn.tab-active { background: #fff; border-color: #d99f3d !important; box-shadow: 0 3px 8px rgba(35,55,80,.12); }
+            .mobile-workspace-bar { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin: .65rem 0 .85rem; padding: .85rem 1rem; border-radius: 14px; background: #203047; color: #fff; box-shadow: 0 7px 16px rgba(32,48,71,.16); }
+            .mobile-workspace-bar > div { min-width: 0; }
+            .mobile-workspace-kicker { display: block; color: #f1c66c; font-size: .55rem; font-weight: 900; letter-spacing: .14em; }
+            .mobile-workspace-bar strong { display: block; margin-top: .12rem; font-size: 1.18rem; letter-spacing: -.02em; }
+            .mobile-unit-chip { flex: 0 0 auto; padding: .4rem .55rem; border: 1px solid rgba(255,255,255,.22); border-radius: 8px; color: #dbe5f1; font-size: .6rem; font-weight: 800; letter-spacing: .08em; }
+            .tab-content > h2 { display: flex; align-items: center; gap: .5rem; margin: .2rem 0 .8rem; padding: .15rem 0 .65rem; border-bottom: 2px solid #e1e8f0; font-size: 1.35rem; }
+            .tab-content > h2::before { content: ''; width: 5px; height: 25px; border-radius: 5px; background: #d99f3d; }
+            .tab-content > .card { border-inline-start: 4px solid #d99f3d; padding: .95rem !important; border-radius: 14px; }
+            .tab-content .card h3 { color: #203047; font-size: .98rem; }
+            .tab-content .pro-input { border-radius: 9px; }
+            .mobile-sticky-footer { padding-top: 10px; }
         }
     </style>
 </head>
@@ -641,6 +659,10 @@
                     <i data-lucide="shovel" class="w-4 h-4 sm:w-5 sm:h-5"></i> 
                     <span class="whitespace-nowrap" data-lang="tabEarthwork">Earth Work</span>
                 </button>
+            </div>
+            <div class="mobile-workspace-bar" aria-live="polite">
+                <div><span class="mobile-workspace-kicker" data-lang="activeToolLabel">ACTIVE TOOL</span><strong id="mobile-active-tool">Concrete</strong></div>
+                <span class="mobile-unit-chip">METRIC / m</span>
             </div>
 
             <main>
@@ -3419,7 +3441,8 @@
         const historyBtn = document.getElementById('workspace-history-btn');
         const settings = document.getElementById('global-settings-wrapper');
         const wastage = document.getElementById('wastage');
-        const activeMetric = document.getElementById('active-tool-metric');
+            const activeMetric = document.getElementById('active-tool-metric');
+            const mobileActiveTool = document.getElementById('mobile-active-tool');
         const sessionMetric = document.getElementById('session-items-metric');
         const labels = { concrete: 'Concrete', blocks: 'Blocks', bricks: 'Bricks', steel: 'Steel', earthwork: 'Earth Work' };
 
@@ -3434,6 +3457,7 @@
             const activeTab = document.querySelector('.tab-btn.tab-active')?.dataset.tab || 'concrete';
             const tabLabel = document.querySelector(`.tab-btn[data-tab="${activeTab}"] span[data-lang]`);
             if (activeMetric) activeMetric.textContent = tabLabel?.textContent?.trim() || labels[activeTab] || activeTab;
+            if (mobileActiveTool) mobileActiveTool.textContent = tabLabel?.textContent?.trim() || labels[activeTab] || activeTab;
             if (wastage) document.getElementById('wastage-metric').textContent = `${wastage.value || 0}%`;
             if (sessionMetric) {
                 const count = [...document.querySelectorAll('.tab-content tbody')].reduce((sum, body) => sum + body.querySelectorAll('tr').length, 0);
