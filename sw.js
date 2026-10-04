@@ -1,4 +1,4 @@
-const CACHE_NAME = 'material-estimator-offline-v1';
+const CACHE_NAME = 'material-estimator-offline-v3';
 const APP_SHELL = [
   './',
   './index.html',
