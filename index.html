@@ -559,10 +559,10 @@
 
     <!-- Mobile Sticky Action Footer -->
     <div class="mobile-sticky-footer no-print">
-        <button id="mobile-calculate" class="btn btn-primary flex-grow text-lg shadow-lg">
+        <button type="button" id="mobile-calculate" class="btn btn-primary flex-grow text-lg shadow-lg">
             <span data-lang="calculateBtn">Calculate</span>
         </button>
-        <button id="mobile-reset" data-lang-aria="resetFormLabel" aria-label="Reset form" class="btn btn-secondary px-4 shadow-lg gap-2">
+        <button type="button" id="mobile-reset" data-lang-aria="resetFormLabel" aria-label="Reset form" class="btn btn-secondary px-4 shadow-lg gap-2">
             <i data-lucide="rotate-ccw" class="w-4 h-4"></i><span data-lang="resetBtn">Reset</span>
         </button>
     </div>
@@ -642,23 +642,23 @@
             <!-- TABS -->
             <div class="mobile-guide" aria-live="polite"><i data-lucide="info" class="w-4 h-4"></i><span data-lang="mobileGuide">Fill the sections from top to bottom, then tap Calculate.</span></div>
             <div class="calculator-nav flex flex-wrap border-b-2 border-gray-700 mb-4 gap-y-1 sm:gap-y-0">
-                <button class="tab-btn tab-active w-[30%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="concrete">
+                <button type="button" class="tab-btn tab-active w-[30%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="concrete">
                     <i data-lucide="box" class="w-4 h-4 sm:w-5 sm:h-5"></i> 
                     <span class="whitespace-nowrap" data-lang="tabConcrete">Concrete</span>
                 </button>
-                <button class="tab-btn w-[30%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="blocks">
+                <button type="button" class="tab-btn w-[30%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="blocks">
                     <i data-lucide="layout-grid" class="w-4 h-4 sm:w-5 sm:h-5"></i> 
                     <span class="whitespace-nowrap" data-lang="tabBlocks">Blocks</span>
                 </button>
-                <button class="tab-btn w-[30%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="bricks">
+                <button type="button" class="tab-btn w-[30%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="bricks">
                     <i data-lucide="brick-wall" class="w-4 h-4 sm:w-5 sm:h-5"></i> 
                     <span class="whitespace-nowrap" data-lang="tabBricks">Bricks</span>
                 </button>
-                <button class="tab-btn w-[45%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="steel">
+                <button type="button" class="tab-btn w-[45%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="steel">
                     <i data-lucide="ruler" class="w-4 h-4 sm:w-5 sm:h-5"></i> 
                     <span class="whitespace-nowrap" data-lang="tabSteel">Steel</span>
                 </button>
-                <button class="tab-btn w-[45%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="earthwork">
+                <button type="button" class="tab-btn w-[45%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="earthwork">
                     <i data-lucide="shovel" class="w-4 h-4 sm:w-5 sm:h-5"></i> 
                     <span class="whitespace-nowrap" data-lang="tabEarthwork">Earth Work</span>
                 </button>
@@ -672,7 +672,7 @@
                 <div id="error-box" class="hidden bg-red-900 border border-red-700 text-red-200 px-3 py-2 rounded-lg relative mb-4 text-start" role="alert">
                     <strong class="font-bold" data-lang="errorTitle">Error:</strong>
                     <span class="block sm:inline" id="error-message"></span>
-                    <button class="absolute top-0 bottom-0 end-0 px-4 py-3" id="close-error" data-lang-aria="closeLabel" aria-label="Close">
+                    <button type="button" class="absolute top-0 bottom-0 end-0 px-4 py-3" id="close-error" data-lang-aria="closeLabel" aria-label="Close">
                       <i data-lucide="x"></i>
                     </button>
                 </div>
@@ -787,8 +787,8 @@
                     
                     <!-- STICKY ACTION BUTTONS -->
                     <div class="sticky-action-container sticky bottom-4 z-40 flex gap-3 mt-6 p-3 card rounded-xl shadow-2xl no-print">
-                        <button id="calculate-concrete" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
-                        <button data-form="concrete" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
+                        <button type="button" id="calculate-concrete" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
+                        <button type="button" data-form="concrete" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
                             <i data-lucide="rotate-ccw"></i>
                         </button>
                     </div>
@@ -799,7 +799,7 @@
                     <div id="concrete-table-section" class="mt-4 card p-4 rounded-lg hidden">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-lg font-semibold header-title" data-lang="sessionResults">Session Results</h3>
-                            <button id="clear-concrete-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                            <button type="button" id="clear-concrete-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
                                 <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
                             </button>
                         </div>
@@ -967,8 +967,8 @@
                     <div class="global-settings-placeholder"></div>
                     
                     <div class="sticky-action-container sticky bottom-4 z-40 flex gap-3 mt-6 p-3 card rounded-xl shadow-2xl no-print">
-                        <button id="calculate-blocks" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
-                        <button data-form="blocks" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
+                        <button type="button" id="calculate-blocks" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
+                        <button type="button" data-form="blocks" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
                             <i data-lucide="rotate-ccw"></i>
                         </button>
                     </div>
@@ -978,7 +978,7 @@
                     <div id="blocks-table-section" class="mt-4 card p-4 rounded-lg hidden">
                        <div class="flex justify-between items-center mb-2">
                            <h3 class="text-lg font-semibold header-title" data-lang="sessionResults">Session Results</h3>
-                           <button id="clear-blocks-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                           <button type="button" id="clear-blocks-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
                                <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
                            </button>
                        </div>
@@ -1146,8 +1146,8 @@
                     <div class="global-settings-placeholder"></div>
                     
                     <div class="sticky-action-container sticky bottom-4 z-40 flex gap-3 mt-6 p-3 card rounded-xl shadow-2xl no-print">
-                        <button id="calculate-bricks" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
-                        <button data-form="bricks" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
+                        <button type="button" id="calculate-bricks" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
+                        <button type="button" data-form="bricks" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
                             <i data-lucide="rotate-ccw"></i>
                         </button>
                     </div>
@@ -1157,7 +1157,7 @@
                     <div id="bricks-table-section" class="mt-4 card p-4 rounded-lg hidden">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-lg font-semibold header-title" data-lang="sessionResults">Session Results</h3>
-                            <button id="clear-bricks-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                            <button type="button" id="clear-bricks-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
                                 <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
                             </button>
                         </div>
@@ -1588,8 +1588,8 @@
                     
                     <!-- STICKY ACTION BUTTONS -->
                     <div class="sticky-action-container sticky bottom-4 z-40 flex gap-3 mt-6 p-3 card rounded-xl shadow-2xl no-print">
-                        <button id="calculate-steel" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
-                        <button data-form="steel" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
+                        <button type="button" id="calculate-steel" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
+                        <button type="button" data-form="steel" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
                             <i data-lucide="rotate-ccw"></i>
                         </button>
                     </div>
@@ -1600,7 +1600,7 @@
                     <div id="steel-table-section" class="mt-4 card p-4 rounded-lg hidden">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-lg font-semibold header-title" data-lang="sessionResults">Session Results</h3>
-                            <button id="clear-steel-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                            <button type="button" id="clear-steel-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
                                 <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
                             </button>
                         </div>
@@ -1666,8 +1666,8 @@
                    <div class="global-settings-placeholder"></div>
                    
                    <div class="sticky-action-container sticky bottom-4 z-40 flex gap-3 mt-6 p-3 card rounded-xl shadow-2xl no-print">
-                        <button id="calculate-earthwork" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
-                        <button data-form="earthwork" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
+                        <button type="button" id="calculate-earthwork" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
+                        <button type="button" data-form="earthwork" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
                             <i data-lucide="rotate-ccw"></i>
                         </button>
                    </div>
@@ -1677,7 +1677,7 @@
                    <div id="earthwork-table-section" class="mt-4 card p-4 rounded-lg hidden">
                        <div class="flex justify-between items-center mb-2">
                            <h3 class="text-lg font-semibold header-title" data-lang="sessionResults">Session Results</h3>
-                           <button id="clear-earthwork-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                           <button type="button" id="clear-earthwork-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
                                <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
                            </button>
                        </div>
@@ -1720,7 +1720,7 @@
                     <i data-lucide="clock" class="text-indigo-400"></i>
                     <h3 id="history-modal-title" class="text-lg font-semibold header-title" data-lang="calcHistory">Calculation History</h3>
                 </div>
-                <button id="close-history-modal-btn" data-lang-aria="closeLabel" aria-label="Close" class="hover:text-red-500 transition-colors">
+                <button type="button" id="close-history-modal-btn" data-lang-aria="closeLabel" aria-label="Close" class="hover:text-red-500 transition-colors">
                     <i data-lucide="x-circle"></i>
                 </button>
             </div>
@@ -1734,14 +1734,14 @@
         <div class="card rounded-lg shadow-xl w-full max-w-lg modal-content transform scale-95" role="dialog" aria-modal="true" aria-labelledby="projects-modal-title">
             <div class="p-4 border-b border-gray-700 flex justify-between items-center">
                 <h3 id="projects-modal-title" class="text-lg font-semibold header-title" data-lang="projectsTitle">Manage Projects</h3>
-                <button id="close-projects-modal-btn" data-lang-aria="closeLabel" aria-label="Close" class="hover:text-red-500 transition-colors">
+                <button type="button" id="close-projects-modal-btn" data-lang-aria="closeLabel" aria-label="Close" class="hover:text-red-500 transition-colors">
                     <i data-lucide="x-circle"></i>
                 </button>
              </div>
             <div class="p-4">
                 <div class="flex gap-2 mb-4">
                     <input type="text" id="new-project-name" placeholder="Enter new project name..." class="pro-input w-full">
-                    <button id="create-project-btn" class="btn btn-primary flex-shrink-0" data-lang="createProjectBtn">Create</button>
+                    <button type="button" id="create-project-btn" class="btn btn-primary flex-shrink-0" data-lang="createProjectBtn">Create</button>
                 </div>
                 <div id="project-list" class="space-y-2 max-h-80 overflow-y-auto"></div>
               </div>
@@ -1752,7 +1752,7 @@
         <div class="card rounded-lg shadow-xl w-full max-w-md modal-content transform scale-95" role="dialog" aria-modal="true" aria-labelledby="save-modal-title">
             <div class="p-4 border-b border-gray-700 flex justify-between items-center">
                 <h3 id="save-modal-title" class="text-lg font-semibold header-title" data-lang="saveCalcTitle">Save Calculation to Project</h3>
-                <button id="close-save-modal-btn" data-lang-aria="closeLabel" aria-label="Close" class="hover:text-red-500 transition-colors">
+                <button type="button" id="close-save-modal-btn" data-lang-aria="closeLabel" aria-label="Close" class="hover:text-red-500 transition-colors">
                     <i data-lucide="x-circle"></i>
                 </button>
             </div>
@@ -1770,8 +1770,8 @@
                     <input type="text" id="calculation-name" placeholder="e.g., Foundation Slab, Exterior Walls..." class="pro-input w-full">
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
-                    <button id="cancel-save-calc-btn" class="btn btn-secondary" data-lang="cancelBtn">Cancel</button>
-                    <button id="confirm-save-calc-btn" class="btn btn-primary" data-lang="saveBtn">Save</button>
+                    <button type="button" id="cancel-save-calc-btn" class="btn btn-secondary" data-lang="cancelBtn">Cancel</button>
+                    <button type="button" id="confirm-save-calc-btn" class="btn btn-primary" data-lang="saveBtn">Save</button>
                 </div>
             </div>
         </div>
@@ -2256,7 +2256,8 @@
                 setTimeout(() => modalEl.classList.add('hidden'), 300);
             };
 
-            document.getElementById('open-history-btn').addEventListener('click', () => openModal(historyModal));
+            const openHistoryBtn = document.getElementById('workspace-history-btn');
+            if (openHistoryBtn) openHistoryBtn.addEventListener('click', () => openModal(historyModal));
             document.getElementById('close-history-modal-btn').addEventListener('click', () => closeModal(historyModal));
             historyModal.addEventListener('click', (e) => { if(e.target === historyModal) closeModal(historyModal); });
 
@@ -2286,7 +2287,7 @@
                     historyItem.innerHTML = `
                         <div class="flex justify-between items-center pointer-events-none">
                             <div><strong>${displayType}</strong><p class="text-sm">${new Date(item.timestamp).toLocaleString()}</p></div>
-                            <button class="load-history-btn text-blue-400 hover:text-blue-300 pointer-events-auto" title="Load"><i data-lucide="rotate-ccw" class="w-4 h-4 pointer-events-none"></i></button>
+                            <button type="button" class="load-history-btn text-blue-400 hover:text-blue-300 pointer-events-auto" title="Load"><i data-lucide="rotate-ccw" class="w-4 h-4 pointer-events-none"></i></button>
                         </div>`;
                      historyContainer.appendChild(historyItem);
                 });
@@ -2386,7 +2387,7 @@
         #theme-toggle:focus-visible + div { outline: 3px solid #a5b4fc; outline-offset: 2px; }
         .light-mode #theme-toggle:focus-visible + div { outline-color: #4338ca; }
         /* 44px minimum tap targets */
-        #open-history-btn, #mobile-reset, #close-error, #close-history-modal-btn, #close-projects-modal-btn,
+        #workspace-history-btn, #mobile-reset, #close-error, #close-history-modal-btn, #close-projects-modal-btn,
         #close-save-modal-btn, .load-history-btn, .btn[class*="!p-2"] {
             min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
         }
@@ -2667,13 +2668,13 @@
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-base font-bold header-title">${T.resultConcrete}</h3>
                             <div class="flex gap-2">
-                                <button class="btn btn-secondary !p-2 save-history-btn" title="${T.saveToHistoryTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 save-history-btn" title="${T.saveToHistoryTitle}">
                                     <i data-lucide="save" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
-                                <button class="btn btn-secondary !p-2 export-csv-btn" title="${T.exportCsvTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 export-csv-btn" title="${T.exportCsvTitle}">
                                     <i data-lucide="file-spreadsheet" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
-                                <button class="btn btn-secondary !p-2 export-btn" title="${T.exportPdfTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 export-btn" title="${T.exportPdfTitle}">
                                     <i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
                             </div>
@@ -2833,13 +2834,13 @@
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-base font-bold header-title">${T.resultBlocks}</h3>
                              <div class="flex gap-2">
-                                <button class="btn btn-secondary !p-2 save-history-btn" title="${T.saveToHistoryTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 save-history-btn" title="${T.saveToHistoryTitle}">
                                     <i data-lucide="save" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
-                                <button class="btn btn-secondary !p-2 export-csv-btn" title="${T.exportCsvTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 export-csv-btn" title="${T.exportCsvTitle}">
                                     <i data-lucide="file-spreadsheet" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
-                                <button class="btn btn-secondary !p-2 export-btn" title="${T.exportPdfTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 export-btn" title="${T.exportPdfTitle}">
                                     <i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
                              </div>
@@ -3003,13 +3004,13 @@
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-base font-bold header-title">${T.resultBricks}</h3>
                              <div class="flex gap-2">
-                                <button class="btn btn-secondary !p-2 save-history-btn" title="${T.saveToHistoryTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 save-history-btn" title="${T.saveToHistoryTitle}">
                                     <i data-lucide="save" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
-                                <button class="btn btn-secondary !p-2 export-csv-btn" title="${T.exportCsvTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 export-csv-btn" title="${T.exportCsvTitle}">
                                     <i data-lucide="file-spreadsheet" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
-                                <button class="btn btn-secondary !p-2 export-btn" title="${T.exportPdfTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 export-btn" title="${T.exportPdfTitle}">
                                     <i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
                              </div>
@@ -3247,13 +3248,13 @@
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-base font-bold header-title">${T.resultSteel} (${T[selectedElement]})</h3>
                             <div class="flex gap-2">
-                                <button class="btn btn-secondary !p-2 save-history-btn" title="${T.saveToHistoryTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 save-history-btn" title="${T.saveToHistoryTitle}">
                                     <i data-lucide="save" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
-                                <button class="btn btn-secondary !p-2 export-csv-btn" title="${T.exportCsvTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 export-csv-btn" title="${T.exportCsvTitle}">
                                     <i data-lucide="file-spreadsheet" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
-                                <button class="btn btn-secondary !p-2 export-btn" title="${T.exportPdfTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 export-btn" title="${T.exportPdfTitle}">
                                     <i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
                             </div>
@@ -3387,13 +3388,13 @@
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-base font-bold header-title">${T.resultEarthwork}</h3>
                             <div class="flex gap-2">
-                                <button class="btn btn-secondary !p-2 save-history-btn" title="${T.saveToHistoryTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 save-history-btn" title="${T.saveToHistoryTitle}">
                                     <i data-lucide="save" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
-                                <button class="btn btn-secondary !p-2 export-csv-btn" title="${T.exportCsvTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 export-csv-btn" title="${T.exportCsvTitle}">
                                     <i data-lucide="file-spreadsheet" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
-                                <button class="btn btn-secondary !p-2 export-btn" title="${T.exportPdfTitle}">
+                                <button type="button" class="btn btn-secondary !p-2 export-btn" title="${T.exportPdfTitle}">
                                     <i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i>
                                 </button>
                             </div>
@@ -3454,7 +3455,7 @@
             if (!settings.classList.contains('hidden')) document.getElementById('close-global-settings-btn')?.focus();
         });
         if (headerSettingsBtn) headerSettingsBtn.addEventListener('click', () => settingsBtn?.click());
-        if (historyBtn) historyBtn.addEventListener('click', () => document.getElementById('open-history-btn')?.click());
+        // The primary history handler is registered by the calculator script.
 
         const updateMetrics = () => {
             const activeTab = document.querySelector('.tab-btn.tab-active')?.dataset.tab || 'concrete';
