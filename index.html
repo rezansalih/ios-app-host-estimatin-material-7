@@ -1786,23 +1786,26 @@
             const mobileCalculate = document.getElementById('mobile-calculate');
             const mobileReset = document.getElementById('mobile-reset');
 
-            mobileCalculate.addEventListener('click', function() {
-                const activeTab = document.querySelector('.tab-btn.tab-active').dataset.tab;
+            const triggerActiveCalculation = () => {
+                const activeTab = document.querySelector('.tab-btn.tab-active')?.dataset.tab;
                 const calculateBtn = document.getElementById(`calculate-${activeTab}`);
                 if (calculateBtn) {
                     if (navigator.vibrate) navigator.vibrate(50);
                     calculateBtn.click();
                 }
-            });
+            };
 
-            mobileReset.addEventListener('click', function() {
-                const activeTab = document.querySelector('.tab-btn.tab-active').dataset.tab;
+            const triggerActiveReset = () => {
+                const activeTab = document.querySelector('.tab-btn.tab-active')?.dataset.tab;
                 const resetBtn = document.querySelector(`.reset-btn[data-form="${activeTab}"]`);
                 if (resetBtn) {
                     if (navigator.vibrate) navigator.vibrate(50);
                     resetBtn.click();
                 }
-            });
+            };
+
+            mobileCalculate?.addEventListener('click', triggerActiveCalculation);
+            mobileReset?.addEventListener('click', triggerActiveReset);
 
             const translations = {
                 en: {
@@ -3480,7 +3483,11 @@
 <script>
 /* ===== OFFLINE APP REGISTRATION ===== */
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+            .then(registration => registration.update())
+            .catch(() => {});
+    });
 }
 </script>
 <script>

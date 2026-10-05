@@ -1,4 +1,4 @@
-const CACHE = 'material-estimator-v1';
+const CACHE = 'material-estimator-v2';
 const APP_SHELL = ['./index.html', './manifest.webmanifest', './icon.svg', './vendor/tailwindcss.js', './vendor/lucide.js'];
 
 self.addEventListener('install', event => {
@@ -7,14 +7,21 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then(names => Promise.all(
+      names.filter(name => name !== CACHE).map(name => caches.delete(name))
+    )).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
-    const copy = response.clone();
-    caches.open(CACHE).then(cache => cache.put(event.request, copy));
-    return response;
-  })));
+  event.respondWith(
+    caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+      if (!response || response.status !== 200 || response.type === 'opaque') return response;
+      const copy = response.clone();
+      caches.open(CACHE).then(cache => cache.put(event.request, copy));
+      return response;
+    }))
+  );
 });
