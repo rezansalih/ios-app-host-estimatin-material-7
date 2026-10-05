@@ -1,12 +1,12 @@
 {
-  "name": "Construction Material Estimator",
-  "short_name": "Material Estimator",
+  "name": "BuildQuant Takeoff — Construction Material Estimator",
+  "short_name": "BuildQuant Takeoff",
   "description": "Offline construction material quantity and cost estimator.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#080d18",
-  "theme_color": "#0a101f",
+  "background_color": "#f5f7fb",
+  "theme_color": "#203047",
   "orientation": "portrait-primary",
   "lang": "en",
   "icons": [

@@ -11,7 +11,7 @@
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
     
-    <title>Construction material estimator</title>
+    <title>BuildQuant Takeoff — Construction Material Estimator</title>
     <!-- Local vendor assets keep the app functional on GitHub Pages and offline. -->
     <script src="./vendor/tailwindcss.js"></script>
     <script src="./vendor/lucide.js"></script>
@@ -301,29 +301,25 @@
            SELECT MENU STYLING (FIX FOR CUT OFF TEXT / ARROWS)
            ======================================================== */
         select.pro-input {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
+            /* Use the platform control: iOS renders one accessible arrow reliably. */
+            appearance: auto;
+            -webkit-appearance: menulist;
+            -moz-appearance: auto;
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
-            /* Custom dropdown arrow for consistent spacing */
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-size: 1.25rem;
+            background-image: none;
         }
-        .light-mode select.pro-input {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234b5563'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-        }
+        .light-mode select.pro-input { background-image: none; }
         html[dir="rtl"] select.pro-input { 
             padding-left: 2.25rem !important; /* Make room for arrow on left */
             padding-right: 0.75rem !important; 
-            background-position: left 0.75rem center;
+            background-position: initial;
         }
         html[dir="ltr"] select.pro-input { 
             padding-right: 2.25rem !important; /* Make room for arrow on right */
             padding-left: 0.75rem !important; 
-            background-position: right 0.75rem center;
+            background-position: initial;
         }
 
         /* ========================================================
@@ -425,7 +421,7 @@
         @media (max-width: 640px) { .app-shell { width: 100%; max-width: 100% !important; padding: .7rem !important; } .app-header { gap: .8rem; } .app-header > div:last-child { width: 100%; justify-content: space-between; } .app-header select { min-width: 0 !important; flex: 1; } .header-action { padding-inline: .65rem !important; } .header-action-label { display: none; } .app-shell > div > .flex.flex-wrap { flex-wrap: wrap; overflow-x: visible; padding-bottom: .25rem; gap: .2rem; } .app-shell > div > .flex.flex-wrap .tab-btn { flex: 1 1 calc(33.333% - .25rem) !important; min-width: 0; padding-inline: .35rem !important; } .card:hover { transform: none; } .sticky-action-container { position: sticky; bottom: 5.25rem !important; } .mobile-sticky-footer { padding-inline: .7rem; } .mobile-sticky-footer .btn { min-height: 46px; } }
         @media (max-width: 520px) { .metric-grid { grid-template-columns: 1fr; } .workspace-actions { flex-direction: column; } .quick-action { width: 100%; } .eyebrow { font-size: .58rem; } .workspace-intro { padding: 1rem; } .workspace-copy h2 { font-size: 1.25rem; } .workspace-copy p { font-size: .82rem; line-height: 1.45; } .pro-input { min-height: 44px; } .btn { min-height: 46px; } }
         @media (max-width: 640px) {
-            body { padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
+            body { padding-bottom: calc(116px + env(safe-area-inset-bottom)); scroll-padding-bottom: 116px; }
             .app-shell { padding: .55rem !important; }
             .workspace-intro, .metric-grid, .mobile-guide { display: none !important; }
             .app-header { margin-bottom: .65rem !important; padding-bottom: .65rem !important; }
@@ -463,7 +459,8 @@
             .tab-content input[type="checkbox"], .tab-content input[type="radio"] { accent-color: #f59e0b; }
             .card { border-radius: 11px; }
             .pro-input { min-height: 46px; padding: 9px 10px; }
-            .mobile-sticky-footer { padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); }
+            select.pro-input { appearance: auto !important; -webkit-appearance: menulist !important; background-image: none !important; padding-inline: 10px !important; }
+            .mobile-sticky-footer { padding: 7px 10px calc(7px + env(safe-area-inset-bottom)); }
             .mobile-sticky-footer .btn { min-height: 46px; }
         }
         @media (max-width: 360px) {
@@ -517,7 +514,7 @@
             .app-header { padding: .7rem .75rem !important; margin-inline: -.15rem; border: 1px solid #dce4ee; border-radius: 16px; background: rgba(255,255,255,.88); box-shadow: 0 5px 18px rgba(35,55,80,.07); }
             .brand-mark { box-shadow: 0 5px 12px rgba(217,159,61,.2); }
             .calculator-nav { margin-top: .8rem; margin-bottom: .55rem !important; padding: .25rem; border-radius: 15px; background: #e9eff6; }
-            .tab-btn, .light-mode .tab-btn { min-height: 48px; border-radius: 11px !important; background: transparent; border-color: transparent !important; box-shadow: none; font-weight: 800; }
+            .tab-btn, .light-mode .tab-btn { width: 100% !important; min-width: 0 !important; min-height: 48px; border-radius: 11px !important; background: transparent; border-color: transparent !important; box-shadow: none; font-weight: 800; }
             .tab-btn.tab-active { background: #fff; border-color: #d99f3d !important; box-shadow: 0 3px 8px rgba(35,55,80,.12); }
             .mobile-workspace-bar { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin: .65rem 0 .85rem; padding: .85rem 1rem; border-radius: 14px; background: #203047; color: #fff; box-shadow: 0 7px 16px rgba(32,48,71,.16); }
             .mobile-workspace-bar > div { min-width: 0; }
