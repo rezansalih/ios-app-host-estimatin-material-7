@@ -330,8 +330,9 @@
         body { background: radial-gradient(circle at 10% 0%, rgba(245,158,11,.10), transparent 28%), radial-gradient(circle at 90% 20%, rgba(99,102,241,.16), transparent 30%), #080d18; }
         .app-shell { max-width: 1180px !important; }
         .app-header { border-bottom: 1px solid var(--line); }
-        .brand-mark { width: 42px; height: 42px; flex: 0 0 42px; display: grid; place-items: center; border-radius: 13px; color: #111827; background: linear-gradient(135deg, #fbbf24, #fb7185); box-shadow: 0 10px 24px rgba(245,158,11,.18); }
-        .brand-mark svg { width: 22px; height: 22px; }
+        .brand-mark { width: 42px; height: 42px; flex: 0 0 42px; display: grid; place-items: center; border-radius: 13px; color: #fff; background: linear-gradient(135deg, #f4b942 0%, #e17b3f 52%, #c94c5b 100%); border: 1px solid rgba(255,255,255,.55); box-shadow: 0 10px 24px rgba(201,76,91,.22); }
+        .brand-mark svg { width: 26px; height: 26px; display: block; }
+        .header-byline { margin-top: .22rem; color: #91a1b5; font-size: .72rem; line-height: 1.25; font-weight: 600; }
         .eyebrow, .metric-label { font-size: .68rem; font-weight: 800; letter-spacing: .16em; color: #fbbf24; }
         .workspace-intro { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 1.35rem; background: linear-gradient(105deg, rgba(30,41,59,.92), rgba(30,41,59,.58)); border-color: rgba(251,191,36,.22); position: relative; overflow: hidden; }
         .workspace-intro::after { content: ''; position: absolute; width: 240px; height: 240px; border-radius: 50%; right: -70px; top: -110px; background: rgba(245,158,11,.09); pointer-events: none; }
@@ -474,6 +475,11 @@
             .tab-btn { font-size: .65rem !important; }
             .tab-content .grid-cols-3 { grid-template-columns: 1fr !important; }
         }
+
+        .settings-section-label { margin-top: .35rem; padding-top: .7rem; border-top: 1px solid rgba(148,163,184,.2); color: #d9a94a; font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+        #project-notes { resize: vertical; min-height: 58px; }
+        input:invalid, select:invalid, textarea:invalid { border-color: #e2a23b; }
+        @media (max-width: 640px) { .settings-section-label { font-size: .65rem; } }
         /* Eye-comfort palette: calm slate surfaces with one warm action color. */
         body { color: #dbe5f1; background: #0b1220; animation: none; }
         .header-title { color: #e5edf7; text-shadow: none; }
@@ -536,15 +542,17 @@
             .tab-btn[data-tab="bricks"].tab-active { border-color: #c96b4b !important; background: #fff0ea; color: #99472e !important; }
             .tab-btn[data-tab="steel"].tab-active { border-color: #71839b !important; background: #edf1f6; color: #3f536d !important; }
             .header-quick-action { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; min-height: 42px; padding: .55rem .7rem; white-space: nowrap; font-size: .78rem; font-weight: 800; }
+            .light-mode .header-quick-action { background: #fff !important; color: #344860 !important; border-color: #cbd7e5 !important; }
             .header-quick-action svg { width: 15px; height: 15px; flex: 0 0 auto; }
             .app-header .header-title { font-size: 1.9rem; line-height: 1.12; }
+            .header-byline { font-size: .68rem; }
             .app-header .eyebrow, .app-header .header-subtitle { display: none; }
             .header-tools { flex-wrap: wrap; justify-content: flex-end; }
             @media (max-width: 640px) {
                 .app-header .header-title { font-size: 1.45rem !important; line-height: 1.15; }
                 .header-tools { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; gap: .4rem; }
                 .header-tools > select { grid-column: 1 / -1; width: 100%; min-width: 0 !important; }
-                .header-tools > .header-quick-action { width: 100%; min-width: 0; min-height: 44px; padding-inline: .35rem; font-size: .68rem; }
+                .header-tools > .header-quick-action { width: 100%; min-width: 0; min-height: 44px; padding-inline: .35rem; font-size: .68rem; background: #fff !important; color: #344860 !important; border-color: #cbd7e5 !important; }
                 .header-tools > .header-quick-action span { overflow: hidden; text-overflow: ellipsis; }
                 .header-tools > .flex { grid-column: 1 / -1; justify-content: flex-end; }
             }
@@ -574,9 +582,15 @@
         
         <header class="app-header flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 pb-4">
             <div class="text-start flex items-start gap-3">
-                <div class="brand-mark" aria-hidden="true"><i data-lucide="layers-3"></i></div>
+                <div class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                        <path d="M8 17 24 8l16 9-16 9-16-9Z" fill="currentColor" opacity=".95"/>
+                        <path d="M8 24.5 24 33l16-8.5M8 32 24 41l16-9" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/>
+                    </svg>
+                </div>
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-bold header-title tracking-tight" data-lang="appTitle">Construction Material Estimator</h1>
+                    <p class="header-byline" data-lang="appDesigner">Designed By Engineer Rezan Salih Noori</p>
                 </div>
             </div>
             
@@ -637,6 +651,14 @@
                         <label for="exchange-rate" class="block text-sm font-medium mb-1" data-lang="exchangeRateLabel">100 USD to IQD Rate</label>
                         <input type="number" inputmode="decimal" id="exchange-rate" value="148000" min="0" class="pro-input w-full">
                     </div>
+                    <div class="sm:col-span-2 settings-section-label" data-upgrade-label="projectInfo">Project information</div>
+                    <div><label for="project-name" class="block text-sm font-medium mb-1" data-upgrade-label="projectName">Project name</label><input type="text" id="project-name" class="pro-input w-full" placeholder="e.g. Villa foundation" autocomplete="off"></div>
+                    <div><label for="client-name" class="block text-sm font-medium mb-1" data-upgrade-label="clientName">Client</label><input type="text" id="client-name" class="pro-input w-full" placeholder="Client name" autocomplete="off"></div>
+                    <div><label for="project-location" class="block text-sm font-medium mb-1" data-upgrade-label="projectLocation">Location</label><input type="text" id="project-location" class="pro-input w-full" placeholder="Site location" autocomplete="off"></div>
+                    <div><label for="project-date" class="block text-sm font-medium mb-1" data-upgrade-label="projectDate">Estimate date</label><input type="date" id="project-date" class="pro-input w-full"></div>
+                    <div><label for="input-unit-system" class="block text-sm font-medium mb-1" data-upgrade-label="inputUnits">Input unit system</label><select id="input-unit-system" class="pro-input w-full"><option value="metric">Metric (m / cm / mm)</option><option value="imperial">Imperial display (ft / in)</option></select></div>
+                    <div><label for="cement-bag-mass" class="block text-sm font-medium mb-1" data-upgrade-label="cementBagSize">Cement bag size</label><select id="cement-bag-mass" class="pro-input w-full"><option value="25">25 kg</option><option value="40">40 kg</option><option value="50" selected>50 kg</option></select></div>
+                    <div class="sm:col-span-2"><label for="project-notes" class="block text-sm font-medium mb-1" data-upgrade-label="projectNotes">Estimate notes</label><textarea id="project-notes" rows="2" class="pro-input w-full" placeholder="Assumptions, exclusions, or site notes"></textarea></div>
                  </div>
             </div>
         </div>
@@ -708,6 +730,10 @@
                                     <option value="column" data-lang="columnOption">Column</option>
                                     <option value="beam" data-lang="beamOption">Beam</option>
                                 </select>
+                                <div id="concrete-slab-support-wrap" class="mt-2">
+                                    <label for="concrete-slab-support" class="block text-xs sm:text-sm font-medium" data-upgrade-label="slabSupport">Slab support</label>
+                                    <select id="concrete-slab-support" class="pro-input w-full"><option value="ground">Ground-supported (no soffit formwork)</option><option value="suspended">Suspended slab (include soffit formwork)</option></select>
+                                </div>
                             </div>
                             <div id="concrete-quantity-wrapper" class="hidden">
                                 <label for="concrete-quantity" class="block text-sm font-medium" data-lang="numberOfElements">Number of Elements (Columns/Beams)</label>
@@ -782,6 +808,7 @@
                                     <label class="block text-sm font-medium" data-lang="costAggregateM3">Cost per m³ of Aggregate</label>
                                     <input type="number" inputmode="decimal" id="concrete-aggregate-cost" min="0" step="0.01" class="pro-input">
                                 </div>
+                                <div><label class="block text-sm font-medium" data-upgrade-label="formworkCost">Formwork cost / m²</label><input type="number" inputmode="decimal" id="concrete-formwork-cost" min="0" step="0.01" value="0" class="pro-input"></div>
                             </div>
                         </div>
                     </div>
@@ -866,6 +893,7 @@
                                     <label class="block text-xs sm:text-sm font-medium" data-lang="wallWidth">Width (m)</label>
                                     <input type="number" inputmode="decimal" id="block-wall-width-input" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W">
                                 </div>
+                                <div><label class="block text-xs sm:text-sm font-medium" data-upgrade-label="wallLeaves">Wall leaves</label><input type="number" inputmode="numeric" id="block-leaves" min="1" step="1" value="1" class="pro-input text-sm !p-2" title="1 = single-leaf wall"></div>
                             </div>
                             <div class="pt-2 border-t border-gray-600" id="block-openings-section">
                                 <div class="openings-toggle flex items-center gap-2 mb-2" id="block-openings-toggle">
@@ -1043,6 +1071,7 @@
                                     <label class="block text-xs sm:text-sm font-medium" data-lang="wallWidth">Width (m)</label>
                                     <input type="number" inputmode="decimal" id="brick-wall-width-input" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W">
                                 </div>
+                                <div><label class="block text-xs sm:text-sm font-medium" data-upgrade-label="wallLeaves">Wall leaves</label><input type="number" inputmode="numeric" id="brick-leaves" min="1" step="1" value="1" class="pro-input text-sm !p-2" title="1 = single-leaf wall"></div>
                             </div>
                             <div class="pt-2 border-t border-gray-600" id="brick-openings-section">
                                 <div class="openings-toggle flex items-center gap-2 mb-2" id="brick-openings-toggle">
@@ -1951,6 +1980,14 @@
                 else { this.value = previousCurrency; }
             });
 
+            const upgradeLabels = {
+                en: {projectInfo:'Project information', projectName:'Project name', clientName:'Client', projectLocation:'Location', projectDate:'Estimate date', inputUnits:'Input unit system', cementBagSize:'Cement bag size', projectNotes:'Estimate notes', slabSupport:'Slab support', wallLeaves:'Wall leaves', formworkCost:'Formwork cost / m²'},
+                ku: {projectInfo:'Agahiyên projeyê', projectName:'Navê projeyê', clientName:'Mişterî', projectLocation:'Cih', projectDate:'Dîroka texmînê', inputUnits:'Sîstema yekîtiyên têketinê', cementBagSize:'Mezinahiya kîsê çîmentoyê', projectNotes:'Têbînîyên texmînê', slabSupport:'Piştgiriya slabê', wallLeaves:'Pelên dîwarê', formworkCost:'Bihaya qalibê / m²'},
+                ks: {projectInfo:'زانیارییەکانی پڕۆژە', projectName:'ناوی پڕۆژە', clientName:'کڕیار', projectLocation:'شوێن', projectDate:'بەرواری خەمڵاندن', inputUnits:'سیستەمی یەکەکانی تێخستن', cementBagSize:'قەبارەی کیسەی چیمەنتۆ', projectNotes:'تێبینییەکانی خەمڵاندن', slabSupport:'پشتگیری تەختە', wallLeaves:'چینەکانی دیوار', formworkCost:'تێچووی قاڵب / م²'},
+                ar: {projectInfo:'معلومات المشروع', projectName:'اسم المشروع', clientName:'العميل', projectLocation:'الموقع', projectDate:'تاريخ التقدير', inputUnits:'نظام وحدات الإدخال', cementBagSize:'حجم كيس الإسمنت', projectNotes:'ملاحظات التقدير', slabSupport:'نوع دعم البلاطة', wallLeaves:'عدد طبقات الجدار', formworkCost:'تكلفة القالب / م²'}
+            };
+            const applyUpgradeLabels = (lang) => document.querySelectorAll('[data-upgrade-label]').forEach(el => { const key=el.dataset.upgradeLabel; if (upgradeLabels[lang]?.[key]) el.textContent=upgradeLabels[lang][key]; });
+
             const changeLanguage = (lang) => {
                 const dir = lang === 'ar' || lang === 'ku' || lang === 'ks' ? 'rtl' : 'ltr';
                 htmlEl.setAttribute('dir', dir);
@@ -1962,6 +1999,7 @@
                         else el.textContent = translations[lang][key]; 
                     }
                 });
+                applyUpgradeLabels(lang);
                 // A11Y: translated accessible names
                 document.querySelectorAll('[data-lang-aria]').forEach(el => {
                     const key = el.dataset.langAria;
@@ -2206,6 +2244,62 @@
             
             function getCurrency() { return currencySelect.value === 'other' ? (customCurrencyInput.value || 'د.ع') : currencySelect.value; }
 
+            // Project/report settings shared by every calculator.
+            function getCementBagMass() { return Number(document.getElementById('cement-bag-mass')?.value) || 50; }
+            function getProjectMeta() {
+                return {
+                    name: document.getElementById('project-name')?.value.trim() || 'Construction Material Estimate',
+                    client: document.getElementById('client-name')?.value.trim() || '',
+                    location: document.getElementById('project-location')?.value.trim() || '',
+                    date: document.getElementById('project-date')?.value || new Date().toISOString().slice(0,10),
+                    notes: document.getElementById('project-notes')?.value.trim() || '',
+                    units: document.getElementById('input-unit-system')?.value || 'metric'
+                };
+            }
+            const projectFieldIds = ['project-name','client-name','project-location','project-date','project-notes','input-unit-system','cement-bag-mass'];
+            const savedProjectMeta = JSON.parse(localStorage.getItem('estimatorProjectMeta') || '{}');
+            projectFieldIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (savedProjectMeta[id] !== undefined) el.value = savedProjectMeta[id];
+                el.addEventListener('input', () => {
+                    const data = {}; projectFieldIds.forEach(key => { const node = document.getElementById(key); if (node) data[key] = node.value; });
+                    localStorage.setItem('estimatorProjectMeta', JSON.stringify(data));
+                });
+            });
+            document.querySelectorAll('input[type="number"], input[type="text"], textarea').forEach(input => {
+                input.setAttribute('autocomplete', 'off');
+                input.setAttribute('enterkeyhint', 'next');
+                if (input.type === 'number') input.setAttribute('spellcheck', 'false');
+            });
+
+            // Unit preference: values entered in imperial are converted to metric just before calculation,
+            // then restored for continued editing. Internal formulas always remain metric.
+            const imperialUnitMap = {
+                'concrete-length':.3048,'concrete-width':.3048,'concrete-thickness':.3048,'concrete-total-volume':.0283168,
+                'block-wall-length':.3048,'block-wall-height':.3048,'block-wall-width-input':.3048,'block-wall-volume':.0283168,'block-mortar-thickness':2.54,
+                'brick-wall-length':.3048,'brick-wall-height':.3048,'brick-wall-width-input':.3048,'brick-wall-volume':.0283168,'brick-mortar-thickness':2.54,
+                'one-way-dist-length':.3048,'one-way-bar-length':.3048,'one-way-spacing':25.4,'one-way-diameter':25.4,
+                'footing-length':.3048,'footing-width':.3048,'slab-length':.3048,'slab-width':.3048,
+                'beam-length':.3048,'column-height':.3048,'beam-width-dim':25.4,'beam-depth-dim':25.4,'column-width-dim':25.4,'column-depth-dim':25.4,
+                'concrete-cover':25.4,'stirrup-spacing':25.4,'stirrup-diameter':25.4,'steel-standard-bar-length':.3048
+            };
+            let unitMode = document.getElementById('input-unit-system')?.value || 'metric';
+            const convertDisplayedUnits = (from, to) => {
+                if (from === to) return;
+                Object.entries(imperialUnitMap).forEach(([id, metricFactor]) => {
+                    const el = document.getElementById(id); if (!el || el.value === '') return;
+                    const value = Number(el.value); if (!Number.isFinite(value)) return;
+                    el.value = from === 'metric' && to === 'imperial' ? (value / metricFactor).toFixed(3) : (value * metricFactor).toFixed(3);
+                });
+            };
+            document.getElementById('input-unit-system')?.addEventListener('change', e => { convertDisplayedUnits(unitMode, e.target.value); unitMode = e.target.value; });
+            document.querySelectorAll('[id^="calculate-"]').forEach(button => button.addEventListener('click', () => {
+                if (unitMode !== 'imperial') return;
+                convertDisplayedUnits('imperial','metric');
+                setTimeout(() => convertDisplayedUnits('metric','imperial'), 0);
+            }, true));
+
             document.querySelectorAll('input[type="number"]').forEach(input => {
                 input.addEventListener('blur', () => {
                     if (input.value && input.value < 0) {
@@ -2369,6 +2463,7 @@
                 const dir = lang === 'ar' || lang === 'ku' || lang === 'ks' ? 'rtl' : 'ltr';
                 const T = translations[lang];
                 
+                const project = getProjectMeta();
                 printArea.innerHTML = `
                     <style>
                         /* EXPLICIT DARK MODE OVERRIDE FOR PRINTING */
@@ -2415,7 +2510,11 @@
         }
     </style>
                     <div style="font-family: 'Inter', 'Noto Sans Arabic', sans-serif; padding: 2rem; direction: ${dir}; background: #ffffff;">
-                        <h1>${title}</h1>
+                        <h1>${project.name} — ${title}</h1>
+                        <div style="margin:-1rem 0 1.5rem; color:#4b5563 !important; font-size:.9rem;">
+                            ${project.client ? `Client: ${project.client} · ` : ''}${project.location ? `Location: ${project.location} · ` : ''}Date: ${project.date}
+                            ${project.notes ? `<br><strong>Notes:</strong> ${project.notes}` : ''}
+                        </div>
                         <div>${resultHTML}</div>
                         <footer style="margin-top: 3rem; text-align: center; font-size: 0.8rem; color: #6b7280 !important; border-top: 1px solid #e5e7eb; padding-top: 1rem;">
                             Generated by ${T.appTitle} on ${new Date().toLocaleDateString()}
@@ -2431,7 +2530,8 @@
 
             const exportToCSV = async (resultCard) => {
                 const title = resultCard.querySelector('h3').textContent.trim();
-                const rows = [['"Parameter"', '"Value"']];
+                const project = getProjectMeta();
+                const rows = [['"Project"', `"${project.name.replace(/"/g, '""')}"`], ['"Client"', `"${project.client.replace(/"/g, '""')}"`], ['"Location"', `"${project.location.replace(/"/g, '""')}"`], ['"Date"', `"${project.date}"`], ['"Parameter"', '"Value"']];
                 
                 resultCard.querySelectorAll('.result-item').forEach(item => {
                     const labelEl = item.querySelector('strong');
@@ -2568,13 +2668,7 @@
                         showError(T.errTotalVolumeSingle);
                         return;
                     }
-                    if (type === 'column' || type === 'beam') {
-                        if (quantity <= 0) {
-                            showError(T.errNumElements);
-                            return;
-                        }
-                        wetVolume *= quantity;
-                    }
+                    // Total-volume mode is already the total for all elements; quantity is not applied again.
                 } else { 
                     length = parseFloat(document.getElementById('concrete-length').value);
                     width = parseFloat(document.getElementById('concrete-width').value);
@@ -2600,6 +2694,7 @@
                 const cementCost = parseFloat(document.getElementById('concrete-cement-cost').value) || 0;
                 const sandCost = parseFloat(document.getElementById('concrete-sand-cost').value) || 0;
                 const aggregateCost = parseFloat(document.getElementById('concrete-aggregate-cost').value) || 0;
+                const formworkCostPerM2 = parseFloat(document.getElementById('concrete-formwork-cost')?.value) || 0;
                 
                 const wastageFactor = getWastageFactor();
                 if (wastageFactor === null) return;
@@ -2612,12 +2707,12 @@
                 
                 const cementWeight = cementVolume * cementDensity;
                 const totalCementWeightWithWastage = cementWeight * wastageFactor;
-                const cementBags = Math.ceil(totalCementWeightWithWastage / 50);
+                const cementBags = Math.ceil(totalCementWeightWithWastage / getCementBagMass());
                 
                 const totalCementCost = cementBags * cementCost;
                 const totalSandCost = sandVolume * sandCost;
                 const totalAggregateCost = aggregateVolume * aggregateCost;
-                const totalCost = totalCementCost + totalSandCost + totalAggregateCost;
+                let totalCost = totalCementCost + totalSandCost + totalAggregateCost;
                 
                 const currency = getCurrency();
 
@@ -2634,8 +2729,8 @@
                 renderSessionTable('concrete');
 
                 let additionalResultsHTML = '';
+                let formworkArea = 0;
                 if (mode === 'dims') {
-                    let formworkArea = 0;
                     let formworkLabel = '';
                     const currentQuantity = (type === 'column' || type === 'beam') ? quantity : 1;
                     
@@ -2652,16 +2747,20 @@
                         formworkLabel = T.beamFormwork;
                     }
                     
+                    if(formworkArea > 0 && formworkCostPerM2 > 0){
+                        additionalResultsHTML += `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start"><i data-lucide="wallet"></i><span><strong class="font-semibold block">Formwork cost</strong> ${currency}${(formworkArea * formworkCostPerM2).toFixed(2)}</span></div>`;
+                    }
                     if(formworkArea > 0){
-                        additionalResultsHTML = `
+                        additionalResultsHTML += `
                             <div class="result-item flex items-center gap-2 sm:col-span-2 text-start">
                                 <i data-lucide="square"></i>
                                 <span><strong class="font-semibold block">${formworkLabel}</strong> ${formworkArea.toFixed(2)} m²</span>
                             </div>`;
                     }
                     // FIX: suspended slabs also need soffit (underside) formwork = L x W
-                    if (type === 'slab') {
+                    if (type === 'slab' && document.getElementById('concrete-slab-support')?.value === 'suspended') {
                         const soffitArea = length * width;
+                        formworkArea += soffitArea;
                         additionalResultsHTML += `
                             <div class="result-item flex items-center gap-2 sm:col-span-2 text-start">
                                 <i data-lucide="layers"></i>
@@ -2669,6 +2768,9 @@
                             </div>`;
                     }
                 }
+                const formworkCost = formworkArea * formworkCostPerM2;
+                totalCost += formworkCost;
+                lastCalcData.concrete.cost = `${currency}${totalCost.toFixed(2)}`;
 
                 const resultDiv = document.getElementById('concrete-result');
                 resultDiv.innerHTML = `
@@ -2783,7 +2885,8 @@
                 const mortarThicknessM = includeMortar ? Number(document.getElementById('block-mortar-thickness').value) / 100 : 0;
                 const wallThicknessM = (mode === 'dims' && dimsWallWidth) ? dimsWallWidth : blockWidthM;
                 if (!Number.isFinite(mortarThicknessM) || mortarThicknessM < 0 || !Number.isFinite(wallThicknessM) || wallThicknessM <= 0) { showError(T.errRequiredFields); return; }
-                const leaves = Math.max(1, Math.round((wallThicknessM + mortarThicknessM) / (blockWidthM + mortarThicknessM)));
+                const requestedLeaves = Number(document.getElementById('block-leaves')?.value);
+                const leaves = Number.isInteger(requestedLeaves) && requestedLeaves >= 1 ? requestedLeaves : Math.max(1, Math.round((wallThicknessM + mortarThicknessM) / (blockWidthM + mortarThicknessM)));
                 const netWallArea = totalWallVolume / wallThicknessM;
                 const unitFaceArea = (blockLengthM + mortarThicknessM) * (blockHeightM + mortarThicknessM);
                 blocksNeededUnwasted = (netWallArea / unitFaceArea) * leaves;
@@ -2796,7 +2899,7 @@
                         const cementVolume = (dryMortarVolume * mortarRatioParts[0]) / sumOfRatio;
                         sandVolume = (dryMortarVolume * mortarRatioParts[1]) / sumOfRatio;
                         cementWeight = cementVolume * cementDensity;
-                        cementBags = Math.ceil((cementWeight * wastageFactor) / 50);
+                        cementBags = Math.ceil((cementWeight * wastageFactor) / getCementBagMass());
                         sandVolume *= wastageFactor;
                     }
                 }
@@ -2958,7 +3061,8 @@
                 const mortarThicknessM = includeMortar ? Number(document.getElementById('brick-mortar-thickness').value) / 100 : 0;
                 const wallThicknessM = (mode === 'dims' && dimsWallWidth) ? dimsWallWidth : brickWidthM;
                 if (!Number.isFinite(mortarThicknessM) || mortarThicknessM < 0 || !Number.isFinite(wallThicknessM) || wallThicknessM <= 0) { showError(T.errRequiredFields); return; }
-                const leaves = Math.max(1, Math.round((wallThicknessM + mortarThicknessM) / (brickWidthM + mortarThicknessM)));
+                const requestedLeaves = Number(document.getElementById('brick-leaves')?.value);
+                const leaves = Number.isInteger(requestedLeaves) && requestedLeaves >= 1 ? requestedLeaves : Math.max(1, Math.round((wallThicknessM + mortarThicknessM) / (brickWidthM + mortarThicknessM)));
                 const netWallArea = totalWallVolume / wallThicknessM;
                 const unitFaceArea = (brickLengthM + mortarThicknessM) * (brickHeightM + mortarThicknessM);
                 bricksNeededUnwasted = (netWallArea / unitFaceArea) * leaves;
@@ -2971,7 +3075,7 @@
                         const cementVolume = (dryMortarVolume * mortarRatioParts[0]) / sumOfRatio;
                         sandVolume = (dryMortarVolume * mortarRatioParts[1]) / sumOfRatio;
                         const cementWeight = cementVolume * cementDensity;
-                        cementBags = Math.ceil((cementWeight * wastageFactor) / 50);
+                        cementBags = Math.ceil((cementWeight * wastageFactor) / getCementBagMass());
                         sandVolume *= wastageFactor;
                     }
                 }
