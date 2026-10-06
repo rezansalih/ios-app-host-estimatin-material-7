@@ -1,4 +1,4 @@
-const CACHE = 'material-estimator-v2';
+const CACHE = 'material-estimator-v3';
 const APP_SHELL = ['./index.html', './manifest.webmanifest', './icon.svg', './vendor/tailwindcss.js', './vendor/lucide.js'];
 
 self.addEventListener('install', event => {

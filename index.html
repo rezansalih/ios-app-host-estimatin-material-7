@@ -427,11 +427,13 @@
             .app-header { margin-bottom: .65rem !important; padding-bottom: .65rem !important; }
             .app-header > div:first-child { width: 100%; gap: .6rem; }
             .brand-mark { width: 34px; height: 34px; flex-basis: 34px; border-radius: 10px; }
-            .brand-mark svg { width: 18px; height: 18px; }
+        .brand-mark svg { width: 20px; height: 20px; stroke-width: 2.5; }
             .eyebrow { display: none; }
             .header-title { font-size: 1.18rem !important; line-height: 1.15; }
             .header-subtitle { display: none; }
-            .app-header > div:last-child { gap: .45rem; margin-top: .65rem !important; }
+            .app-header { gap: .35rem; }
+            .app-header > div:first-child { width: 100%; }
+            .app-header > div:last-child { gap: .45rem; margin-top: 0 !important; }
             .app-header > div:last-child > select { width: 100%; max-width: none !important; min-height: 44px; }
             .app-header > div:last-child > .flex { width: 100%; justify-content: flex-end; gap: .45rem; }
             .app-header > div:last-child > .flex > svg { width: 15px; height: 15px; }
@@ -460,8 +462,9 @@
             .card { border-radius: 11px; }
             .pro-input { min-height: 46px; padding: 9px 10px; }
             select.pro-input { appearance: auto !important; -webkit-appearance: menulist !important; background-image: none !important; padding-inline: 10px !important; }
-            .mobile-sticky-footer { padding: 7px 10px calc(7px + env(safe-area-inset-bottom)); }
+            .mobile-sticky-footer { padding: 7px 10px calc(7px + env(safe-area-inset-bottom)); pointer-events: auto; }
             .mobile-sticky-footer .btn { min-height: 46px; }
+            .mobile-sticky-footer button { cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         }
         @media (max-width: 360px) {
             .header-title { font-size: 1.05rem !important; }
@@ -528,7 +531,7 @@
             .tab-content .pro-input { border-radius: 9px; }
             .mobile-sticky-footer { padding-top: 10px; }
             #mobile-reset { min-width: 92px; flex: 0 0 92px; font-size: .82rem; font-weight: 800; }
-            .brand-mark { background: #203047; color: #f1c66c; }
+            .brand-mark { background: linear-gradient(135deg, #f4b942 0%, #e17b3f 52%, #c94c5b 100%); color: #fff; border: 1px solid rgba(255,255,255,.5); box-shadow: 0 6px 14px rgba(201,76,91,.25); }
             .tab-btn[data-tab="blocks"].tab-active { border-color: #3c918c !important; background: #e8f6f4; color: #236b67 !important; }
             .tab-btn[data-tab="bricks"].tab-active { border-color: #c96b4b !important; background: #fff0ea; color: #99472e !important; }
             .tab-btn[data-tab="steel"].tab-active { border-color: #71839b !important; background: #edf1f6; color: #3f536d !important; }
@@ -2191,11 +2194,12 @@
             document.getElementById('column-include-stirrups').addEventListener('change', function() { document.getElementById('column-stirrups-details').classList.toggle('hidden', !this.checked); });
             document.getElementById('steel-include-lap-splice').addEventListener('change', function() { document.getElementById('steel-lap-splice-details').classList.toggle('hidden', !this.checked); });
 
-            function getWastageFactor() { 
-                const wastage = parseFloat(document.getElementById('wastage').value) || 0;
-                if (wastage < 0 || wastage > 50) {
+            function getWastageFactor() {
+                const raw = document.getElementById('wastage').value.trim();
+                const wastage = raw === '' ? 0 : Number(raw);
+                if (!Number.isFinite(wastage) || wastage < 0 || wastage > 50) {
                     showError(translations[localStorage.getItem('language') || 'en'].errWastage);
-                    return 1;
+                    return null;
                 }
                 return 1 + (wastage / 100);
             }
@@ -2598,6 +2602,7 @@
                 const aggregateCost = parseFloat(document.getElementById('concrete-aggregate-cost').value) || 0;
                 
                 const wastageFactor = getWastageFactor();
+                if (wastageFactor === null) return;
                 const dryVolume = wetVolume * dryFactor;
                 const sumOfRatio = ratio.reduce((a, b) => a + b, 0);
 
@@ -2728,6 +2733,7 @@
                 const includeMortar = document.getElementById('block-include-mortar').checked;
                 const mortarRatioParts = document.getElementById('block-mortar-ratio').value.split(':').map(Number);
                 const cementDensity = parseFloat(document.getElementById('block-cement-density').value) || 1440;
+                if ([blockCost, cementCost, sandCost].some(v => !Number.isFinite(v) || v < 0) || !Number.isFinite(cementDensity) || cementDensity <= 0 || mortarRatioParts.some(v => !Number.isFinite(v) || v <= 0)) { showError(T.errRequiredFields); return; }
 
                 const mode = document.querySelector('input[name="block-mode"]:checked').value;
                 let totalWallVolume, length, height, dimsWallWidth = null;
@@ -2755,11 +2761,12 @@
                     const windowVolume = parseFloat(document.getElementById('block-window-area').value) || 0;
                     const numDoors = parseFloat(document.getElementById('block-num-doors').value) || 0;
                     const doorVolume = parseFloat(document.getElementById('block-door-area').value) || 0;
+                    if ([numWindows, windowVolume, numDoors, doorVolume].some(v => !Number.isFinite(v) || v < 0) || !Number.isInteger(numWindows) || !Number.isInteger(numDoors)) { showError(T.errRequiredFields); return; }
                     
                     const totalOpeningVolumeToSubtract = (numWindows * windowVolume) + (numDoors * doorVolume);
                     totalWallVolume = grossWallVolume - totalOpeningVolumeToSubtract;
                     
-                    if (totalWallVolume < 0) {
+                    if (!Number.isFinite(totalWallVolume) || totalWallVolume <= 0) {
                         showError(T.errOpeningExceeds);
                         return;
                     }
@@ -2767,20 +2774,22 @@
                 }
 
                 const wastageFactor = getWastageFactor();
+                if (wastageFactor === null) return;
                 const singleBlockVolume = blockLengthM * blockWidthM * blockHeightM;
                 let blocksNeededUnwasted, mortarVolume = 0, cementBags = 0, sandVolume = 0, cementWeight = 0;
                 
                 // FIX: standard face-area method. Joints only on the face (length + height), never through the wall
                 // thickness, and the count no longer depends on the wall width matching the unit width.
-                const mortarThicknessM = includeMortar ? (parseFloat(document.getElementById('block-mortar-thickness').value) || 1.0) / 100 : 0;
+                const mortarThicknessM = includeMortar ? Number(document.getElementById('block-mortar-thickness').value) / 100 : 0;
                 const wallThicknessM = (mode === 'dims' && dimsWallWidth) ? dimsWallWidth : blockWidthM;
-                const leaves = Math.max(1, Math.round(wallThicknessM / (blockWidthM + mortarThicknessM)));
+                if (!Number.isFinite(mortarThicknessM) || mortarThicknessM < 0 || !Number.isFinite(wallThicknessM) || wallThicknessM <= 0) { showError(T.errRequiredFields); return; }
+                const leaves = Math.max(1, Math.round((wallThicknessM + mortarThicknessM) / (blockWidthM + mortarThicknessM)));
                 const netWallArea = totalWallVolume / wallThicknessM;
                 const unitFaceArea = (blockLengthM + mortarThicknessM) * (blockHeightM + mortarThicknessM);
                 blocksNeededUnwasted = (netWallArea / unitFaceArea) * leaves;
                 if (includeMortar) {
                     const builtThicknessM = leaves * blockWidthM + (leaves - 1) * mortarThicknessM;
-                    mortarVolume = netWallArea * builtThicknessM - (blocksNeededUnwasted * singleBlockVolume);
+                    mortarVolume = Math.max(0, totalWallVolume - (blocksNeededUnwasted * singleBlockVolume));
                     if (mortarVolume > 0) {
                         const dryMortarVolume = mortarVolume * 1.33;
                         const sumOfRatio = mortarRatioParts.reduce((a, b) => a + b, 0);
@@ -2899,6 +2908,7 @@
                 const includeMortar = document.getElementById('brick-include-mortar').checked;
                 const mortarRatioParts = document.getElementById('brick-mortar-ratio').value.split(':').map(Number);
                 const cementDensity = parseFloat(document.getElementById('brick-cement-density').value) || 1440;
+                if ([brickCost, cementCost, sandCost].some(v => !Number.isFinite(v) || v < 0) || !Number.isFinite(cementDensity) || cementDensity <= 0 || mortarRatioParts.some(v => !Number.isFinite(v) || v <= 0)) { showError(T.errRequiredFields); return; }
 
                 const mode = document.querySelector('input[name="brick-mode"]:checked').value;
                 let totalWallVolume, length, height, dimsWallWidth = null;
@@ -2926,11 +2936,12 @@
                     const windowVolume = parseFloat(document.getElementById('brick-window-area').value) || 0;
                     const numDoors = parseFloat(document.getElementById('brick-num-doors').value) || 0;
                     const doorVolume = parseFloat(document.getElementById('brick-door-area').value) || 0;
+                    if ([numWindows, windowVolume, numDoors, doorVolume].some(v => !Number.isFinite(v) || v < 0) || !Number.isInteger(numWindows) || !Number.isInteger(numDoors)) { showError(T.errRequiredFields); return; }
                     
                     const totalOpeningVolumeToSubtract = (numWindows * windowVolume) + (numDoors * doorVolume);
                     totalWallVolume = grossWallVolume - totalOpeningVolumeToSubtract;
                     
-                    if (totalWallVolume < 0) {
+                    if (!Number.isFinite(totalWallVolume) || totalWallVolume <= 0) {
                         showError(T.errOpeningExceeds);
                         return;
                     }
@@ -2938,20 +2949,22 @@
                 }
 
                 const wastageFactor = getWastageFactor();
+                if (wastageFactor === null) return;
                 const singleBrickVolume = brickLengthM * brickWidthM * brickHeightM;
                 let bricksNeededUnwasted, mortarVolume = 0, cementBags = 0, sandVolume = 0;
                 
                 // FIX: standard face-area method. Joints only on the face (length + height), never through the wall
                 // thickness, and the count no longer depends on the wall width matching the unit width.
-                const mortarThicknessM = includeMortar ? (parseFloat(document.getElementById('brick-mortar-thickness').value) || 1.0) / 100 : 0;
+                const mortarThicknessM = includeMortar ? Number(document.getElementById('brick-mortar-thickness').value) / 100 : 0;
                 const wallThicknessM = (mode === 'dims' && dimsWallWidth) ? dimsWallWidth : brickWidthM;
-                const leaves = Math.max(1, Math.round(wallThicknessM / (brickWidthM + mortarThicknessM)));
+                if (!Number.isFinite(mortarThicknessM) || mortarThicknessM < 0 || !Number.isFinite(wallThicknessM) || wallThicknessM <= 0) { showError(T.errRequiredFields); return; }
+                const leaves = Math.max(1, Math.round((wallThicknessM + mortarThicknessM) / (brickWidthM + mortarThicknessM)));
                 const netWallArea = totalWallVolume / wallThicknessM;
                 const unitFaceArea = (brickLengthM + mortarThicknessM) * (brickHeightM + mortarThicknessM);
                 bricksNeededUnwasted = (netWallArea / unitFaceArea) * leaves;
                 if (includeMortar) {
                     const builtThicknessM = leaves * brickWidthM + (leaves - 1) * mortarThicknessM;
-                    mortarVolume = netWallArea * builtThicknessM - (bricksNeededUnwasted * singleBrickVolume);
+                    mortarVolume = Math.max(0, totalWallVolume - (bricksNeededUnwasted * singleBrickVolume));
                     if (mortarVolume > 0) {
                         const dryMortarVolume = mortarVolume * 1.33;
                         const sumOfRatio = mortarRatioParts.reduce((a, b) => a + b, 0);
@@ -3054,7 +3067,8 @@
                     return { totalLength: singleBarLength * numberOfBars, totalLapLength: 0, spliceCount: 0 };
                 }
                 const lapLength = lapFactor * (diameter / 1000); 
-                const splicesPerBar = Math.ceil(singleBarLength / standardLength) - 1;
+                if (standardLength <= lapLength) return { totalLength: NaN, totalLapLength: NaN, spliceCount: 0 };
+                const splicesPerBar = Math.max(0, Math.ceil((singleBarLength - lapLength) / (standardLength - lapLength)) - 1);
                 
                 if (splicesPerBar <= 0) {
                     return { totalLength: singleBarLength * numberOfBars, totalLapLength: 0, spliceCount: 0 };
@@ -3079,7 +3093,9 @@
 
                 const currency = getCurrency();
                 const wastageFactor = getWastageFactor();
+                if (wastageFactor === null) return;
                 const costPerKg = parseFloat(document.getElementById('steel-cost').value) || 0;
+                if (!Number.isFinite(costPerKg) || costPerKg < 0) { showError(T.errRequiredFields); return; }
 
                 const includeLap = document.getElementById('steel-include-lap-splice').checked;
                 const standardBarLength = parseFloat(document.getElementById('steel-standard-bar-length').value);
@@ -3122,7 +3138,7 @@
                         barsAlongWidth = parseInt(document.getElementById(`${selectedElement}-number-wid`).value);
                         diameterWid = parseFloat(document.getElementById(`${selectedElement}-diameter-wid-alt`).value);
                         
-                        if ([length, width, barsAlongLength, diameterLen, barsAlongWidth, diameterWid].some(v => isNaN(v) || v <= 0)) {
+                        if ([length, width, barsAlongLength, diameterLen, barsAlongWidth, diameterWid].some(v => !Number.isFinite(v) || v <= 0) || !Number.isInteger(barsAlongLength) || !Number.isInteger(barsAlongWidth)) {
                             showError(T.errNumberInputs);
                             return;
                         }
@@ -3160,7 +3176,7 @@
                     
                     if ([distLength, barLength, spacing, diameter].every(v => !isNaN(v) && v > 0)) {
                         inputsValid = true;
-                        const numBars = Math.floor((distLength * 1000) / spacing) + 1;
+                        const numBars = Math.ceil((distLength * 1000) / spacing) + 1;
                         const lapResult = calculateLengthWithLap(barLength, numBars, diameter, includeLap, standardBarLength, lapSpliceFactor);
                         
                         results.totalLapLength = lapResult.totalLapLength;
@@ -3184,7 +3200,7 @@
                     const numBars = parseInt(document.getElementById(`${selectedElement}-bars`).value);
                     const diameter = parseFloat(document.getElementById(`${selectedElement}-diameter`).value);
                     
-                    if (isNaN(length) || isNaN(numBars) || isNaN(diameter) || length <= 0 || numBars <= 0 || diameter <= 0) {
+                    if (!Number.isFinite(length) || !Number.isFinite(numBars) || !Number.isFinite(diameter) || length <= 0 || numBars <= 0 || diameter <= 0 || !Number.isInteger(numBars)) {
                         showError(T.errMainBars);
                         return;
                     }
@@ -3214,7 +3230,8 @@
                             results.stirrups = null;
                         } else {
                             const singleStirrupLength = (2 * (elWidth - 2 * cover) + 2 * (elDepth - 2 * cover) + 2 * (10 * stirrupDiameter)) / 1000;
-                            const numStirrups = Math.floor((length * 1000) / stirrupSpacing) + 1;
+                            if (elWidth <= 2 * cover + stirrupDiameter || elDepth <= 2 * cover + stirrupDiameter) { showError(T.errStirrups); return; }
+                            const numStirrups = Math.ceil((length * 1000) / stirrupSpacing) + 1;
                             
                             results.stirrups = {
                                 numberOfStirrups: numStirrups,
@@ -3361,17 +3378,18 @@
                 const length = parseFloat(document.getElementById('earthwork-length').value);
                 const width = parseFloat(document.getElementById('earthwork-width').value);
                 const height = parseFloat(document.getElementById('earthwork-height').value);
-                const quantity = parseFloat(document.getElementById('earthwork-quantity').value);
-                const truckCapacity = parseFloat(document.getElementById('earthwork-truck-capacity').value) || 4;
+                const quantity = Number(document.getElementById('earthwork-quantity').value);
+                const truckCapacity = Number(document.getElementById('earthwork-truck-capacity').value);
+                const swellRaw = document.getElementById('earthwork-swell').value.trim();
+                const swellPct = swellRaw === '' ? 0 : Number(swellRaw);
                 
-                if ([length, width, height, quantity].some(v => isNaN(v) || v <= 0)) {
+                if ([length, width, height, quantity, truckCapacity, swellPct].some(v => !Number.isFinite(v)) || [length, width, height, quantity, truckCapacity].some(v => v <= 0) || !Number.isInteger(quantity) || swellPct < 0 || swellPct > 100) {
                     showError(T.errEarthworkDims);
                     return;
                 }
       
                 const volume = length * width * height * quantity;
                 // FIX: excavated soil bulks up, trucks carry the loose volume, not the bank volume
-                const swellPct = Math.max(0, parseFloat(document.getElementById('earthwork-swell').value) || 0);
                 const looseVolume = volume * (1 + swellPct / 100);
                 const totalLoads = Math.ceil(looseVolume / truckCapacity);
 

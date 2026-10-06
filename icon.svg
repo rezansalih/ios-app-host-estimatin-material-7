@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Material Estimator">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fbbf24"/><stop offset="1" stop-color="#fb7185"/></linearGradient></defs>
-  <rect width="64" height="64" rx="16" fill="#111b2b"/>
-  <path fill="url(#g)" d="M16 16h14v14H16zM34 16h14v14H34zM16 34h14v14H16zM34 34h14v14H34z"/>
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7c14d"/><stop offset=".52" stop-color="#e77e3f"/><stop offset="1" stop-color="#c94c5b"/></linearGradient></defs>
+  <rect width="64" height="64" rx="16" fill="url(#g)"/>
+  <path fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round" d="M18 23 32 15l14 8-14 8-14-8Zm0 9 14 8 14-8M18 41l14 8 14-8"/>
 </svg>
