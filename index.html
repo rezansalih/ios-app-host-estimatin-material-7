@@ -215,9 +215,9 @@
            ======================================================== */
         .swipe-indicator { display: none; font-size: 0.8rem; color: #818cf8; margin-bottom: 0.5rem; align-items: center; justify-content: center; gap: 0.25rem; opacity: 0.9; }
         .light-mode .swipe-indicator { color: #4f46e5; }
-        @media (max-width: 640px) { .swipe-indicator { display: flex; animation: pulse 2.5s infinite; } }
+        @media (max-width: 640px) { .swipe-indicator { display: none !important; } }
 
-        .table-scroll-container { position: relative; }
+        .table-scroll-container { position: relative; overflow: visible; }
         .table-scroll-container::after { content: ''; position: absolute; top: 0; right: 0; bottom: 8px; width: 35px; background: linear-gradient(to left, rgba(17, 24, 39, 0.9), transparent); pointer-events: none; z-index: 10; border-radius: 0 0.5rem 0.5rem 0; }
         .light-mode .table-scroll-container::after { background: linear-gradient(to left, rgba(255, 255, 255, 0.9), transparent); }
         
@@ -228,6 +228,20 @@
         @media (min-width: 641px) { .table-scroll-container::after { display: none; } }
 
         .custom-scrollbar { -webkit-overflow-scrolling: touch; scrollbar-width: thin; padding-bottom: 0.5rem; }
+        @media (max-width: 640px) {
+            .table-scroll-container::after { display: none !important; }
+            .table-wrapper { overflow: visible; }
+            .table-wrapper table, .table-wrapper thead, .table-wrapper tbody, .table-wrapper tfoot,
+            .table-wrapper tr, .table-wrapper td, .table-wrapper th { display: block; width: 100%; }
+            .table-wrapper thead { position: absolute; width: 1px !important; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+            .table-wrapper tbody tr { margin: .55rem 0; padding: .35rem .7rem; border: 1px solid #d7e0eb; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(35,55,80,.06); }
+            .table-wrapper tbody td { display: flex; align-items: baseline; justify-content: space-between; gap: .8rem; padding: .42rem 0; white-space: normal; text-align: end; border-bottom: 1px solid #e8edf3; font-size: .78rem; }
+            .table-wrapper tbody td:last-child { border-bottom: 0; }
+            .table-wrapper tbody td::before { content: attr(data-label); flex: 0 0 46%; color: #52657c; font-size: .7rem; font-weight: 800; text-align: start; }
+            .table-wrapper tfoot tr { display: block; margin-top: .45rem; padding: .45rem .7rem; border-radius: 9px; background: #fff4dc; }
+            .table-wrapper tfoot td { display: inline; padding: .2rem; white-space: normal; font-size: .78rem; }
+        }
+
         .custom-scrollbar::-webkit-scrollbar { height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.5); border-radius: 4px; }
         
@@ -330,6 +344,8 @@
         body { background: radial-gradient(circle at 10% 0%, rgba(245,158,11,.10), transparent 28%), radial-gradient(circle at 90% 20%, rgba(99,102,241,.16), transparent 30%), #080d18; }
         .app-shell { max-width: 1180px !important; }
         .app-header { border-bottom: 1px solid var(--line); }
+        .app-header h1 { margin: 0 !important; }
+        .app-header > div:first-child { align-items: flex-start; }
         .brand-mark { width: 42px; height: 42px; flex: 0 0 42px; display: grid; place-items: center; border-radius: 13px; color: #fff; background: linear-gradient(135deg, #f4b942 0%, #e17b3f 52%, #c94c5b 100%); border: 1px solid rgba(255,255,255,.55); box-shadow: 0 10px 24px rgba(201,76,91,.22); }
         .brand-mark svg { width: 26px; height: 26px; display: block; }
         .header-byline { margin-top: .22rem; color: #91a1b5; font-size: .72rem; line-height: 1.25; font-weight: 600; }
@@ -656,8 +672,8 @@
                     <div><label for="client-name" class="block text-sm font-medium mb-1" data-upgrade-label="clientName">Client</label><input type="text" id="client-name" class="pro-input w-full" placeholder="Client name" autocomplete="off"></div>
                     <div><label for="project-location" class="block text-sm font-medium mb-1" data-upgrade-label="projectLocation">Location</label><input type="text" id="project-location" class="pro-input w-full" placeholder="Site location" autocomplete="off"></div>
                     <div><label for="project-date" class="block text-sm font-medium mb-1" data-upgrade-label="projectDate">Estimate date</label><input type="date" id="project-date" class="pro-input w-full"></div>
-                    <div><label for="input-unit-system" class="block text-sm font-medium mb-1" data-upgrade-label="inputUnits">Input unit system</label><select id="input-unit-system" class="pro-input w-full"><option value="metric">Metric (m / cm / mm)</option><option value="imperial">Imperial display (ft / in)</option></select></div>
-                    <div><label for="cement-bag-mass" class="block text-sm font-medium mb-1" data-upgrade-label="cementBagSize">Cement bag size</label><select id="cement-bag-mass" class="pro-input w-full"><option value="25">25 kg</option><option value="40">40 kg</option><option value="50" selected>50 kg</option></select></div>
+                    <div><label for="input-unit-system" class="block text-sm font-medium mb-1" data-upgrade-label="inputUnits">Input unit system</label><select id="input-unit-system" class="pro-input w-full"><option value="metric" data-upgrade-label="metricUnits">Metric (m / cm / mm)</option><option value="imperial" data-upgrade-label="imperialUnits">Imperial display (ft / in)</option></select></div>
+                    <div><label for="cement-bag-mass" class="block text-sm font-medium mb-1" data-upgrade-label="cementBagSize">Cement bag size</label><select id="cement-bag-mass" class="pro-input w-full"><option value="25" data-upgrade-label="bag25">25 kg</option><option value="40" data-upgrade-label="bag40">40 kg</option><option value="50" selected data-upgrade-label="bag50">50 kg</option></select></div>
                     <div class="sm:col-span-2"><label for="project-notes" class="block text-sm font-medium mb-1" data-upgrade-label="projectNotes">Estimate notes</label><textarea id="project-notes" rows="2" class="pro-input w-full" placeholder="Assumptions, exclusions, or site notes"></textarea></div>
                  </div>
             </div>
@@ -732,7 +748,7 @@
                                 </select>
                                 <div id="concrete-slab-support-wrap" class="mt-2">
                                     <label for="concrete-slab-support" class="block text-xs sm:text-sm font-medium" data-upgrade-label="slabSupport">Slab support</label>
-                                    <select id="concrete-slab-support" class="pro-input w-full"><option value="ground">Ground-supported (no soffit formwork)</option><option value="suspended">Suspended slab (include soffit formwork)</option></select>
+                                    <select id="concrete-slab-support" class="pro-input w-full"><option value="ground" data-upgrade-label="groundSupported">Ground-supported (no soffit formwork)</option><option value="suspended" data-upgrade-label="suspendedSlab">Suspended slab (include soffit formwork)</option></select>
                                 </div>
                             </div>
                             <div id="concrete-quantity-wrapper" class="hidden">
@@ -1981,10 +1997,10 @@
             });
 
             const upgradeLabels = {
-                en: {projectInfo:'Project information', projectName:'Project name', clientName:'Client', projectLocation:'Location', projectDate:'Estimate date', inputUnits:'Input unit system', cementBagSize:'Cement bag size', projectNotes:'Estimate notes', slabSupport:'Slab support', wallLeaves:'Wall leaves', formworkCost:'Formwork cost / m²'},
-                ku: {projectInfo:'Agahiyên projeyê', projectName:'Navê projeyê', clientName:'Mişterî', projectLocation:'Cih', projectDate:'Dîroka texmînê', inputUnits:'Sîstema yekîtiyên têketinê', cementBagSize:'Mezinahiya kîsê çîmentoyê', projectNotes:'Têbînîyên texmînê', slabSupport:'Piştgiriya slabê', wallLeaves:'Pelên dîwarê', formworkCost:'Bihaya qalibê / m²'},
-                ks: {projectInfo:'زانیارییەکانی پڕۆژە', projectName:'ناوی پڕۆژە', clientName:'کڕیار', projectLocation:'شوێن', projectDate:'بەرواری خەمڵاندن', inputUnits:'سیستەمی یەکەکانی تێخستن', cementBagSize:'قەبارەی کیسەی چیمەنتۆ', projectNotes:'تێبینییەکانی خەمڵاندن', slabSupport:'پشتگیری تەختە', wallLeaves:'چینەکانی دیوار', formworkCost:'تێچووی قاڵب / م²'},
-                ar: {projectInfo:'معلومات المشروع', projectName:'اسم المشروع', clientName:'العميل', projectLocation:'الموقع', projectDate:'تاريخ التقدير', inputUnits:'نظام وحدات الإدخال', cementBagSize:'حجم كيس الإسمنت', projectNotes:'ملاحظات التقدير', slabSupport:'نوع دعم البلاطة', wallLeaves:'عدد طبقات الجدار', formworkCost:'تكلفة القالب / م²'}
+                en: {projectInfo:'Project information', projectName:'Project name', clientName:'Client', projectLocation:'Location', projectDate:'Estimate date', inputUnits:'Input unit system', metricUnits:'Metric (m / cm / mm)', imperialUnits:'Imperial display (ft / in)', cementBagSize:'Cement bag size', bag25:'25 kg', bag40:'40 kg', bag50:'50 kg', projectNotes:'Estimate notes', slabSupport:'Slab support', groundSupported:'Ground-supported (no soffit formwork)', suspendedSlab:'Suspended slab (include soffit formwork)', wallLeaves:'Wall leaves', formworkCost:'Formwork cost / m²'},
+                ku: {projectInfo:'Agahiyên projeyê', projectName:'Navê projeyê', clientName:'Mişterî', projectLocation:'Cih', projectDate:'Dîroka texmînê', inputUnits:'Sîstema yekîtiyên têketinê', metricUnits:'Metrîk (m / cm / mm)', imperialUnits:'Imperyal (ft / in)', cementBagSize:'Mezinahiya kîsê çîmentoyê', bag25:'25 kg', bag40:'40 kg', bag50:'50 kg', projectNotes:'Têbînîyên texmînê', slabSupport:'Piştgiriya slabê', groundSupported:'Slaba li ser axê (bê qalibê binê)', suspendedSlab:'Slaba hilbijartî (bi qalibê binê)', wallLeaves:'Pelên dîwarê', formworkCost:'Bihaya qalibê / m²'},
+                ks: {projectInfo:'زانیارییەکانی پڕۆژە', projectName:'ناوی پڕۆژە', clientName:'کڕیار', projectLocation:'شوێن', projectDate:'بەرواری خەمڵاندن', inputUnits:'سیستەمی یەکەکانی تێخستن', metricUnits:'مەتری (m / cm / mm)', imperialUnits:'ئیمپریاڵ (ft / in)', cementBagSize:'قەبارەی کیسەی چیمەنتۆ', bag25:'٢٥ کگ', bag40:'٤٠ کگ', bag50:'٥٠ کگ', projectNotes:'تێبینییەکانی خەمڵاندن', slabSupport:'پشتگیری تەختە', groundSupported:'تەختەی پشتبەستوو بە زەوی (بێ قاڵبی ژێرەوە)', suspendedSlab:'تەختەی هەڵواسراو (لەگەڵ قاڵبی ژێرەوە)', wallLeaves:'چینەکانی دیوار', formworkCost:'تێچووی قاڵب / م²'},
+                ar: {projectInfo:'معلومات المشروع', projectName:'اسم المشروع', clientName:'العميل', projectLocation:'الموقع', projectDate:'تاريخ التقدير', inputUnits:'نظام وحدات الإدخال', metricUnits:'متري (م / سم / مم)', imperialUnits:'إمبراطوري (قدم / بوصة)', cementBagSize:'حجم كيس الإسمنت', bag25:'٢٥ كجم', bag40:'٤٠ كجم', bag50:'٥٠ كجم', projectNotes:'ملاحظات التقدير', slabSupport:'نوع دعم البلاطة', groundSupported:'بلاطة على الأرض (بدون قالب سفلي)', suspendedSlab:'بلاطة معلقة (مع قالب سفلي)', wallLeaves:'عدد طبقات الجدار', formworkCost:'تكلفة القالب / م²'}
             };
             const applyUpgradeLabels = (lang) => document.querySelectorAll('[data-upgrade-label]').forEach(el => { const key=el.dataset.upgradeLabel; if (upgradeLabels[lang]?.[key]) el.textContent=upgradeLabels[lang][key]; });
 
@@ -2349,16 +2365,23 @@
             
             const historyModal = document.getElementById('history-modal');
             const openModal = (modalEl) => {
-                modalEl.classList.remove('hidden');
-                setTimeout(() => { modalEl.classList.remove('opacity-0'); modalEl.querySelector('.modal-content').classList.remove('scale-95'); }, 10);
+                if (!modalEl) return;
+                modalEl.classList.remove('hidden', 'opacity-0');
+                modalEl.setAttribute('aria-hidden', 'false');
+                modalEl.querySelector('.modal-content')?.classList.remove('scale-95');
+                document.body.classList.add('modal-open');
             };
             const closeModal = (modalEl) => {
                 modalEl.classList.add('opacity-0'); modalEl.querySelector('.modal-content').classList.add('scale-95');
-                setTimeout(() => modalEl.classList.add('hidden'), 300);
+                setTimeout(() => { modalEl.classList.add('hidden'); modalEl.setAttribute('aria-hidden', 'true'); document.body.classList.remove('modal-open'); }, 300);
             };
 
             const openHistoryBtn = document.getElementById('workspace-history-btn');
-            if (openHistoryBtn) openHistoryBtn.addEventListener('click', () => openModal(historyModal));
+            if (openHistoryBtn) {
+                const openHistory = (event) => { event?.preventDefault(); openModal(historyModal); };
+                openHistoryBtn.addEventListener('pointerup', openHistory, { passive: false });
+                openHistoryBtn.addEventListener('click', openHistory);
+            }
             document.getElementById('close-history-modal-btn').addEventListener('click', () => closeModal(historyModal));
             historyModal.addEventListener('click', (e) => { if(e.target === historyModal) closeModal(historyModal); });
 
@@ -2435,10 +2458,12 @@
                 }
 
                 tableSection.classList.remove('hidden');
+                const table = tableSection.querySelector('table');
+                const headers = [...table.querySelectorAll('thead th')].map(th => th.textContent.trim());
                 let rowsHTML = '';
                 sessionResults[type].forEach(result => {
                     let row = '<tr>';
-                    Object.values(result).forEach(value => { row += `<td>${value}</td>`; });
+                    Object.values(result).forEach((value, index) => { row += `<td data-label="${(headers[index] || '').replace(/"/g, '&quot;')}">${value}</td>`; });
                     row += '</tr>';
                     rowsHTML += row;
                 });
