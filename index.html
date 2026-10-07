@@ -595,6 +595,25 @@
             #steel.tab-content > h2::before { background: #71839b; }
             #steel.tab-content > .card { border-inline-start-color: #71839b; }
         }
+    
+        /* Final phone theme fix: the legacy mobile rules above intentionally style light mode,
+           so dark mode needs an explicit counterpart after them. */
+        @media (max-width: 640px) {
+            body:not(.light-mode) { background: #0b1220 !important; color: #dbe5f1 !important; }
+            body:not(.light-mode) .app-header { background: #111b2b !important; border-color: #26364d !important; }
+            body:not(.light-mode) .header-title, body:not(.light-mode) .tab-content > h2 { color: #e5edf7 !important; }
+            body:not(.light-mode) .header-byline, body:not(.light-mode) .tab-content label { color: #91a1b5 !important; }
+            body:not(.light-mode) .header-tools > .header-quick-action { background: #172338 !important; border-color: #334761 !important; color: #dbe5f1 !important; }
+            body:not(.light-mode) .calculator-nav { background: #111b2b !important; }
+            body:not(.light-mode) .tab-btn { background: #172338 !important; border-color: #334761 !important; color: #b7c5d6 !important; }
+            body:not(.light-mode) .tab-btn.tab-active { background: #1a2b42 !important; border-color: #e5b653 !important; color: #fff !important; }
+            body:not(.light-mode) .tab-content > .card { background: #111b2b !important; border-color: #26364d !important; color: #dbe5f1 !important; }
+            body:not(.light-mode) .tab-content .card h3 { color: #e5edf7 !important; }
+            body:not(.light-mode) .tab-content [role="radiogroup"] label { background: #152238 !important; border-color: #2b3d56 !important; color: #dbe5f1 !important; }
+            body:not(.light-mode) .pro-input { background: #172338 !important; border-color: #334761 !important; color: #e8eef7 !important; }
+            body:not(.light-mode) .mobile-sticky-footer { background: rgba(11,18,32,.97) !important; border-top-color: #26364d !important; }
+            body:not(.light-mode) .mobile-sticky-footer .btn-secondary { background: #26364d !important; color: #dbe5f1 !important; }
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -687,7 +706,7 @@
                     <div><label for="client-name" class="block text-sm font-medium mb-1" data-upgrade-label="clientName">Client</label><input type="text" id="client-name" class="pro-input w-full" placeholder="Client name" autocomplete="off"></div>
                     <div><label for="project-location" class="block text-sm font-medium mb-1" data-upgrade-label="projectLocation">Location</label><input type="text" id="project-location" class="pro-input w-full" placeholder="Site location" autocomplete="off"></div>
                     <div><label for="project-date" class="block text-sm font-medium mb-1" data-upgrade-label="projectDate">Estimate date</label><input type="date" id="project-date" class="pro-input w-full"></div>
-                    <div><label for="input-unit-system" class="block text-sm font-medium mb-1" data-upgrade-label="inputUnits">Input unit system</label><select id="input-unit-system" class="pro-input w-full"><option value="metric" data-upgrade-label="metricUnits">Metric (m / cm / mm)</option><option value="imperial" data-upgrade-label="imperialUnits">Imperial display (ft / in)</option></select></div>
+                    <div><label for="input-unit-system" class="block text-sm font-medium mb-1" data-upgrade-label="inputUnits">Input unit system</label><select id="input-unit-system" class="pro-input w-full"><option value="metric" data-upgrade-label="metricUnits">Metric (m / cm / mm)</option><option value="imperial" data-upgrade-label="imperialUnits" hidden disabled>Imperial display (ft / in)</option></select></div>
                     <div><label for="cement-bag-mass" class="block text-sm font-medium mb-1" data-upgrade-label="cementBagSize">Cement bag size</label><select id="cement-bag-mass" class="pro-input w-full"><option value="25" data-upgrade-label="bag25">25 kg</option><option value="40" data-upgrade-label="bag40">40 kg</option><option value="50" selected data-upgrade-label="bag50">50 kg</option></select></div>
                     <div class="sm:col-span-2"><label for="project-notes" class="block text-sm font-medium mb-1" data-upgrade-label="projectNotes">Estimate notes</label><textarea id="project-notes" rows="2" class="pro-input w-full" placeholder="Assumptions, exclusions, or site notes"></textarea></div>
                  </div>
@@ -2293,6 +2312,7 @@
                 const el = document.getElementById(id);
                 if (!el) return;
                 if (savedProjectMeta[id] !== undefined) el.value = savedProjectMeta[id];
+                if (id === 'input-unit-system' && el.value !== 'metric') el.value = 'metric';
                 el.addEventListener('input', () => {
                     const data = {}; projectFieldIds.forEach(key => { const node = document.getElementById(key); if (node) data[key] = node.value; });
                     localStorage.setItem('estimatorProjectMeta', JSON.stringify(data));
@@ -2324,7 +2344,7 @@
                     el.value = from === 'metric' && to === 'imperial' ? (value / metricFactor).toFixed(3) : (value * metricFactor).toFixed(3);
                 });
             };
-            document.getElementById('input-unit-system')?.addEventListener('change', e => { convertDisplayedUnits(unitMode, e.target.value); unitMode = e.target.value; });
+            document.getElementById('input-unit-system')?.addEventListener('change', e => { if (e.target.value !== 'metric') { e.target.value = 'metric'; return; } unitMode = 'metric'; });
             document.querySelectorAll('[id^="calculate-"]').forEach(button => button.addEventListener('click', () => {
                 if (unitMode !== 'imperial') return;
                 convertDisplayedUnits('imperial','metric');
