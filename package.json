@@ -1,0 +1,7 @@
+{
+  "name": "construction-material-estimator",
+  "private": true,
+  "scripts": {
+    "test": "node tests/calculations.test.js"
+  }
+}
