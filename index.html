@@ -7,6 +7,7 @@
     <!-- Mobile Web Optimization Tags -->
     <meta name="theme-color" content="#0a101f" id="theme-color-meta">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Material Estimator">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
@@ -346,6 +347,8 @@
         .app-header { border-bottom: 1px solid var(--line); }
         .app-header h1 { margin: 0 !important; }
         .app-header > div:first-child { align-items: flex-start; }
+        .app-header > div:first-child > div:last-child { min-width: 0; flex: 1 1 auto; }
+        .app-header h1 { overflow-wrap: break-word; word-break: normal; }
         .brand-mark { width: 42px; height: 42px; flex: 0 0 42px; display: grid; place-items: center; border-radius: 13px; color: #fff; background: linear-gradient(135deg, #f4b942 0%, #e17b3f 52%, #c94c5b 100%); border: 1px solid rgba(255,255,255,.55); box-shadow: 0 10px 24px rgba(201,76,91,.22); }
         .brand-mark svg { width: 26px; height: 26px; display: block; }
         .header-byline { margin-top: .22rem; color: #91a1b5; font-size: .72rem; line-height: 1.25; font-weight: 600; }
@@ -482,6 +485,18 @@
             .mobile-sticky-footer { padding: 7px 10px calc(7px + env(safe-area-inset-bottom)); pointer-events: auto; }
             .mobile-sticky-footer .btn { min-height: 46px; }
             .mobile-sticky-footer button { cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        }
+        @media (display-mode: standalone), (display-mode: fullscreen) {
+            body { padding-top: env(safe-area-inset-top); }
+            .app-header { margin-top: max(.35rem, env(safe-area-inset-top)); }
+        }
+        @supports (-webkit-touch-callout: none) {
+            @media (max-width: 640px) {
+                body { padding-top: env(safe-area-inset-top); }
+                .app-header { margin-top: .35rem; }
+                .app-header .header-title { font-size: clamp(1.22rem, 6.2vw, 1.45rem) !important; line-height: 1.12; letter-spacing: -.025em; }
+                .app-header .header-byline { font-size: .64rem; line-height: 1.2; white-space: normal; }
+            }
         }
         @media (max-width: 360px) {
             .header-title { font-size: 1.05rem !important; }

@@ -1,8 +1,12 @@
 {
   "name": "Construction Material Estimator",
   "short_name": "Material Estimator",
+  "id": "./index.html",
+  "scope": "./",
   "start_url": "./index.html",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
   "background_color": "#080d18",
   "theme_color": "#0a101f",
   "icons": [{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
