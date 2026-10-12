@@ -1,17 +1,21 @@
 {
   "name": "Construction Material Estimator",
-  "short_name": "Material Estimator",
+  "short_name": "Estimator",
+  "description": "Phone-first tool to estimate concrete, blocks, bricks, steel and earth work from site dimensions.",
   "id": "./index.html",
-  "scope": "./",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
-  "orientation": "portrait",
-  "background_color": "#080d18",
-  "theme_color": "#0a101f",
+  "orientation": "portrait-primary",
+  "background_color": "#f2f6f7",
+  "theme_color": "#0d9488",
+  "lang": "en",
+  "dir": "auto",
+  "categories": ["productivity", "utilities"],
   "icons": [
-    {"src":"./icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-    {"src":"./icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"},
-    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "./icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

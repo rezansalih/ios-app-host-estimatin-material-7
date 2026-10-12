@@ -1,14 +1,18 @@
-const CACHE = 'material-estimator-v10';
+const CACHE = 'material-estimator-v22';
 const CACHE_PREFIX = 'material-estimator-';
 const APP_SHELL = [
   './index.html',
   './manifest.webmanifest',
+  './assets/app.css',
+  './concrete-calculations.js',
+  './app-ui.js',
   './icon.svg',
+  './favicon.ico',
   './apple-touch-icon.png',
   './icon-192.png',
   './icon-512.png',
-  './vendor/tailwindcss.js',
-  './vendor/lucide.js'
+  './icon-maskable-192.png',
+  './icon-maskable-512.png'
 ];
 
 self.addEventListener('install', event => {

@@ -1,5 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Material Estimator">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7c14d"/><stop offset=".52" stop-color="#e77e3f"/><stop offset="1" stop-color="#c94c5b"/></linearGradient></defs>
-  <rect width="64" height="64" rx="16" fill="url(#g)"/>
-  <path fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round" d="M18 23 32 15l14 8-14 8-14-8Zm0 9 14 8 14-8M18 41l14 8 14-8"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17b3a0"/>
+      <stop offset="1" stop-color="#0e7a6e"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <g fill="#ffffff">
+    <!-- running bond: two rows of 2, one row of 3 -->
+    <rect x="116" y="136" width="136" height="64" rx="18"/>
+    <rect x="260" y="136" width="136" height="64" rx="18"/>
+    <rect x="116" y="224" width="56"  height="64" rx="14"/>
+    <rect x="180" y="224" width="152" height="64" rx="14"/>
+    <rect x="340" y="224" width="56"  height="64" rx="14"/>
+    <rect x="116" y="312" width="136" height="64" rx="18"/>
+    <rect x="260" y="312" width="136" height="64" rx="18"/>
+  </g>
 </svg>

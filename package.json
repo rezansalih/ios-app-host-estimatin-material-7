@@ -2,6 +2,18 @@
   "name": "construction-material-estimator",
   "private": true,
   "scripts": {
-    "test": "node tests/calculations.test.js"
+    "build:css": "tailwindcss -c tailwind.config.js -i src-input.css -o assets/app.css --minify",
+    "test": "node tests/calculations.test.js",
+    "test:bricks-audit": "node tests/bricks-audit.js",
+    "test:bricks-dom": "node tests/bricks-dom-check.js",
+    "test:bricks-live": "node tests/bricks-live-check.js",
+    "test:smoke": "node tests/smoke-all-tabs.js",
+    "test:ui": "node tests/full-ui-check.js",
+    "test:ui-nav": "node tests/ui-navigation-check.js",
+    "test:audit": "node tests/audit-deep.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1",
+    "tailwindcss": "^3.4.17"
   }
 }
