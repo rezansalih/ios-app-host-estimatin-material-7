@@ -1,6 +1,6 @@
 # Construction Material Estimator — mobile-fixed app
 
-This is the **complete app folder**, not a screenshot. Open `index.html` through a local web server or host the folder on an HTTPS site. **Keep the `assets/`, `src/`, `scripts/`, and `tests/` folders in place**; the page loads `assets/app.css` and `new-style.css` by relative path.
+This is the **complete app folder**, not a screenshot. Open `index.html` through a local web server or host the folder on an HTTPS site. **Keep `index.html` and the root JavaScript files together.** CSS is embedded directly in `index.html` so missing CSS files or a stale stylesheet cannot stretch the form on a phone. `assets/`, `src/`, `scripts/`, and `tests/` contain build sources and checks; keep them if you want to maintain the project.
 
 ## Quick start
 
@@ -13,18 +13,19 @@ Open `http://localhost:8000` on your computer. For a phone on the same Wi-Fi net
 
 ## What changed in this revision
 
-- Restored the missing `assets/app.css`, `manifest.webmanifest`, `icon.svg`, and `favicon.ico`; all references in the HTML and offline cache now resolve.
+- Restored the missing `assets/app.css`, `manifest.webmanifest`, `icon.svg`, and `favicon.ico`. The compiled CSS and component styles are now **embedded together** in the HTML, so even if a deployed copy omits `assets/app.css`, the app layout remains intact.
 - Made the language selector, visible **Dark mode** switch, settings, and history controls a tidy two-column phone toolbar. The same switch works inside calculators and remembers your choice.
 - Matched the header logo to the supplied brick-wall app icons.
 - Stacked narrow dimension/input rows instead of squeezing three steppers across a phone; fixed widths, RTL positioning, and bottom-nav/action-bar space. No page-width panning is required.
 - Removed the desktop metric dashboard from the small-screen calculator view, so the form starts higher on the screen. Phone tabs live in the bottom navigation; tablet/desktop use the standard tabs and action buttons.
 - Bottom navigation respects the device safe area, and the keyboard hides the fixed action bar while typing.
-- Advanced the offline-cache version to v31 so previously installed copies receive the corrected shell.
+- Fixed the specific iPhone screenshot failure: universal `border-box` sizing, full-width constrained number-field wrappers, and no native duplicate spinners. The width and padding of numeric inputs now stay inside their cards, just like selects.
+- Advanced the offline-cache version to v32 so previously installed copies can receive the corrected shell.
 
 ## Verification
 
 `npm ci && npm run test:all && npm run test:ui && npm run test:audit`
 
-Also checked actual mobile Chromium viewports at 320, 360, 390, 428, and 600 pixels; all calculator tabs at 320 pixels in English, Badini, Sorani, and Arabic had no page-width overflow or page errors. Dark-mode switching was tested from the phone UI. Browser pinch-to-zoom remains available for accessibility, but the app itself fits the portrait screen without zooming or sideways scrolling.
+Also checked actual Chromium and WebKit (Safari engine) mobile viewports at 320, 375, 390, 428, and 600 pixels. In both engines, all six form controls from the reported iPhone screenshot stayed inside the same card, including when **all external CSS requests were blocked**. All calculator tabs at 320 pixels in English, Badini, Sorani, and Arabic had no page-width overflow or page errors. Browser pinch-to-zoom remains available for accessibility, but the app itself fits the portrait screen without zooming or sideways scrolling.
 
-Editable JavaScript is in `src/*.src.js`; use `npm run build` to regenerate the minified root scripts. The source for the custom mobile layout is `new-style.css`.
+Editable JavaScript is in `src/*.src.js`; use `npm run build` to regenerate the minified root scripts and re-embed CSS. The custom mobile layout source is `new-style.css`; after editing CSS alone, run `npm run embed:css`. If you have an older installed Home Screen copy, replace the deployed files, open the site online once, and reinstall/clear the previous site's data if it still shows the old layout.

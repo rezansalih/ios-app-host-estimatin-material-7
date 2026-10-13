@@ -1,10 +1,9 @@
-const CACHE = 'material-estimator-v31';
+const CACHE = 'material-estimator-v32';
 const CACHE_PREFIX = 'material-estimator-';
 const APP_SHELL = [
   './index.html',
   './manifest.webmanifest',
-  './assets/app.css',
-  './new-style.css',
+  // CSS ships inside index.html so a partial upload cannot distort the form.
   './concrete-calculations.js',
   './app-ui.js',
   './app.js',

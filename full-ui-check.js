@@ -35,7 +35,8 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     const { dom, errs } = await boot();
     const d = dom.window.document;
     ok('no page errors', errs.length === 0, errs.join(' | '));
-    ok('compiled CSS linked', !!d.querySelector('link[href="./assets/app.css"]'));
+    ok('compiled CSS embedded (no partial stylesheet load)',
+       !!d.querySelector('#app-styles') && d.querySelector('#app-styles').textContent.includes('box-sizing:border-box') && !d.querySelector('link[rel="stylesheet"]'));
     ok('no tailwind runtime', typeof dom.window.tailwind === 'undefined');
     ok('icon sprite inline', d.querySelectorAll('symbol[id^="i-"]').length >= 42);
     ok('bottom nav built', !!d.getElementById('bottom-nav'));
