@@ -96,7 +96,7 @@ const vis = (d, sel) => {
     // v2: the legacy .mobile-sticky-footer is replaced by the fixed bottom
     // action bar + bottom nav on phones; the sticky bar is desktop-only now.
     ok('bottom nav shown on phones (CSS rule)',
-       /@media \(max-width: ?1023px\)/.test(css) && /\.bottom-nav \{ display: flex; \}/.test(css));
+       /@media \(max-width: ?640px\)/.test(css) && /\.bottom-nav \{ display: flex; \}/.test(css));
     ok('bottom action bar shown on phones (CSS rule)',
        /body:not\(\.view-home\) \.mobile-actions \{ display: flex; \}/.test(css));
     ok('legacy sticky footer suppressed', /\.mobile-sticky-footer \{ display: none !important; \}/.test(css));

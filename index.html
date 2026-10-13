@@ -108,12 +108,7 @@
         
         <header class="app-header flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 pb-4">
             <div class="text-start flex items-start gap-3">
-                <div class="brand-mark" aria-hidden="true">
-                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                        <path d="M8 17 24 8l16 9-16 9-16-9Z" fill="currentColor" opacity=".95"/>
-                        <path d="M8 24.5 24 33l16-8.5M8 32 24 41l16-9" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/>
-                    </svg>
-                </div>
+                <div class="brand-mark" aria-hidden="true"><img src="./icon-192.png" alt="" width="42" height="42"></div>
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-bold header-title tracking-tight" data-lang="appTitle">Construction Material Estimator</h1>
                     <p class="header-byline" data-lang="appDesigner">Designed By Engineer Rezan Salih Noori</p>
@@ -133,12 +128,12 @@
                 <button id="workspace-history-btn" class="quick-action header-quick-action" type="button"><i data-lucide="history"></i><span data-lang="workspaceHistory">Recent calculations</span></button>
                 
                 <div class="theme-switch">
-                    <i data-lucide="sun" class="text-yellow-400"></i>
-                    <label for="theme-toggle" class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" value="" id="theme-toggle" role="switch" data-lang-aria="themeToggleLabel" aria-label="Dark mode" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                    <label for="theme-toggle" class="theme-control">
+                        <i data-lucide="moon" class="text-indigo-400"></i>
+                        <span class="theme-label" data-lang="themeToggleLabel">Dark mode</span>
+                        <input type="checkbox" id="theme-toggle" role="switch" data-lang-aria="themeToggleLabel" aria-label="Dark mode" class="sr-only">
+                        <span class="theme-track" aria-hidden="true"></span>
                     </label>
-                    <i data-lucide="moon" class="text-indigo-400"></i>
                 </div>
             </div>
         </header>

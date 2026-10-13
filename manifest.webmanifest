@@ -1,14 +1,14 @@
 {
+  "id": "./",
   "name": "Construction Material Estimator",
   "short_name": "Material Estimator",
-  "description": "Estimate concrete, blocks, bricks, steel and earthwork quantities.",
-  "id": "./index.html",
+  "description": "Estimate construction materials for concrete, blocks, bricks, steel and earthwork.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "background_color": "#f2f6f7",
-  "theme_color": "#0f766e",
+  "theme_color": "#0d9488",
   "icons": [
     { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
