@@ -1,11 +1,18 @@
-const CACHE = 'material-estimator-v22';
+const CACHE = 'material-estimator-v30';
 const CACHE_PREFIX = 'material-estimator-';
 const APP_SHELL = [
   './index.html',
   './manifest.webmanifest',
   './assets/app.css',
+  './new-style.css',
   './concrete-calculations.js',
   './app-ui.js',
+  './app.js',
+  './calc-concrete.js',
+  './calc-blocks.js',
+  './calc-bricks.js',
+  './calc-steel.js',
+  './calc-earthwork.js',
   './icon.svg',
   './favicon.ico',
   './apple-touch-icon.png',

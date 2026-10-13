@@ -6,12 +6,17 @@ const DIR=path.join(__dirname,'..');
 // app.js / app-ui.js are external files; inline them (function replacement, so
 // the "$" sequences in the sources are not read as substitution patterns).
 let html=fs.readFileSync(path.join(DIR,'index.html'),'utf8');
-html=html.replace('<script src="./app.js"></script>',
+html = html.replace('<link rel="stylesheet" href="./new-style.css">',
+  () => '<style>' + fs.readFileSync(path.join(DIR, 'new-style.css'), 'utf8') + '<\/style>')
+   .replace(/<script src="\.\/app\.js"[^>]*><\/script>/,
   ()=>'<script>'+fs.readFileSync(path.join(DIR,'app.js'),'utf8')+'<\/script>')
-  .replace('<script src="./app-ui.js" defer></script>',
+  .replace(/<script src="\.\/app-ui\.js"[^>]*><\/script>/,
   ()=>'<script>'+fs.readFileSync(path.join(DIR,'app-ui.js'),'utf8')+'<\/script>')
-  .replace('<script src="./concrete-calculations.js"></script>',
+  .replace(/<script src="\.\/concrete-calculations\.js"[^>]*><\/script>/,
   ()=>'<script>'+fs.readFileSync(path.join(DIR,'concrete-calculations.js'),'utf8')+'<\/script>');
+
+// Lazy calc chunks: inline them here (a real browser fetches calc-*.js on first tool open).
+html = html.replace('</body>', () => ['calc-concrete','calc-blocks','calc-bricks','calc-steel','calc-earthwork'].map(n => '<script>' + fs.readFileSync(path.join(DIR, n + '.js'), 'utf8') + '<\/script>').join('') + '</body>');
 const tick=ms=>new Promise(r=>setTimeout(r,ms));
 async function boot(){
   const vc=new VirtualConsole(); const errs=[];

@@ -5,13 +5,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const appJs = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+const appJs = fs.readFileSync(path.join(root, 'src', 'app.src.js'), 'utf8') + '\n' + ['concrete','blocks','bricks','steel','earthwork'].map(n => fs.readFileSync(path.join(root, 'src', `calc-${n}.src.js`), 'utf8')).join('\n');
 const source = html + '\n' + appJs;
 
 const idsInHtml = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]));
 
-const start = source.indexOf("document.getElementById('calculate-bricks')");
-const end = source.indexOf("document.getElementById('calculate-steel')");
+const start = source.indexOf("__calcHandlers.bricks");
+const end = source.indexOf("__calcHandlers.steel");
 const brickHandler = source.slice(start, end);
 
 const referenced = new Set();

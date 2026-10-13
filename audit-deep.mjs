@@ -37,7 +37,7 @@ function extractTables(src) {
   return translations;
 }
 
-const appSrc = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8');
+const appSrc = fs.readFileSync(path.join(ROOT, 'src/app.src.js'), 'utf8');
 const htmlSrc = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
 const T = extractTables(appSrc);
 const grabObj = (src, name) => {
@@ -325,7 +325,7 @@ console.log('\n================ 6. PHONE / PWA READINESS ================');
   ok('index.html: apple standalone meta', /apple-mobile-web-app-capable/.test(htmlSrc));
   ok('index.html: theme-color meta', /name="theme-color"/.test(htmlSrc));
   ok('index.html: service worker registration', /serviceWorker\.register/.test(htmlSrc) || /serviceWorker\.register/.test(appSrc));
-  ok('safe-area padding in CSS', /safe-area-inset-bottom/.test(htmlSrc));
+  ok('safe-area padding in CSS', /safe-area-inset-bottom/.test(htmlSrc + fs.readFileSync(path.join(ROOT, 'new-style.css'), 'utf8')));
 
   // iOS icon sizes
   ok('apple-touch-icon is 180x180', fs.existsSync(path.join(ROOT, 'apple-touch-icon.png')));

@@ -98,7 +98,8 @@ assert.throws(() => {
 // The app script lives in app.js now; scan markup + script together so the
 // assertions below keep covering both.
 const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8') +
-             fs.readFileSync(path.join(__dirname, '..', 'app.js'), 'utf8');
+             fs.readFileSync(path.join(__dirname, '..', 'src', 'app.src.js'), 'utf8') +
+             ['concrete','blocks','bricks','steel','earthwork'].map(n => fs.readFileSync(path.join(__dirname, '..', 'src', `calc-${n}.src.js`), 'utf8')).join('\n');
 assert.equal(html.includes('singleBlockVolume + (mortarThicknessM'), false);
 assert.equal(html.includes('singleBrickVolume + (mortarThicknessM'), false);
 assert.match(html, /src="\.\/concrete-calculations\.js"/);
@@ -139,7 +140,7 @@ assert.match(html, /id="block-door-width"/);
 assert.match(html, /id="block-door-height"/);
 assert.match(html, /block-window-width.*block-window-height.*wallWidth/s);
 assert.match(html, /id="block-mortar-dry-factor"/);
-const blockHandler = html.slice(html.indexOf("document.getElementById('calculate-blocks')"), html.indexOf("document.getElementById('calculate-bricks')"));
+const blockHandler = html.slice(html.indexOf("__calcHandlers.blocks"), html.indexOf("__calcHandlers.bricks"));
 assert.equal(blockHandler.includes('const dryMortarVolume = mortarVolume * 1.33;'), false);
 assert.match(html, /T\.errWallThicknessMismatch/);
 assert.match(html, /T\.hollowBlockNote/);
@@ -153,7 +154,7 @@ for (const id of ['brick-custom-profile', 'brick-custom-length', 'brick-custom-w
 }
 // Regression guard: every brick-* element the bricks handler reads must exist in the markup.
 {
-  const handler = html.slice(html.indexOf("document.getElementById('calculate-bricks')"), html.indexOf("document.getElementById('calculate-steel')"));
+  const handler = html.slice(html.indexOf("__calcHandlers.bricks"), html.indexOf("__calcHandlers.steel"));
   const declared = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]));
   for (const m of handler.matchAll(/getElementById\(\s*'([^']+)'\s*\)/g)) {
     assert.ok(declared.has(m[1]), `bricks handler reads missing element #${m[1]}`);
@@ -166,7 +167,7 @@ for (const m of html.matchAll(/data-(width|length|height)="([^"]+)"[^>]*data-lan
 assert.match(html, /T\.bricksPerM2/);
 assert.match(html, /T\.mixingWaterEstimate/);
 assert.match(html, /const mixingWaterLitres = cementWeight \* MORTAR_WATER_PER_KG_CEMENT/);
-const brickHandler = html.slice(html.indexOf("document.getElementById('calculate-bricks')"), html.indexOf("document.getElementById('calculate-steel')"));
+const brickHandler = html.slice(html.indexOf("__calcHandlers.bricks"), html.indexOf("__calcHandlers.steel"));
 assert.equal(brickHandler.includes('const dryMortarVolume = mortarVolume * 1.33;'), false);
 assert.match(brickHandler, /<details class="calculation-trail/);
 assert.match(brickHandler, /T\.errWallThicknessMismatch/, 'bricks must use the dedicated wall-thickness error, not the generic dimensions error');
@@ -185,7 +186,8 @@ for (const asset of [
   'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png',
   'icon-maskable-192.png', 'icon-maskable-512.png', 'apple-touch-icon.png',
   'favicon.ico', 'assets/app.css', 'app.js', 'app-ui.js',
-  'concrete-calculations.js', 'sw.js'
+  'concrete-calculations.js', 'sw.js',
+  'calc-concrete.js', 'calc-blocks.js', 'calc-bricks.js', 'calc-steel.js', 'calc-earthwork.js'
 ]) assert.ok(fs.existsSync(path.join(__dirname, '..', asset)), `deployment asset missing: ${asset}`);
 // ...and nothing in the shipped page may point at the old vendor runtimes.
 for (const dead of ['vendor/tailwindcss.js', 'vendor/lucide.js']) {

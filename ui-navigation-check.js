@@ -13,10 +13,15 @@ const DIR = path.join(__dirname, '..');
 let html = fs.readFileSync(path.join(DIR, 'index.html'), 'utf8');
 // Use function replacements: the sources contain "$'" and "${...}", which
 // String.replace would otherwise treat as substitution patterns.
-html = html.replace('<script src="./app.js"></script>',
+html = html.replace('<link rel="stylesheet" href="./new-style.css">',
+  () => '<style>' + fs.readFileSync(path.join(DIR, 'new-style.css'), 'utf8') + '<\/style>')
+   .replace(/<script src="\.\/app\.js"[^>]*><\/script>/,
   () => '<script>' + fs.readFileSync(path.join(DIR, 'app.js'), 'utf8') + '<\/script>')
-   .replace('<script src="./app-ui.js" defer></script>',
+   .replace(/<script src="\.\/app-ui\.js"[^>]*><\/script>/,
   () => '<script>' + fs.readFileSync(path.join(DIR, 'app-ui.js'), 'utf8') + '<\/script>');
+
+// Lazy calc chunks: inline them here (a real browser fetches calc-*.js on first tool open).
+html = html.replace('</body>', () => ['calc-concrete','calc-blocks','calc-bricks','calc-steel','calc-earthwork'].map(n => '<script>' + fs.readFileSync(path.join(DIR, n + '.js'), 'utf8') + '<\/script>').join('') + '</body>');
 const tick = ms => new Promise(r => setTimeout(r, ms));
 
 async function boot(w = 390, h = 844) {
@@ -85,9 +90,9 @@ const vis = (d, sel) => {
     ok('bottom nav marks the open tool',
        d.querySelector('.bn-item[data-goto="bricks"]').classList.contains('is-active'));
     ok('tab bar is phone-hidden (CSS rule)',
-       /\.calculator-nav \{ display: none; \}/.test(d.querySelector('style').textContent));
+       /\.calculator-nav \{ display: none; \}/.test(fs.readFileSync(path.join(DIR, 'new-style.css'), 'utf8')));
     // jsdom does not evaluate @media, so assert the rule exists and the bar is not .hidden
-    const css = d.querySelector('style').textContent;
+    const css = fs.readFileSync(path.join(DIR, 'new-style.css'), 'utf8');
     // v2: the legacy .mobile-sticky-footer is replaced by the fixed bottom
     // action bar + bottom nav on phones; the sticky bar is desktop-only now.
     ok('bottom nav shown on phones (CSS rule)',

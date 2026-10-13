@@ -10,10 +10,13 @@
     "test:smoke": "node tests/smoke-all-tabs.js",
     "test:ui": "node tests/full-ui-check.js",
     "test:ui-nav": "node tests/ui-navigation-check.js",
-    "test:audit": "node tests/audit-deep.mjs"
+    "test:audit": "node tests/audit-deep.mjs",
+    "test:all": "npm test && npm run test:bricks-audit && npm run test:smoke && npm run test:ui-nav",
+    "build": "node scripts/build.mjs"
   },
   "devDependencies": {
     "jsdom": "^29.1.1",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "terser": "^5.36.0"
   }
 }

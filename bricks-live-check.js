@@ -58,11 +58,12 @@ function fillBrickWall({ dom }, o) {
   }
 }
 
-function click({ dom, errors }) {
+async function click({ dom, errors }) {
   const doc = dom.window.document;
   const before = errors.length;
   let thrown = null;
   try { doc.getElementById('calculate-bricks').click(); } catch (e) { thrown = e; }
+  await tick(500); // lazy calc-bricks chunk loads on first Calculate (prefetched on tab open in a browser)
   const res = doc.getElementById('bricks-result');
   return {
     thrown,
@@ -119,7 +120,7 @@ const show = (label, r) => {
     } else {
       fillBrickWall(env, opts);
     }
-    const result = click(env);
+    const result = await click(env);
     show(label, result);
     if (opts.type !== 'custom' && !result.shown) failures++;
   }
@@ -129,7 +130,7 @@ const show = (label, r) => {
     const env = await boot();
     const doc = env.dom.window.document;
     fillBrickWall(env, { type: 'local_iraqi', len: 10, hgt: 3, thick: 0.115, leaves: 1, waste: 5, ratio: '1:3', prices: { brick: 0.15, cement: 8, sand: 25 } });
-    const preset = click(env).text;
+    const preset = (await click(env)).text;
     const env2 = await boot();
     fillBrickWall(env2, { type: 'custom', len: 10, hgt: 3, thick: 0.115, leaves: 1, waste: 5, ratio: '1:3', prices: { brick: 0.15, cement: 8, sand: 25 } });
     const d2 = env2.dom.window.document;
@@ -138,7 +139,7 @@ const show = (label, r) => {
     d2.getElementById('brick-custom-length').value = '240';
     d2.getElementById('brick-custom-width').value = '115';
     d2.getElementById('brick-custom-height').value = '75';
-    const customResult = click(env2);
+    const customResult = await click(env2);
     show('[7] Custom brick 240 x 115 x 75 mm  (must equal the Local Iraqi preset)', customResult);
     console.log('   identical to preset output:', customResult.text === preset);
     if (!customResult.shown || customResult.text !== preset) failures++;
@@ -151,12 +152,12 @@ const show = (label, r) => {
     fillBrickWall(env, { type: 'local_iraqi', len: 5, hgt: 3, thick: 0.24, leaves: 2, waste: 5, prices: { brick: 0.15, cement: 8, sand: 25 } });
     setVal(doc, 'brick-num-windows', 2); setVal(doc, 'brick-window-width', 1.5); setVal(doc, 'brick-window-height', 1.5);
     setVal(doc, 'brick-num-doors', 1); setVal(doc, 'brick-door-width', 1.0); setVal(doc, 'brick-door-height', 2.1);
-    const openingsResult = click(env);
+    const openingsResult = await click(env);
     show('[8] 5 x 3 m two-leaf wall, 2 windows 1.5x1.5 + 1 door 1.0x2.1', openingsResult);
     if (!openingsResult.shown) failures++;
     const env2 = await boot();
     fillBrickWall(env2, { type: 'local_iraqi', len: 5, hgt: 3, thick: 0.24, leaves: 2, waste: 5, prices: { brick: 0.15 } });
-    const noOp = click(env2);
+    const noOp = await click(env2);
     console.log('\n   with no openings, "Total Opening Volume" row hidden:', !noOp.text.includes('Total Opening Volume'));
   }
 
