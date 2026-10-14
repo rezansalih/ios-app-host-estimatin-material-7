@@ -123,10 +123,10 @@ window.__calcHandlers.blocks = function (ctx) {
                 const hollowGroutNote = blockOpt.value === 'hollow' ? T.hollowBlockNote : '';
 
                 lastCalcData.blocks = {
-                    description: mode === 'dims' ? `${length}x${height}m Wall` : `${totalWallVolume.toFixed(2)} m³`,
+                    volume: `${totalWallVolume.toFixed(2)} m³`,
                     blocks: `${blocksNeeded} pcs`,
-                    mortarCement: includeMortar ? `${cementBags} bags` : 'N/A',
-                    mortarSand: includeMortar ? `${sandVolume.toFixed(2)} m³` : 'N/A',
+                    cement: includeMortar ? `${cementBags} bags` : 'N/A',
+                    sand: includeMortar ? `${sandVolume.toFixed(2)} m³` : 'N/A',
                     cost: materialCostsComplete ? `${currency}${totalCost.toFixed(2)}` : T.costNotEntered
                 };
                 

@@ -197,6 +197,17 @@ const vis = (d, sel) => {
        /padding-inline-end: 100px !important/.test(css) && /padding-inline-start: 100px !important/.test(css));
   }
 
+  console.log('\n=== 6c. Session table labels are plain and honest ===');
+  {
+    const htmlSrc = fs.readFileSync(path.join(DIR, 'index.html'), 'utf8');
+    ok('blocks/bricks session columns say Volume / Cement / Sand',
+       /data-lang="tableHeaderVolume">Volume/.test(htmlSrc) &&
+       /data-lang="tableHeaderCement">Cement/.test(htmlSrc) &&
+       /data-lang="tableHeaderSand">Sand/.test(htmlSrc));
+    ok('confusing Mortar Cement/Sand headers gone', !/tableHeaderMortarCement|tableHeaderMortarSand/.test(htmlSrc));
+    ok('earthwork description column renamed to Dimensions', /data-lang="tableHeaderDims">Dimensions/.test(htmlSrc));
+  }
+
   console.log('\n=== 7. Home screen translates (ar / ku / ks) ===');
   {
     for (const lang of ['ar', 'ku', 'ks']) {

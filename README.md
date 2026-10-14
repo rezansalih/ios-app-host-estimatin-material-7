@@ -13,6 +13,7 @@ Open `http://localhost:8000` on your computer. For a phone on the same Wi-Fi net
 
 ## What changed in this revision
 
+- **Session Results labels corrected (all calculators)**: *Description* → **Volume** in the blocks/bricks tables (it shows the wall volume in m³), *Mortar Cement* → **Cement** and *Mortar Sand* → **Sand** (clear names in every language), and the earthwork *Description* column → **Dimensions**. The cost inputs now say *Cement Cost/Bag* and *Sand Cost/m³*.
 - **Typed values no longer hide behind the +/− buttons**: compact number fields use a Tailwind `!p-2` padding override that used to cancel the stepper space reservation (worst in Arabic/Kurdish RTL, where the caret and digits start on the stepper side). The reservation is now `!important`, so values always show clearly in every language.
 - **"Total Volume" mode asks for the volume only**: the confusing *Wall thickness* and *Wall leaves* fields were removed from the blocks/bricks total-volume mode (total volume already contains the thickness). Blocks and bricks are counted directly from the block module (length × height × block depth), and the result matches the dimensions mode exactly. Dimensions mode still asks for width and leaves.
 - **Zoom is locked**: pinch, double-tap, keyboard and trackpad zoom are disabled (`user-scalable=no`, `touch-action: pan-x pan-y`, and gesture guards). The UI always stays at its designed size; one-finger scrolling still works.
