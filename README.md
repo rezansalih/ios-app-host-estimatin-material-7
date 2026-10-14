@@ -13,6 +13,11 @@ Open `http://localhost:8000` on your computer. For a phone on the same Wi-Fi net
 
 ## What changed in this revision
 
+- **Typed values no longer hide behind the +/− buttons**: compact number fields use a Tailwind `!p-2` padding override that used to cancel the stepper space reservation (worst in Arabic/Kurdish RTL, where the caret and digits start on the stepper side). The reservation is now `!important`, so values always show clearly in every language.
+- **"Total Volume" mode asks for the volume only**: the confusing *Wall thickness* and *Wall leaves* fields were removed from the blocks/bricks total-volume mode (total volume already contains the thickness). Blocks and bricks are counted directly from the block module (length × height × block depth), and the result matches the dimensions mode exactly. Dimensions mode still asks for width and leaves.
+- **Zoom is locked**: pinch, double-tap, keyboard and trackpad zoom are disabled (`user-scalable=no`, `touch-action: pan-x pan-y`, and gesture guards). The UI always stays at its designed size; one-finger scrolling still works.
+- **Project settings slimmed down**: only **General Material Wastage**, **Currency**, the **100 USD to IQD rate** and **Cement bag size** remain. The whole *Project information* block (project name, client, location, date, unit system, notes) was removed.
+- **Project settings is its own screen**: tapping *Project settings* in the header now opens a dedicated settings view (back bar + bottom navigation) exactly like the calculators; closing it returns to the tool you were using (or home).
 - Restored the missing `assets/app.css`, `manifest.webmanifest`, `icon.svg`, and `favicon.ico`. The compiled CSS and component styles are now **embedded together** in the HTML, so even if a deployed copy omits `assets/app.css`, the app layout remains intact.
 - Made the language selector, visible **Dark mode** switch, settings, and history controls a tidy two-column phone toolbar. The same switch works inside calculators and remembers your choice.
 - Matched the header logo to the supplied brick-wall app icons.
@@ -26,6 +31,6 @@ Open `http://localhost:8000` on your computer. For a phone on the same Wi-Fi net
 
 `npm ci && npm run test:all && npm run test:ui && npm run test:audit`
 
-Also checked actual Chromium and WebKit (Safari engine) mobile viewports at 320, 375, 390, 428, and 600 pixels. In both engines, all six form controls from the reported iPhone screenshot stayed inside the same card, including when **all external CSS requests were blocked**. All calculator tabs at 320 pixels in English, Badini, Sorani, and Arabic had no page-width overflow or page errors. Browser pinch-to-zoom remains available for accessibility, but the app itself fits the portrait screen without zooming or sideways scrolling.
+Also checked actual Chromium and WebKit (Safari engine) mobile viewports at 320, 375, 390, 428, and 600 pixels. In both engines, all six form controls from the reported iPhone screenshot stayed inside the same card, including when **all external CSS requests were blocked**. All calculator tabs at 320 pixels in English, Badini, Sorani, and Arabic had no page-width overflow or page errors. Zoom in/out is disabled on purpose (the app UI must never scale); the layout fits the portrait screen without zooming or sideways scrolling.
 
 Editable JavaScript is in `src/*.src.js`; use `npm run build` to regenerate the minified root scripts and re-embed CSS. The custom mobile layout source is `new-style.css`; after editing CSS alone, run `npm run embed:css`. If you have an older installed Home Screen copy, replace the deployed files, open the site online once, and reinstall/clear the previous site's data if it still shows the old layout.

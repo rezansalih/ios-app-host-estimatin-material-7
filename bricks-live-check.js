@@ -101,7 +101,7 @@ const show = (label, r) => {
       { type: 'local_iraqi', len: 10, hgt: 3, thick: 0.115, leaves: 1, waste: 5, mortarCm: 0, prices: { brick: 0.15, cement: 8, sand: 25 } }],
     ['[5] Hollow brick (30x12x12) wall, thickness 0.12 m',
       { type: 'hollow_brick', len: 10, hgt: 3, thick: 0.12, leaves: 1, waste: 5, prices: { brick: 0.3, cement: 8, sand: 25 } }],
-    ['[6] Volume mode: 3.45 m3 wall, thickness 0.115 m, 1 leaf',
+    ['[6] Volume mode: 3.45 m3 wall (block module counts — no thickness/leaves input)',
       { type: 'local_iraqi', len: 0, hgt: 0, thick: 0.115, leaves: 1, waste: 5, prices: { brick: 0.15 } , volume: true }],
   ];
 
@@ -112,8 +112,6 @@ const show = (label, r) => {
       doc.querySelector('input[name="brick-mode"][value="volume"]').checked = true;
       doc.querySelector('input[name="brick-mode"][value="volume"]').dispatchEvent(new env.dom.window.Event('change', { bubbles: true }));
       setVal(doc, 'brick-wall-volume', 3.45);
-      setVal(doc, 'brick-volume-wall-thickness', opts.thick);
-      setVal(doc, 'brick-volume-leaves', opts.leaves ?? 1);
       setVal(doc, 'brick-mortar-thickness', 1.0);
       if (opts.prices) { setVal(doc, 'brick-cost', opts.prices.brick ?? 0); setVal(doc, 'brick-cement-cost', opts.prices.cement ?? 0); setVal(doc, 'brick-sand-cost', opts.prices.sand ?? 0); }
       setVal(doc, 'wastage', opts.waste);

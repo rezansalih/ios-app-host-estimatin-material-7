@@ -293,8 +293,11 @@
             const calcBackTitle = document.getElementById('calc-back-title');
             const tabList = Array.from(tabs);
 
+            let toolBeforeSettings = null;
             const goHome = () => {
                 body.classList.add('view-home');
+                body.classList.remove('view-settings');
+                toolBeforeSettings = null;
                 homeScreen?.classList.remove('hidden');
                 tabList.forEach(t => t.classList.remove('tab-active'));
                 tabContents.forEach(c => c.classList.add('hidden'));
@@ -308,11 +311,19 @@
                 homeScreen?.classList.add('hidden');
                 const T9 = translations[localStorage.getItem('language') || 'en'] || {};
                 if (toolId === 'settings') {
+                    // Project settings is its own screen (back bar + bottom nav).
+                    // Remember where the user came from so closing can return there.
+                    const activeTab = tabList.find(t => t.classList.contains('tab-active'));
+                    if (activeTab) toolBeforeSettings = activeTab.dataset.tab;
+                    else if (!body.classList.contains('view-settings')) toolBeforeSettings = null;
+                    body.classList.add('view-settings');
                     tabList.forEach(t => t.classList.remove('tab-active'));
                     tabContents.forEach(c => c.classList.add('hidden'));
                     if (globalSettingsWrapper) globalSettingsWrapper.classList.remove('hidden');
                     if (calcBackTitle) calcBackTitle.textContent = T9.workspaceSettings || 'Project settings';
                 } else {
+                    body.classList.remove('view-settings');
+                    if (globalSettingsWrapper) globalSettingsWrapper.classList.add('hidden');
                     const target = tabList.find(t => t.dataset.tab === toolId);
                     if (!target) return;
                     target.click();                       // reuse the existing tab logic
@@ -323,6 +334,7 @@
                 errorBox.classList.add('hidden');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             };
+            window.openTool = openTool;
 
             document.querySelectorAll('.app-tile').forEach(tile => {
                 tile.addEventListener('click', () => {
@@ -335,14 +347,20 @@
                 goHome();
             });
 
+            // Closing the settings screen returns to the tool the user was using;
+            // when settings were opened from the home screen it returns home.
+            const closeSettings = () => {
+                if (globalSettingsWrapper) globalSettingsWrapper.classList.add('hidden');
+                body.classList.remove('view-settings');
+                const back = toolBeforeSettings;
+                toolBeforeSettings = null;
+                if (back) openTool(back);
+                else goHome();
+            };
             const closeGlobalSettingsBtn = document.getElementById('close-global-settings-btn');
-            if (closeGlobalSettingsBtn && globalSettingsWrapper) closeGlobalSettingsBtn.addEventListener('click', () => {
-                globalSettingsWrapper.classList.add('hidden');
-                // When settings were opened from the home screen nothing else is on screen.
-                if (!document.querySelector('.tab-btn.tab-active')) goHome();
-            });
+            if (closeGlobalSettingsBtn && globalSettingsWrapper) closeGlobalSettingsBtn.addEventListener('click', closeSettings);
             if (globalSettingsWrapper) globalSettingsWrapper.addEventListener('click', (event) => {
-                if (event.target === globalSettingsWrapper) globalSettingsWrapper.classList.add('hidden');
+                if (event.target === globalSettingsWrapper) closeSettings();
             });
 
             document.querySelectorAll('.reset-btn').forEach(button => {

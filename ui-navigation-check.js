@@ -153,23 +153,48 @@ const vis = (d, sel) => {
     ok('no page errors', errors.length === 0, errors.join(' | '));
   }
 
-  console.log('\n=== 6. Project settings (header button) opens & closes ===');
+  console.log('\n=== 6. Project settings opens as its own screen (header button) ===');
   {
     const { dom, errors } = await boot();
     const d = dom.window.document;
     d.getElementById('open-settings-btn').click();
-    ok('settings panel visible from home', vis(d, '#global-settings-wrapper'));
-    ok('still on home screen', d.body.classList.contains('view-home'));
+    ok('settings screen visible from home', vis(d, '#global-settings-wrapper'));
+    ok('home screen left (settings is a screen)', !d.body.classList.contains('view-home'));
+    ok('back bar titled "Project settings"', d.getElementById('calc-back-title').textContent.trim() === 'Project settings',
+       `("${d.getElementById('calc-back-title').textContent.trim()}")`);
     d.getElementById('close-global-settings-btn').click();
     ok('panel closed', !vis(d, '#global-settings-wrapper'));
-    ok('still on home after close', d.body.classList.contains('view-home'));
+    ok('returned home after close', d.body.classList.contains('view-home'));
     d.querySelector('.bn-item[data-goto="bricks"]').click();
     await tick(150);
     d.getElementById('open-settings-btn').click();
     ok('settings open from inside a tool', vis(d, '#global-settings-wrapper'));
+    ok('bricks content hidden while settings open', !vis(d, '#bricks'));
     d.getElementById('close-global-settings-btn').click();
     ok('closed, back on bricks', vis(d, '#bricks') && !vis(d, '#global-settings-wrapper'));
+    // Slimmed settings panel: only wastage, currency + rate and cement bag size remain.
+    ok('project information fields removed',
+       ['project-name', 'client-name', 'project-location', 'project-date', 'project-notes', 'input-unit-system']
+         .every(id => !d.getElementById(id)));
+    ok('wastage + currency + rate + bag size kept',
+       ['wastage', 'currency', 'exchange-rate', 'cement-bag-mass'].every(id => d.getElementById(id)));
+    // Total-volume mode asks for the volume only — thickness/leaves were confusing
+    // (total volume already contains the thickness).
+    ok('volume-mode thickness/leaves fields removed',
+       ['block-volume-wall-thickness', 'block-volume-leaves', 'brick-volume-wall-thickness', 'brick-volume-leaves']
+         .every(id => !d.getElementById(id)));
     ok('no page errors', errors.length === 0, errors.join(' | '));
+  }
+
+  console.log('\n=== 6b. Zoom is locked down ===');
+  {
+    const htmlSrc = fs.readFileSync(path.join(DIR, 'index.html'), 'utf8');
+    const css = fs.readFileSync(path.join(DIR, 'new-style.css'), 'utf8');
+    ok('viewport disables user scaling', /maximum-scale=1/.test(htmlSrc) && /user-scalable=no/.test(htmlSrc));
+    ok('touch-action pan-x pan-y in CSS', /touch-action: pan-x pan-y/.test(css));
+    ok('gesture / keyboard zoom guards present', /gesturestart/.test(htmlSrc) && /touchmove/.test(htmlSrc) && /ctrlKey/.test(htmlSrc));
+    ok('stepper reserve is !important (beats compact !p-2 padding)',
+       /padding-inline-end: 100px !important/.test(css) && /padding-inline-start: 100px !important/.test(css));
   }
 
   console.log('\n=== 7. Home screen translates (ar / ku / ks) ===');

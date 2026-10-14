@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <!-- Mobile Web Optimization Tags -->
     <meta name="theme-color" content="#f2f6f7" id="theme-color-meta">
@@ -125,7 +125,9 @@ body {
 }
 body.theme-dark { color-scheme: dark; }
 
-button, a, input, select, label { touch-action: manipulation; }
+/* Zoom lock: scrolling stays, pinch / double-tap zoom is disabled app-wide. */
+html, body { touch-action: pan-x pan-y; }
+button, a, input, select, label { touch-action: pan-x pan-y; }
 
 html[lang="ku"] body, html[lang="ks"] body, html[lang="ar"] body,
 html[lang="ku"] input, html[lang="ks"] input, html[lang="ar"] input,
@@ -350,6 +352,12 @@ body.view-home .metric-grid          { display: none; }
 body.view-home .mobile-guide         { display: none; }
 body.view-home .workspace-intro      { display: none; }
 
+/* Project settings is its own screen: keep it clean (no metrics, guide or calculate bar). */
+body.view-settings .metric-grid      { display: none; }
+body.view-settings .mobile-guide     { display: none; }
+body.view-settings .workspace-intro  { display: none; }
+body.view-settings .mobile-actions   { display: none !important; }
+
 /* -------------------------------------------------------------- metrics -- */
 .metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
 .metric-card {
@@ -402,8 +410,10 @@ body.view-home .workspace-intro      { display: none; }
 
 /* --------------------------------------------------------- number fields */
 .num-field { position: relative; display: block; width: 100%; max-width: 100%; min-width: 0; }
-.num-field > .pro-input { display: block; box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; margin: 0; padding-inline-end: 92px; }
-html[dir="rtl"] .num-field > .pro-input { padding-inline-end: 14px; padding-inline-start: 92px; }
+/* Reserve space for the +/− steppers with !important: compact fields use Tailwind
+   !p-2 (padding: .5rem !important), which otherwise hides typed values under the buttons. */
+.num-field > .pro-input { display: block; box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; margin: 0; padding-inline-start: 14px !important; padding-inline-end: 100px !important; }
+html[dir="rtl"] .num-field > .pro-input { padding-inline-start: 100px !important; padding-inline-end: 14px !important; }
 .num-stepper {
   position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%);
   display: flex; gap: 5px;
@@ -720,7 +730,6 @@ svg.lucide-default { width: 1.15rem; height: 1.15rem; }
   }
   .tab-content [role="radiogroup"] { flex-direction: column; border-radius: var(--r-sm); }
   .tab-content [role="radiogroup"] label { justify-content: flex-start; border-radius: 10px; }
-  .tab-content .num-field > .pro-input { padding-inline-end: 92px; }
 }
 @media (max-width: 380px) {
   .bn-item { font-size: .68rem; }
@@ -1011,18 +1020,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                         <p id="currency-conversion-note" class="text-xs text-gray-500 mt-1">Only USD ↔ IQD conversion is supported; enter prices in the selected currency.</p>
                         <input type="text" id="custom-currency" class="pro-input w-full mt-2 hidden">
                     </div>
-                    <div class="sm:col-span-2">
+                    <div>
                         <label for="exchange-rate" class="block text-sm font-medium mb-1" data-lang="exchangeRateLabel">100 USD to IQD Rate</label>
                         <input type="number" inputmode="decimal" id="exchange-rate" value="148000" min="0" class="pro-input w-full">
                     </div>
-                    <div class="sm:col-span-2 settings-section-label" data-upgrade-label="projectInfo">Project information</div>
-                    <div><label for="project-name" class="block text-sm font-medium mb-1" data-upgrade-label="projectName">Project name</label><input type="text" id="project-name" class="pro-input w-full" placeholder="e.g. Villa foundation" autocomplete="off"></div>
-                    <div><label for="client-name" class="block text-sm font-medium mb-1" data-upgrade-label="clientName">Client</label><input type="text" id="client-name" class="pro-input w-full" placeholder="Client name" autocomplete="off"></div>
-                    <div><label for="project-location" class="block text-sm font-medium mb-1" data-upgrade-label="projectLocation">Location</label><input type="text" id="project-location" class="pro-input w-full" placeholder="Site location" autocomplete="off"></div>
-                    <div><label for="project-date" class="block text-sm font-medium mb-1" data-upgrade-label="projectDate">Estimate date</label><input type="date" id="project-date" class="pro-input w-full"></div>
-                    <div><label for="input-unit-system" class="block text-sm font-medium mb-1" data-upgrade-label="inputUnits">Input unit system</label><select id="input-unit-system" class="pro-input w-full"><option value="metric" data-upgrade-label="metricUnits">Metric (m / cm / mm)</option><option value="imperial" data-upgrade-label="imperialUnits" hidden disabled>Imperial display (ft / in)</option></select></div>
                     <div><label for="cement-bag-mass" class="block text-sm font-medium mb-1" data-upgrade-label="cementBagSize">Cement bag size</label><select id="cement-bag-mass" class="pro-input w-full"><option value="25" data-upgrade-label="bag25">25 kg</option><option value="40" data-upgrade-label="bag40">40 kg</option><option value="50" selected data-upgrade-label="bag50">50 kg</option></select></div>
-                    <div class="sm:col-span-2"><label for="project-notes" class="block text-sm font-medium mb-1" data-upgrade-label="projectNotes">Estimate notes</label><textarea id="project-notes" rows="2" class="pro-input w-full" placeholder="Assumptions, exclusions, or site notes"></textarea></div>
                  </div>
             </div>
         </div>
@@ -1300,7 +1302,6 @@ body.keyboard-open .mobile-actions { display: none !important; }
                             <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1Dimensions">1. Wall Volume</h3>
                             <label class="block text-sm font-medium" data-lang="totalWallVolumeInput">Total Wall Volume (m³)</label>
                            <input type="number" inputmode="decimal" id="block-wall-volume" min="0" step="0.01" class="pro-input">
-                           <div class="grid grid-cols-2 gap-2"><div><label for="block-volume-wall-thickness" class="text-sm" data-upgrade-label="wallThickness">Wall thickness (m)</label><input type="number" inputmode="decimal" id="block-volume-wall-thickness" min="0" step="0.01" class="pro-input"></div><div><label for="block-volume-leaves" class="text-sm" data-upgrade-label="wallLeaves">Wall leaves</label><input type="number" inputmode="numeric" id="block-volume-leaves" min="1" step="1" value="1" class="pro-input"></div></div>
                         </div>
                         
                         <div class="card p-3 rounded-lg space-y-2 text-start">
@@ -1478,7 +1479,6 @@ body.keyboard-open .mobile-actions { display: none !important; }
                             <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1Dimensions">1. Wall Volume</h3>
                             <label class="block text-sm font-medium" data-lang="totalWallVolumeInput">Total Wall Volume (m³)</label>
                             <input type="number" inputmode="decimal" id="brick-wall-volume" min="0" step="0.01" class="pro-input">
-                            <div class="grid grid-cols-2 gap-2"><div><label for="brick-volume-wall-thickness" class="text-sm" data-upgrade-label="wallThickness">Wall thickness (m)</label><input type="number" inputmode="decimal" id="brick-volume-wall-thickness" min="0" step="0.01" class="pro-input"></div><div><label for="brick-volume-leaves" class="text-sm" data-upgrade-label="wallLeaves">Wall leaves</label><input type="number" inputmode="numeric" id="brick-volume-leaves" min="1" step="1" value="1" class="pro-input"></div></div>
                         </div>
 
                         <div class="card p-3 rounded-lg space-y-2 text-start">
@@ -2150,6 +2150,27 @@ body.keyboard-open .mobile-actions { display: none !important; }
     <script src="./app.js" defer></script>
     <script src="./app-ui.js" defer></script>
 <script>
+/* ===== ZOOM LOCK: the app UI stays at a fixed scale (no pinch / double-tap / keyboard zoom) ===== */
+(function () {
+    // iOS Safari pinch gestures
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (type) {
+        document.addEventListener(type, function (e) { e.preventDefault(); }, { passive: false });
+    });
+    // Multi-touch zoom in older mobile browsers (page must keep scrolling with one finger)
+    document.addEventListener('touchmove', function (e) {
+        if (e.touches && e.touches.length > 1) e.preventDefault();
+    }, { passive: false });
+    // Desktop trackpad / mouse zoom (ctrl + wheel)
+    document.addEventListener('wheel', function (e) {
+        if (e.ctrlKey) e.preventDefault();
+    }, { passive: false });
+    // Keyboard zoom shortcuts (Ctrl / Cmd + / - / 0)
+    document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '_', '0'].indexOf(e.key) !== -1) e.preventDefault();
+    });
+})();
+</script>
+<script>
 /* ===== PRO WORKSPACE ENHANCEMENTS ===== */
 (function () {
     function initWorkspaceShell() {
@@ -2164,8 +2185,15 @@ body.keyboard-open .mobile-actions { display: none !important; }
         const labels = { concrete: 'Concrete', blocks: 'Blocks', bricks: 'Bricks', steel: 'Steel', earthwork: 'Earth Work' };
 
         if (settingsBtn && settings) settingsBtn.addEventListener('click', () => {
-            settings.classList.toggle('hidden');
-            if (!settings.classList.contains('hidden')) document.getElementById('close-global-settings-btn')?.focus();
+            // Project settings opens as its own screen (back bar + bottom nav),
+            // the same way the bottom navigation opens the calculators.
+            if (typeof window.openTool === 'function') {
+                window.openTool('settings');
+                document.getElementById('close-global-settings-btn')?.focus();
+            } else {
+                settings.classList.remove('hidden');
+                settings.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         });
         if (headerSettingsBtn) headerSettingsBtn.addEventListener('click', () => settingsBtn?.click());
         // The primary history handler is registered by the calculator script.

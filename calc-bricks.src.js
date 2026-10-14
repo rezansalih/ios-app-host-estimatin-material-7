@@ -32,14 +32,14 @@ window.__calcHandlers.bricks = function (ctx) {
                 let hasOpenings = false;
 
                 if (mode === 'volume') {
+                    // Total volume already includes the wall thickness, so the number of
+                    // bricks follows from the brick module alone (length × height × brick
+                    // depth). No wall-thickness or leaves input is needed in this mode.
                     totalWallVolume = Number(document.getElementById('brick-wall-volume').value);
-                    const volumeWallThickness = Number(document.getElementById('brick-volume-wall-thickness').value);
-                    const volumeLeaves = Number(document.getElementById('brick-volume-leaves').value);
-                    if (!Number.isFinite(totalWallVolume) || totalWallVolume <= 0 || !Number.isFinite(volumeWallThickness) || volumeWallThickness <= 0 || !Number.isInteger(volumeLeaves) || volumeLeaves < 1) {
+                    if (!Number.isFinite(totalWallVolume) || totalWallVolume <= 0) {
                         showError(T.errDimsWallWidth);
                         return;
                     }
-                    dimsWallWidth = volumeWallThickness;
                     length = null; height = null;
                 } else if (mode === 'dims') {
                     const wallWidth = parseFloat(document.getElementById('brick-wall-width-input').value);
@@ -87,7 +87,7 @@ window.__calcHandlers.bricks = function (ctx) {
                 const mortarDryFactor = includeMortar ? Number(document.getElementById('brick-mortar-dry-factor').value) : 1;
                 const wallThicknessM = dimsWallWidth || brickWidthM;
                 if (!Number.isFinite(mortarThicknessM) || mortarThicknessM < 0 || !Number.isFinite(mortarDryFactor) || mortarDryFactor < 1 || !Number.isFinite(wallThicknessM) || wallThicknessM <= 0) { showError(T.errRequiredFields); return; }
-                const requestedLeaves = mode === 'dims' ? Number(document.getElementById('brick-leaves')?.value) : Number(document.getElementById('brick-volume-leaves').value);
+                const requestedLeaves = mode === 'dims' ? Number(document.getElementById('brick-leaves')?.value) : 1;
                 if (!Number.isInteger(requestedLeaves) || requestedLeaves < 1) { showError(T.errDimsWallWidth); return; }
                 const leaves = requestedLeaves;
                 const impliedThicknessM = leaves * brickWidthM + Math.max(0, leaves - 1) * mortarThicknessM;
@@ -191,7 +191,7 @@ window.__calcHandlers.bricks = function (ctx) {
 
                                  ${hasOpenings ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start" data-kind="detail"><i data-lucide="scan"></i><span><strong class="font-semibold block">${T.totalOpeningVolume}</strong> ${totalOpeningVolumeForDisplay}</span></div>` : ''}
                                 ${hollowBrickNote ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start"><i data-lucide="info"></i><span>${hollowBrickNote}</span></div>` : ''}
-                                <details class="calculation-trail card p-3 mt-2 sm:col-span-2 text-sm text-start"><summary class="font-semibold">${T.brickCalculationDetails}</summary><div class="mt-2 space-y-1"><div>${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³; ${T.wallWidth}: ${wallThicknessM.toFixed(3)} m; ${T.wallLeaves}: ${leaves}</div><div>${T.totalBricks}: ${bricksNeededUnwasted.toFixed(2)} ${T.trailBeforeWaste} + ${(bricksNeeded - bricksNeededUnwasted).toFixed(2)} ${T.wasteWord} = ${bricksNeeded} ${T.orderedWord}</div><div>${T.mortarVolume}: ${fill(T.trailNetToBatch, { a: mortarVolumeNet.toFixed(3), b: mortarVolumeOrder.toFixed(3), c: (mortarVolumeOrder - mortarVolumeNet).toFixed(3) })}; ${T.mortarDryFactor}: ${mortarDryFactor.toFixed(2)}; ${T.mortarMixRatio}: ${mortarRatioParts.join(':')}</div><div>${T.cementWeight}: ${fill(T.trailCementOrdered, { a: cementWeight.toFixed(2), b: cementBags, kg: getCementBagMass(), c: cementOrderedKg.toFixed(0), d: (cementOrderedKg - cementWeight).toFixed(2) })}</div><div>${T.mixingWaterEstimate}: ${fill(T.trailWaterPerKg, { v: mixingWaterLitres.toFixed(1) })}</div>${hasOpenings ? `<div>${T.totalOpeningVolume}: ${totalOpeningVolumeForDisplay}</div>` : ''}${hollowBrickNote ? `<div>${hollowBrickNote}</div>` : ''}</div></details>
+                                <details class="calculation-trail card p-3 mt-2 sm:col-span-2 text-sm text-start"><summary class="font-semibold">${T.brickCalculationDetails}</summary><div class="mt-2 space-y-1"><div>${mode === 'volume' ? `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³` : `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³; ${T.wallWidth}: ${wallThicknessM.toFixed(3)} m; ${T.wallLeaves}: ${leaves}`}</div><div>${T.totalBricks}: ${bricksNeededUnwasted.toFixed(2)} ${T.trailBeforeWaste} + ${(bricksNeeded - bricksNeededUnwasted).toFixed(2)} ${T.wasteWord} = ${bricksNeeded} ${T.orderedWord}</div><div>${T.mortarVolume}: ${fill(T.trailNetToBatch, { a: mortarVolumeNet.toFixed(3), b: mortarVolumeOrder.toFixed(3), c: (mortarVolumeOrder - mortarVolumeNet).toFixed(3) })}; ${T.mortarDryFactor}: ${mortarDryFactor.toFixed(2)}; ${T.mortarMixRatio}: ${mortarRatioParts.join(':')}</div><div>${T.cementWeight}: ${fill(T.trailCementOrdered, { a: cementWeight.toFixed(2), b: cementBags, kg: getCementBagMass(), c: cementOrderedKg.toFixed(0), d: (cementOrderedKg - cementWeight).toFixed(2) })}</div><div>${T.mixingWaterEstimate}: ${fill(T.trailWaterPerKg, { v: mixingWaterLitres.toFixed(1) })}</div>${hasOpenings ? `<div>${T.totalOpeningVolume}: ${totalOpeningVolumeForDisplay}</div>` : ''}${hollowBrickNote ? `<div>${hollowBrickNote}</div>` : ''}</div></details>
                                 
                                  <div class="sm:col-span-2 mt-2 pt-2 border-t border-gray-700">
                                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-start">

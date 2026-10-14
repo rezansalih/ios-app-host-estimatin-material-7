@@ -103,7 +103,9 @@ body {
 }
 body.theme-dark { color-scheme: dark; }
 
-button, a, input, select, label { touch-action: manipulation; }
+/* Zoom lock: scrolling stays, pinch / double-tap zoom is disabled app-wide. */
+html, body { touch-action: pan-x pan-y; }
+button, a, input, select, label { touch-action: pan-x pan-y; }
 
 html[lang="ku"] body, html[lang="ks"] body, html[lang="ar"] body,
 html[lang="ku"] input, html[lang="ks"] input, html[lang="ar"] input,
@@ -328,6 +330,12 @@ body.view-home .metric-grid          { display: none; }
 body.view-home .mobile-guide         { display: none; }
 body.view-home .workspace-intro      { display: none; }
 
+/* Project settings is its own screen: keep it clean (no metrics, guide or calculate bar). */
+body.view-settings .metric-grid      { display: none; }
+body.view-settings .mobile-guide     { display: none; }
+body.view-settings .workspace-intro  { display: none; }
+body.view-settings .mobile-actions   { display: none !important; }
+
 /* -------------------------------------------------------------- metrics -- */
 .metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
 .metric-card {
@@ -380,8 +388,10 @@ body.view-home .workspace-intro      { display: none; }
 
 /* --------------------------------------------------------- number fields */
 .num-field { position: relative; display: block; width: 100%; max-width: 100%; min-width: 0; }
-.num-field > .pro-input { display: block; box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; margin: 0; padding-inline-end: 92px; }
-html[dir="rtl"] .num-field > .pro-input { padding-inline-end: 14px; padding-inline-start: 92px; }
+/* Reserve space for the +/− steppers with !important: compact fields use Tailwind
+   !p-2 (padding: .5rem !important), which otherwise hides typed values under the buttons. */
+.num-field > .pro-input { display: block; box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; margin: 0; padding-inline-start: 14px !important; padding-inline-end: 100px !important; }
+html[dir="rtl"] .num-field > .pro-input { padding-inline-start: 100px !important; padding-inline-end: 14px !important; }
 .num-stepper {
   position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%);
   display: flex; gap: 5px;
@@ -698,7 +708,6 @@ svg.lucide-default { width: 1.15rem; height: 1.15rem; }
   }
   .tab-content [role="radiogroup"] { flex-direction: column; border-radius: var(--r-sm); }
   .tab-content [role="radiogroup"] label { justify-content: flex-start; border-radius: 10px; }
-  .tab-content .num-field > .pro-input { padding-inline-end: 92px; }
 }
 @media (max-width: 380px) {
   .bn-item { font-size: .68rem; }
