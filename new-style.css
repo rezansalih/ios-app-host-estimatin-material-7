@@ -450,8 +450,8 @@ html[dir="rtl"] .num-stepper { inset-inline-end: auto; inset-inline-start: 6px; 
 
 .result-actions { display: flex; gap: 8px; margin-bottom: 12px; }
 .result-actions button {
-  flex: 1 1 0; min-width: 0; min-height: 46px; padding: 10px 6px;
-  font-size: .78rem; border-radius: 13px; gap: 6px;
+  flex: 1 1 0; min-width: 0; min-height: 40px; padding: 8px 6px;
+  font-size: .76rem; border-radius: 12px; gap: 6px; font-weight: 700;
 }
 .result-actions button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .result-actions svg { width: 17px; height: 17px; }
@@ -789,6 +789,72 @@ body.keyboard-open .mobile-actions { display: none !important; }
 .result-more { border: 1px dashed var(--line-2); border-radius: var(--r); padding: 10px 12px; margin-top: 4px; }
 .result-more > summary { cursor: pointer; font-weight: 800; font-size: .86rem; color: var(--accent-ink); min-height: 44px; display: flex; align-items: center; }
 .result-more .result-item { padding: 8px 6px; border-bottom: 1px solid var(--line); font-size: .88rem; }
+
+/* Merged "See details": cost rows + flattened calculation trail */
+.result-more .trail-subhead {
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
+  font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+}
+.result-more .trail-body { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; font-size: .82rem; }
+.result-more .trail-body > * { min-width: 0; }
+
+/* Session Results: one collapsed bar ("this session") above its table */
+.session-details {
+  border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface-2);
+  overflow: hidden; margin-top: 14px;
+}
+.session-details > summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px;
+  min-height: 54px; padding: 12px 14px; font-weight: 800; font-size: .95rem;
+}
+.session-details > summary::-webkit-details-marker { display: none; }
+.session-details > summary .sd-icon { display: inline-flex; color: var(--accent-ink); }
+.session-details > summary .sd-icon svg { width: 18px; height: 18px; }
+.session-details > summary .sd-chev { margin-inline-start: auto; color: var(--muted); transition: transform .18s ease; }
+.session-details > summary .sd-chev svg { width: 18px; height: 18px; }
+.session-details[open] > summary .sd-chev { transform: rotate(180deg); }
+.session-count {
+  min-width: 26px; height: 26px; padding: 0 8px; border-radius: 999px;
+  background: var(--accent); color: var(--on-accent);
+  font-size: .78rem; display: inline-flex; align-items: center; justify-content: center;
+}
+.session-details .card {
+  border: 0; border-top: 1px solid var(--line); border-radius: 0;
+  background: var(--surface); box-shadow: none;
+}
+@media print {
+  .session-details > summary { display: none; }
+  .session-details .card { display: block !important; border-top: 0; }
+}
+
+/* Steel: collapsed "Lap splices (advanced)" line inside Element details */
+.advanced-details {
+  border-top: 1px solid var(--line); margin-top: 12px; padding-top: 4px;
+}
+.advanced-details > summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px;
+  min-height: 44px; font-weight: 700; font-size: .88rem; color: var(--muted);
+}
+.advanced-details > summary::-webkit-details-marker { display: none; }
+.advanced-details > summary .adv-chev { transition: transform .18s ease; color: var(--muted); }
+.advanced-details > summary .adv-chev svg { width: 16px; height: 16px; }
+.advanced-details[open] > summary .adv-chev { transform: rotate(90deg); }
+.advanced-details > div { padding-bottom: 6px; }
+
+/* Steel: dynamic "Custom bars" rows */
+.custom-bar-row {
+  position: relative; border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--surface-2); padding: 12px 12px 10px;
+}
+.custom-bar-row .custom-remove-btn {
+  position: absolute; top: 6px; inset-inline-end: 6px; width: 32px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 10px; border: 1px solid var(--line); background: var(--surface);
+  color: var(--muted);
+}
+.custom-bar-row .custom-remove-btn svg { width: 15px; height: 15px; }
+.custom-bar-row label { color: var(--muted); }
+.custom-bar-row .grid > div { min-width: 0; }
 .result-ready .result-hero { animation: popIn .32s ease both; }
 
 /* ------------------------------------------------- edit-inputs bar ----- */

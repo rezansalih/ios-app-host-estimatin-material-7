@@ -206,6 +206,13 @@ const vis = (d, sel) => {
        /data-lang="tableHeaderSand">Sand/.test(htmlSrc));
     ok('confusing Mortar Cement/Sand headers gone', !/tableHeaderMortarCement|tableHeaderMortarSand/.test(htmlSrc));
     ok('earthwork description column renamed to Dimensions', /data-lang="tableHeaderDims">Dimensions/.test(htmlSrc));
+    ok('session tables collapsed behind details bars', (htmlSrc.match(/class="session-details"/g) || []).length === 5);
+    ok('steel session column renamed to Dimensions', (htmlSrc.match(/data-lang="tableHeaderDims"/g) || []).length === 2);
+    ok('steel: member quantity label has translations', /data-lang="memberQuantity">/.test(htmlSrc));
+    ok('steel: lap splices collapsed in advanced details', /id="steel-lap-details"/.test(htmlSrc) && !/id="steel-include-lap-splice"/.test(htmlSrc));
+    ok('steel: custom bars element exists', /id="steel-custom-inputs"/.test(htmlSrc) && /data-lang="customBars">/.test(htmlSrc));
+    ok('steel: diameter lists include 8 and 32', /value="8">8</.test(htmlSrc) && /value="32">32</.test(htmlSrc));
+    ok('steel: shop bar length field present', /id="steel-standard-bar-length"/.test(htmlSrc) && /data-lang="standardBarLength">/.test(htmlSrc));
   }
 
   console.log('\n=== 7. Home screen translates (ar / ku / ks) ===');

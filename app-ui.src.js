@@ -343,8 +343,14 @@
         headIdx = i; break;
       }
     } else if (pick === 'lastNonMoney') {
+      // Steel: the headline is the combined Total Weight. Skip cost rows and
+      // breakdown/detail rows (with lap splices on, those sit at the end).
       headIdx = items.length - 1;
-      if (isMoneyItem && items.length > 1) headIdx = items.length - 2;
+      while (headIdx > 0 &&
+             (items[headIdx].getAttribute('data-kind') === 'detail' ||
+              isMoneyLike(rawValue(items[headIdx])))) {
+        headIdx--;
+      }
     }
 
     var head = items[headIdx];
@@ -432,10 +438,10 @@
   // Nothing is removed from the DOM, only moved/hidden, so CSV/PDF
   // export (which enumerates .result-item) keeps working exactly as before.
   var RESULT_STRINGS = {
-    en: { order: 'What to order', more: 'Details & breakdown', share: 'Share list', copied: 'Copied ✓', listTitle: 'Order list', edit: 'Edit inputs', hide: 'Hide inputs' },
-    ku: { order: 'لیستا کڕینێ', more: 'وردەکاری و شیکردنەوە', share: 'لیستێ بەشدار بکە', copied: 'هاتە کۆپیکرن ✓', listTitle: 'لیستا کڕینێ', edit: 'گوهۆڕینا زانیارییان', hide: 'ڤەشارتن' },
-    ks: { order: 'لیستی کڕین', more: 'وردەکاری و شیکردنەوە', share: 'هاوبەشکردنی لیست', copied: 'کۆپی کرا ✓', listTitle: 'لیستی کڕین', edit: 'دەستکاری تێکردنەکان', hide: 'شاردنەوە' },
-    ar: { order: 'قائمة الشراء', more: 'التفاصيل والحساب', share: 'مشاركة القائمة', copied: 'تم النسخ ✓', listTitle: 'قائمة الشراء', edit: 'تعديل المدخلات', hide: 'إخفاء المدخلات' }
+    en: { order: 'What to order', more: 'See details', share: 'Share list', copied: 'Copied ✓', listTitle: 'Order list', edit: 'Edit inputs', hide: 'Hide inputs' },
+    ku: { order: 'لیستا کڕینێ', more: 'وردەکاری ببینە', share: 'لیستێ بەشدار بکە', copied: 'هاتە کۆپیکرن ✓', listTitle: 'لیستا کڕینێ', edit: 'گوهۆڕینا زانیارییان', hide: 'ڤەشارتن' },
+    ks: { order: 'لیستی کڕین', more: 'وردەکاری ببینە', share: 'هاوبەشکردنی لیست', copied: 'کۆپی کرا ✓', listTitle: 'لیستی کڕین', edit: 'دەستکاری تێکردنەکان', hide: 'شاردنەوە' },
+    ar: { order: 'قائمة الشراء', more: 'عرض التفاصيل', share: 'مشاركة القائمة', copied: 'تم النسخ ✓', listTitle: 'قائمة الشراء', edit: 'تعديل المدخلات', hide: 'إخفاء المدخلات' }
   };
   function resultStrings() {
     var lang = 'en';
@@ -533,20 +539,55 @@
 
     grid.insertBefore(section, grid.firstChild);
 
-    if (more.length) {
+    // One single collapsed section: the cost/breakdown rows AND the
+    // calculation trail (flattened) live behind one "See details" tap.
+    var trail = card.querySelector('details.calculation-trail');
+    if (more.length || trail) {
       var details = doc.createElement('details');
       details.className = 'result-more';
       var summary = doc.createElement('summary'); summary.textContent = strings.more;
-      var moreRows = doc.createElement('div'); moreRows.className = 'order-rows';
-      more.forEach(function (it) { moreRows.appendChild(it); });
-      details.appendChild(summary); details.appendChild(moreRows);
+      details.appendChild(summary);
+      if (more.length) {
+        var moreRows = doc.createElement('div'); moreRows.className = 'order-rows';
+        more.forEach(function (it) { moreRows.appendChild(it); });
+        details.appendChild(moreRows);
+      }
+      if (trail) {
+        var tsum = trail.querySelector('summary');
+        var sub = doc.createElement('div');
+        sub.className = 'trail-subhead';
+        sub.textContent = tsum ? tsum.textContent.trim() : strings.more;
+        var body = doc.createElement('div');
+        body.className = 'trail-body';
+        Array.prototype.slice.call(trail.childNodes).forEach(function (n) {
+          if (n === tsum) return;
+          body.appendChild(n);
+        });
+        details.appendChild(sub);
+        details.appendChild(body);
+        if (trail.parentNode) trail.parentNode.removeChild(trail);
+      }
       grid.appendChild(details);
     }
 
+    // Normalise the card layout: the answer -> buttons -> what to order ->
+    // one collapsed details section. (Left-over rows are hidden for export.)
+    var hero = card.querySelector('.result-hero');
+    var actions = card.querySelector('.result-actions');
+    if (hero) grid.appendChild(hero);
+    if (actions) grid.appendChild(actions);
+    grid.appendChild(section);
+    var merged = grid.querySelector('.result-more');
+    if (merged) grid.appendChild(merged);
+    // Park export-only (hidden) leftovers after the visible blocks.
+    Array.prototype.slice.call(grid.children).forEach(function (n) {
+      if (n !== hero && n !== actions && n !== section && n !== merged) grid.appendChild(n);
+    });
+
     card.classList.add('result-ready');
     if (navigator.vibrate) navigator.vibrate(25);
-    var hero = card.querySelector('.result-hero');
-    if (hero) setTimeout(function () { hero.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 60);
+    var heroFinal = card.querySelector('.result-hero');
+    if (heroFinal) setTimeout(function () { heroFinal.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 60);
   }
 
 

@@ -117,7 +117,153 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     ok('action buttons row', !!res.querySelector('.result-actions'));
     ok('save/export buttons present', res.querySelectorAll('.result-actions button').length >= 3,
        `(${res.querySelectorAll('.result-actions button').length})`);
+    ok('one "See details" section with the trail merged inside',
+       res.querySelectorAll('details.result-more').length === 1 && !res.querySelector('details.calculation-trail'),
+       `(more=${res.querySelectorAll('details.result-more').length}, trail=${res.querySelectorAll('details.calculation-trail').length})`);
+    ok('details section closed by default', !!res.querySelector('details.result-more') && !res.querySelector('details.result-more').open);
+    const grid = res.querySelector('.result-content > div');
+    const orderList = grid && grid.querySelector('.order-list');
+    ok('answer sits above the order list', !!grid && !!orderList &&
+       [...grid.children].indexOf(hero) < [...grid.children].indexOf(orderList));
+    const sd = d.querySelector('#bricks-table-section .session-details');
+    ok('session table hidden behind a closed bar', !!sd && !sd.open);
+    ok('session count badge present', !!d.querySelector('#bricks-table-section .session-count'));
     ok('no errors', errs.length === 0, errs.join(' | '));
+  }
+
+  console.log('\n=== D2. Steel: custom bars, member quantity, order by diameter ===');
+  {
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="steel"]').click();
+    await tick(150);
+    const set = (id, v) => { const e = d.getElementById(id); if (!e) throw new Error('missing #' + id); e.value = String(v); };
+
+    // lap splices: collapsed advanced details, not a top-level checkbox
+    ok('lap splices hidden in closed details', !!d.getElementById('steel-lap-details') && !d.getElementById('steel-lap-details').open);
+    ok('no old lap checkbox', !d.getElementById('steel-include-lap-splice'));
+
+    // --- custom bars element ---
+    const sel = d.getElementById('steel-element-selector');
+    sel.value = 'custom';
+    sel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(50);
+    ok('custom inputs shown', !d.getElementById('steel-custom-inputs').classList.contains('hidden'));
+    ok('member qty hidden for custom', d.getElementById('steel-member-qty-row').classList.contains('hidden'));
+    ok('one custom row to start', d.querySelectorAll('#steel-custom-rows .custom-bar-row').length === 1,
+       `(${d.querySelectorAll('#steel-custom-rows .custom-bar-row').length})`);
+    d.getElementById('steel-custom-add-row').click();
+    ok('add row works', d.querySelectorAll('#steel-custom-rows .custom-bar-row').length === 2);
+    const rows = d.querySelectorAll('#steel-custom-rows .custom-bar-row');
+    rows[0].querySelector('.custom-diameter').value = '12';
+    rows[0].querySelector('.custom-count').value = '10';
+    rows[0].querySelector('.custom-length').value = '3';
+    rows[1].querySelector('.custom-diameter').value = '8';
+    rows[1].querySelector('.custom-count').value = '20';
+    rows[1].querySelector('.custom-length').value = '1.5';
+    set('steel-cost', 1500);
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    const res = d.getElementById('steel-result');
+    ok('steel result shown', !res.classList.contains('hidden'));
+    const hero = res.querySelector('.result-hero');
+    ok('hero built', !!hero);
+    ok('hero headline is Total Weight', /Total Weight/.test(hero?.querySelector('.rh-label')?.textContent || ''),
+       (hero?.querySelector('.rh-label')?.textContent || '').trim());
+    // Ø12: 30 m x 0.8889 kg/m x 1.05 = 28.00 kg ; Ø8: 30 m x 0.3951 x 1.05 = 12.44 kg ; total 40.44
+    ok('total weight = 40.44 kg', /40\.44/.test(hero?.querySelector('.rh-value')?.textContent || ''),
+       (hero?.querySelector('.rh-value')?.textContent || '').trim());
+    ok('hero shows cost', !!hero?.querySelector('.rh-cost'));
+    ok('flat rows: no stray group headings', res.querySelectorAll('.result-content > div > p').length === 0);
+    const orderRows = [...res.querySelectorAll('.order-list .result-item')];
+    ok('what-to-order lists each diameter with shop bars',
+       orderRows.some(r => /Ø12 mm/.test(r.textContent) && /3 .*\u00d7 12 m/.test(r.textContent)) &&
+       orderRows.some(r => /Ø8 mm/.test(r.textContent)),
+       orderRows.map(r => r.textContent.replace(/\s+/g, ' ').trim()).join(' | '));
+    ok('one closed "See details" section', res.querySelectorAll('details.result-more').length === 1 &&
+       !res.querySelector('details.result-more').open);
+    ok('breakdown rows live in details', /Custom bars/.test(res.querySelector('details.result-more')?.textContent || '') ||
+       /20 .*\u00d7 1\.5 m/.test(res.querySelector('details.result-more')?.textContent || ''));
+    ok('calculation note merged into details', !!res.querySelector('details.result-more .trail-subhead') &&
+       (res.querySelector('details.result-more .trail-body')?.textContent || '').length > 40);
+
+    // --- footing: member quantity must multiply (regression) ---
+    sel.value = 'footing';
+    sel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(50);
+    ok('member qty visible for footing', !d.getElementById('steel-member-qty-row').classList.contains('hidden'));
+    set('footing-length', 3); set('footing-width', 2);
+    set('footing-spacing-len', 150); set('footing-diameter-len', 12);
+    set('footing-spacing-wid', 150); set('footing-diameter-wid', 10);
+    set('steel-member-quantity', 1);
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    const hero1 = d.querySelector('#steel-result .result-hero .rh-value')?.textContent || '';
+    const w1 = parseFloat(hero1.replace(/[^\d.]/g, ''));
+    // qty 1: (3x15x144/162 + 2x21x100/162) x 1.05 = 69.22 kg
+    ok('footing weight qty 1 = 69.22', Math.abs(w1 - 69.22) < 0.02, String(w1));
+    set('steel-member-quantity', 2);
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    const hero2 = d.querySelector('#steel-result .result-hero .rh-value')?.textContent || '';
+    const w2 = parseFloat(hero2.replace(/[^\d.]/g, ''));
+    ok('member quantity doubles the weight', Math.abs(w2 - 2 * 69.22) < 0.05, String(w2));
+    ok('per-member note in details', /per member/.test(d.getElementById('steel-result').textContent));
+    ok('session row dimensions are language-neutral', /3\u00d72 m/.test(d.querySelector('#steel-table-body')?.textContent || ''),
+       (d.querySelector('#steel-table-body')?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 80));
+    ok('no errors', errs.length === 0, errs.join(' | '));
+  }
+
+  console.log('\n=== D3. Reset button clears the form and hides the result ===');
+  {
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="steel"]').click();
+    await tick(150);
+    const sel = d.getElementById('steel-element-selector');
+    sel.value = 'custom';
+    sel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(50);
+    const r0 = d.querySelector('#steel-custom-rows .custom-bar-row');
+    r0.querySelector('.custom-diameter').value = '12';
+    r0.querySelector('.custom-count').value = '10';
+    r0.querySelector('.custom-length').value = '3';
+    d.getElementById('steel-cost').value = '1500';
+    d.getElementById('steel-lap-details').open = true;
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    ok('steel result shown before reset', !d.getElementById('steel-result').classList.contains('hidden'));
+    ok('session row exists before reset', d.querySelectorAll('#steel-table-body tr').length >= 1);
+    d.querySelector('.reset-btn[data-form="steel"]').click();
+    await tick(150);
+    ok('result hidden after reset', d.getElementById('steel-result').classList.contains('hidden'));
+    ok('element selector cleared', d.getElementById('steel-element-selector').value === '');
+    ok('member quantity back to 1', d.getElementById('steel-member-quantity').value === '1');
+    ok('cost cleared', d.getElementById('steel-cost').value === '');
+    ok('bar length back to 12', d.getElementById('steel-standard-bar-length').value === '12');
+    ok('lap details closed again', !d.getElementById('steel-lap-details').open);
+    ok('custom rows reset to one empty row', d.querySelectorAll('#steel-custom-rows .custom-bar-row').length === 1 &&
+       !(d.querySelector('#steel-custom-rows .custom-count')?.value));
+    ok('session rows cleared', d.querySelectorAll('#steel-table-body tr').length === 0 ||
+       d.getElementById('steel-table-section').classList.contains('hidden'));
+    ok('no errors on steel reset', errs.length === 0, errs.join(' | '));
+  }
+  {
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="bricks"]').click();
+    await tick(150);
+    d.getElementById('brick-wall-length').value = '10';
+    d.getElementById('brick-wall-height').value = '3';
+    d.getElementById('brick-wall-width-input').value = '0.115';
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    ok('bricks result shown before reset', !d.getElementById('bricks-result').classList.contains('hidden'));
+    d.querySelector('.reset-btn[data-form="bricks"]').click();
+    await tick(150);
+    ok('bricks result hidden after reset', d.getElementById('bricks-result').classList.contains('hidden'));
+    ok('bricks fields cleared', d.getElementById('brick-wall-length').value === '');
+    ok('no errors on bricks reset', errs.length === 0, errs.join(' | '));
   }
 
   console.log('\n=== E. Touch steppers ===');

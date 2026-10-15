@@ -472,8 +472,8 @@ html[dir="rtl"] .num-stepper { inset-inline-end: auto; inset-inline-start: 6px; 
 
 .result-actions { display: flex; gap: 8px; margin-bottom: 12px; }
 .result-actions button {
-  flex: 1 1 0; min-width: 0; min-height: 46px; padding: 10px 6px;
-  font-size: .78rem; border-radius: 13px; gap: 6px;
+  flex: 1 1 0; min-width: 0; min-height: 40px; padding: 8px 6px;
+  font-size: .76rem; border-radius: 12px; gap: 6px; font-weight: 700;
 }
 .result-actions button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .result-actions svg { width: 17px; height: 17px; }
@@ -811,6 +811,72 @@ body.keyboard-open .mobile-actions { display: none !important; }
 .result-more { border: 1px dashed var(--line-2); border-radius: var(--r); padding: 10px 12px; margin-top: 4px; }
 .result-more > summary { cursor: pointer; font-weight: 800; font-size: .86rem; color: var(--accent-ink); min-height: 44px; display: flex; align-items: center; }
 .result-more .result-item { padding: 8px 6px; border-bottom: 1px solid var(--line); font-size: .88rem; }
+
+/* Merged "See details": cost rows + flattened calculation trail */
+.result-more .trail-subhead {
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
+  font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+}
+.result-more .trail-body { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; font-size: .82rem; }
+.result-more .trail-body > * { min-width: 0; }
+
+/* Session Results: one collapsed bar ("this session") above its table */
+.session-details {
+  border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface-2);
+  overflow: hidden; margin-top: 14px;
+}
+.session-details > summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px;
+  min-height: 54px; padding: 12px 14px; font-weight: 800; font-size: .95rem;
+}
+.session-details > summary::-webkit-details-marker { display: none; }
+.session-details > summary .sd-icon { display: inline-flex; color: var(--accent-ink); }
+.session-details > summary .sd-icon svg { width: 18px; height: 18px; }
+.session-details > summary .sd-chev { margin-inline-start: auto; color: var(--muted); transition: transform .18s ease; }
+.session-details > summary .sd-chev svg { width: 18px; height: 18px; }
+.session-details[open] > summary .sd-chev { transform: rotate(180deg); }
+.session-count {
+  min-width: 26px; height: 26px; padding: 0 8px; border-radius: 999px;
+  background: var(--accent); color: var(--on-accent);
+  font-size: .78rem; display: inline-flex; align-items: center; justify-content: center;
+}
+.session-details .card {
+  border: 0; border-top: 1px solid var(--line); border-radius: 0;
+  background: var(--surface); box-shadow: none;
+}
+@media print {
+  .session-details > summary { display: none; }
+  .session-details .card { display: block !important; border-top: 0; }
+}
+
+/* Steel: collapsed "Lap splices (advanced)" line inside Element details */
+.advanced-details {
+  border-top: 1px solid var(--line); margin-top: 12px; padding-top: 4px;
+}
+.advanced-details > summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px;
+  min-height: 44px; font-weight: 700; font-size: .88rem; color: var(--muted);
+}
+.advanced-details > summary::-webkit-details-marker { display: none; }
+.advanced-details > summary .adv-chev { transition: transform .18s ease; color: var(--muted); }
+.advanced-details > summary .adv-chev svg { width: 16px; height: 16px; }
+.advanced-details[open] > summary .adv-chev { transform: rotate(90deg); }
+.advanced-details > div { padding-bottom: 6px; }
+
+/* Steel: dynamic "Custom bars" rows */
+.custom-bar-row {
+  position: relative; border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--surface-2); padding: 12px 12px 10px;
+}
+.custom-bar-row .custom-remove-btn {
+  position: absolute; top: 6px; inset-inline-end: 6px; width: 32px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 10px; border: 1px solid var(--line); background: var(--surface);
+  color: var(--muted);
+}
+.custom-bar-row .custom-remove-btn svg { width: 15px; height: 15px; }
+.custom-bar-row label { color: var(--muted); }
+.custom-bar-row .grid > div { min-width: 0; }
 .result-ready .result-hero { animation: popIn .32s ease both; }
 
 /* ------------------------------------------------- edit-inputs bar ----- */
@@ -1204,37 +1270,45 @@ body.keyboard-open .mobile-actions { display: none !important; }
                     <div id="concrete-result" class="mt-4 p-3 card rounded-lg hidden"></div>
                     
                     <!-- SESSION RESULTS TABLE -->
-                    <div id="concrete-table-section" class="mt-4 card p-4 rounded-lg hidden">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="text-lg font-semibold header-title" data-lang="sessionResults">Session Results</h3>
-                            <button type="button" id="clear-concrete-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
-                                <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="swipe-indicator">
-                            <i data-lucide="move-horizontal" class="w-4 h-4"></i>
-                            <span data-lang="swipeHint">Swipe table to view more</span>
-                        </div>
+                    <div id="concrete-table-section" class="mt-4 hidden">
+                        <details class="session-details">
+                            <summary>
+                                <i data-lucide="table-2" class="sd-icon"></i>
+                                <span data-lang="sessionResults">Session Results</span>
+                                <span class="session-count">0</span>
+                                <i data-lucide="chevron-down" class="sd-chev"></i>
+                            </summary>
+                            <div class="card p-4 rounded-lg">
+                                <div class="flex justify-end items-center mb-2">
+                                    <button type="button" id="clear-concrete-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                    <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                    </button>
+                                </div>
+                                <div class="swipe-indicator">
+                                <i data-lucide="move-horizontal" class="w-4 h-4"></i>
+                                <span data-lang="swipeHint">Swipe table to view more</span>
+                                </div>
 
-                        <div class="table-scroll-container">
-                            <div class="overflow-x-auto custom-scrollbar table-wrapper">
+                                <div class="table-scroll-container">
+                                <div class="overflow-x-auto custom-scrollbar table-wrapper">
                                 <table>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col" data-lang="tableHeaderVolumeDim">Volume / Dimensions</th>
-                                            <th scope="col" data-lang="tableHeaderTotalVolume">Total Volume</th>
-                                            <th scope="col" data-lang="tableHeaderCement">Cement</th>
-                                            <th scope="col" data-lang="tableHeaderSand">Sand</th>
-                                            <th scope="col" data-lang="tableHeaderAggregate">Aggregate</th>
-                                            <th scope="col" data-lang="tableHeaderCost">Cost</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="concrete-table-body"></tbody>
-                                    <tfoot id="concrete-table-footer"></tfoot>
+                                <thead>
+                                <tr>
+                                <th scope="col" data-lang="tableHeaderVolumeDim">Volume / Dimensions</th>
+                                <th scope="col" data-lang="tableHeaderTotalVolume">Total Volume</th>
+                                <th scope="col" data-lang="tableHeaderCement">Cement</th>
+                                <th scope="col" data-lang="tableHeaderSand">Sand</th>
+                                <th scope="col" data-lang="tableHeaderAggregate">Aggregate</th>
+                                <th scope="col" data-lang="tableHeaderCost">Cost</th>
+                                </tr>
+                                </thead>
+                                <tbody id="concrete-table-body"></tbody>
+                                <tfoot id="concrete-table-footer"></tfoot>
                                 </table>
+                                </div>
+                                </div>
                             </div>
-                        </div>
+                        </details>
                     </div>
                 </div>
                  
@@ -1383,36 +1457,44 @@ body.keyboard-open .mobile-actions { display: none !important; }
 
                     <div id="blocks-result" class="mt-4 p-3 card rounded-lg hidden"></div>
                     
-                    <div id="blocks-table-section" class="mt-4 card p-4 rounded-lg hidden">
-                       <div class="flex justify-between items-center mb-2">
-                           <h3 class="text-lg font-semibold header-title" data-lang="sessionResults">Session Results</h3>
-                           <button type="button" id="clear-blocks-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
-                               <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
-                           </button>
-                       </div>
-                       
-                       <div class="swipe-indicator">
-                            <i data-lucide="move-horizontal" class="w-4 h-4"></i>
-                            <span data-lang="swipeHint">Swipe table to view more</span>
-                        </div>
+                    <div id="blocks-table-section" class="mt-4 hidden">
+                        <details class="session-details">
+                            <summary>
+                                <i data-lucide="table-2" class="sd-icon"></i>
+                                <span data-lang="sessionResults">Session Results</span>
+                                <span class="session-count">0</span>
+                                <i data-lucide="chevron-down" class="sd-chev"></i>
+                            </summary>
+                            <div class="card p-4 rounded-lg">
+                                <div class="flex justify-end items-center mb-2">
+                                    <button type="button" id="clear-blocks-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                    <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                    </button>
+                                </div>
+                                <div class="swipe-indicator">
+                                <i data-lucide="move-horizontal" class="w-4 h-4"></i>
+                                <span data-lang="swipeHint">Swipe table to view more</span>
+                                </div>
 
-                        <div class="table-scroll-container">
-                           <div class="overflow-x-auto custom-scrollbar table-wrapper">
-                               <table>
-                                   <thead>
-                                       <tr>
-                                           <th scope="col" data-lang="tableHeaderVolume">Volume</th>
-                                           <th scope="col" data-lang="tableHeaderBlocks">Blocks</th>
-                                           <th scope="col" data-lang="tableHeaderCement">Cement</th>
-                                           <th scope="col" data-lang="tableHeaderSand">Sand</th>
-                                           <th scope="col" data-lang="tableHeaderCost">Cost</th>
-                                       </tr>
-                                   </thead>
-                                   <tbody id="blocks-table-body"></tbody>
-                               </table>
-                           </div>
-                       </div>
-                   </div>
+                                <div class="table-scroll-container">
+                                <div class="overflow-x-auto custom-scrollbar table-wrapper">
+                                <table>
+                                <thead>
+                                <tr>
+                                <th scope="col" data-lang="tableHeaderVolume">Volume</th>
+                                <th scope="col" data-lang="tableHeaderBlocks">Blocks</th>
+                                <th scope="col" data-lang="tableHeaderCement">Cement</th>
+                                <th scope="col" data-lang="tableHeaderSand">Sand</th>
+                                <th scope="col" data-lang="tableHeaderCost">Cost</th>
+                                </tr>
+                                </thead>
+                                <tbody id="blocks-table-body"></tbody>
+                                </table>
+                                </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
                 </div>
 
                 <div id="bricks" class="tab-content hidden space-y-3 pb-4">
@@ -1562,35 +1644,43 @@ body.keyboard-open .mobile-actions { display: none !important; }
 
                     <div id="bricks-result" class="mt-4 p-3 card rounded-lg hidden"></div>
 
-                    <div id="bricks-table-section" class="mt-4 card p-4 rounded-lg hidden">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="text-lg font-semibold header-title" data-lang="sessionResults">Session Results</h3>
-                            <button type="button" id="clear-bricks-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
-                                <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="swipe-indicator">
-                            <i data-lucide="move-horizontal" class="w-4 h-4"></i>
-                            <span data-lang="swipeHint">Swipe table to view more</span>
-                        </div>
+                    <div id="bricks-table-section" class="mt-4 hidden">
+                        <details class="session-details">
+                            <summary>
+                                <i data-lucide="table-2" class="sd-icon"></i>
+                                <span data-lang="sessionResults">Session Results</span>
+                                <span class="session-count">0</span>
+                                <i data-lucide="chevron-down" class="sd-chev"></i>
+                            </summary>
+                            <div class="card p-4 rounded-lg">
+                                <div class="flex justify-end items-center mb-2">
+                                    <button type="button" id="clear-bricks-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                    <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                    </button>
+                                </div>
+                                <div class="swipe-indicator">
+                                <i data-lucide="move-horizontal" class="w-4 h-4"></i>
+                                <span data-lang="swipeHint">Swipe table to view more</span>
+                                </div>
 
-                        <div class="table-scroll-container">
-                            <div class="overflow-x-auto custom-scrollbar table-wrapper">
+                                <div class="table-scroll-container">
+                                <div class="overflow-x-auto custom-scrollbar table-wrapper">
                                 <table>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col" data-lang="tableHeaderVolume">Volume</th>
-                                            <th scope="col" data-lang="tableHeaderBricks">Bricks</th>
-                                            <th scope="col" data-lang="tableHeaderCement">Cement</th>
-                                            <th scope="col" data-lang="tableHeaderSand">Sand</th>
-                                            <th scope="col" data-lang="tableHeaderCost">Cost</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="bricks-table-body"></tbody>
+                                <thead>
+                                <tr>
+                                <th scope="col" data-lang="tableHeaderVolume">Volume</th>
+                                <th scope="col" data-lang="tableHeaderBricks">Bricks</th>
+                                <th scope="col" data-lang="tableHeaderCement">Cement</th>
+                                <th scope="col" data-lang="tableHeaderSand">Sand</th>
+                                <th scope="col" data-lang="tableHeaderCost">Cost</th>
+                                </tr>
+                                </thead>
+                                <tbody id="bricks-table-body"></tbody>
                                 </table>
+                                </div>
+                                </div>
                             </div>
-                        </div>
+                        </details>
                     </div>
                 </div>
 
@@ -1599,26 +1689,6 @@ body.keyboard-open .mobile-actions { display: none !important; }
                 
                     <div class="card p-3 rounded-lg space-y-3 text-start">
                         <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1General">1. General Settings</h3>
-                        
-                        <!-- LAP SPLICE SECTION -->
-                        <div class="border-b border-gray-700 pb-3">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" id="steel-include-lap-splice" class="h-4 w-4">
-                                <span class="font-semibold text-sm" data-lang="includeLapSplice">Include Lap Splice Calculation</span>
-                            </label>
-                            <div id="steel-lap-splice-details" class="hidden space-y-3 mt-3">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="block text-sm font-medium" data-lang="standardBarLength">Standard Bar Length (m)</label>
-                                        <input type="number" inputmode="decimal" id="steel-standard-bar-length" class="pro-input w-full" value="12">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium" data-lang="lapSpliceFactor">Lap Splice Factor (e.g., 50d)</label>
-                                        <input type="number" inputmode="decimal" id="steel-lap-splice-factor" class="pro-input w-full" value="50">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <div>
                             <label for="steel-element-selector" class="block text-sm font-medium mb-1" data-lang="selectElement">Select Structural Element</label>
@@ -1629,9 +1699,16 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                 <option value="beam" data-lang="beam">Beam</option>
                                 <option value="column" data-lang="column">Column</option>
                                 <option value="one_way" data-lang="oneWay">One-Way Reinforcement</option>
+                                <option value="custom" data-lang="customBars">Custom bars</option>
                             </select>
-                            <label for="steel-member-quantity" class="block text-sm font-medium mt-2">Member quantity</label>
-                            <input type="number" id="steel-member-quantity" min="1" step="1" value="1" class="pro-input w-full">
+                            <div id="steel-member-qty-row">
+                                <label for="steel-member-quantity" class="block text-sm font-medium mt-2" data-lang="memberQuantity">Number of members (same size)</label>
+                                <input type="number" id="steel-member-quantity" min="1" step="1" value="1" class="pro-input w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mt-2" data-lang="standardBarLength">Bar length in shops (m)</label>
+                                <input type="number" inputmode="decimal" id="steel-standard-bar-length" class="pro-input w-full" value="12">
+                            </div>
                         </div>
                     </div>
                 
@@ -1675,8 +1752,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                             <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
                                             <select id="footing-diameter-len" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1692,8 +1769,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                             <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
                                             <select id="footing-diameter-wid" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                             </select>
                                         </div>
                                      </div>
@@ -1712,8 +1789,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                             <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
                                             <select id="footing-diameter-len-alt" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                             </select>
                                         </div>
                                      </div>
@@ -1729,8 +1806,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                             <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
                                             <select id="footing-diameter-wid-alt" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                             </select>
                                         </div>
                                      </div>
@@ -1774,8 +1851,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                              <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
                                              <select id="slab-diameter-len" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                             </select>
                                          </div>
                                      </div>
@@ -1791,8 +1868,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                             <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
                                             <select id="slab-diameter-wid" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                             </select>
                                         </div>
                                      </div>
@@ -1811,8 +1888,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                             <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
                                             <select id="slab-diameter-len-alt" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                             </select>
                                          </div>
                                      </div>
@@ -1828,8 +1905,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                              <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
                                              <select id="slab-diameter-wid-alt" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                             </select>
                                          </div>
                                      </div>
@@ -1852,8 +1929,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                     <label class="block text-sm font-medium" data-lang="diameter">Bar Diameter (mm)</label>
                                     <select id="beam-diameter" class="pro-input w-full">
                                         <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                        <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                        <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                        <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                        <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                     </select>
                                  </div>
                              </div>
@@ -1885,8 +1962,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                             <label class="block text-sm font-medium" data-lang="stirrupDiameter">Stirrup Diameter (mm)</label>
                                             <select id="beam-stirrup-diameter" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                             </select>
                                          </div>
                                      </div>
@@ -1909,8 +1986,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                     <label class="block text-sm font-medium" data-lang="diameter">Bar Diameter (mm)</label>
                                     <select id="column-diameter" class="pro-input w-full">
                                         <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                        <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                        <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                        <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                        <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                     </select>
                                   </div>
                              </div>
@@ -1942,8 +2019,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                             <label class="block text-sm font-medium" data-lang="stirrupDiameter">Tie Diameter (mm)</label>
                                             <select id="column-stirrup-diameter" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                             </select>
                                          </div>
                                      </div>
@@ -1969,12 +2046,28 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                     <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
                                     <select id="one-way-diameter" class="pro-input w-full">
                                         <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                        <option value="10">10</option><option value="12">12</option><option value="16">16</option>
-                                        <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+                                        <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                        <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
                                     </select>
                                  </div>
                              </div>
                         </div>
+
+                        <div id="steel-custom-inputs" class="hidden mt-2 space-y-2">
+                            <div id="steel-custom-rows" class="space-y-2"></div>
+                            <button type="button" id="steel-custom-add-row" class="btn btn-secondary w-full" data-lang="addRowBtn">Add bar row</button>
+                        </div>
+
+                        <details id="steel-lap-details" class="advanced-details">
+                            <summary>
+                                <i data-lucide="chevron-right" class="sd-chev adv-chev"></i>
+                                <span data-lang="lapSplicesAdvanced">Lap splices (for long bars)</span>
+                            </summary>
+                            <div class="pt-2">
+                                <label class="block text-sm font-medium" data-lang="lapSpliceFactor">Lap Splice Factor (e.g., 50d)</label>
+                                <input type="number" inputmode="decimal" id="steel-lap-splice-factor" class="pro-input w-full" value="50">
+                            </div>
+                        </details>
                     </div>
 
                     <!-- Step 3: Costing -->
@@ -2007,34 +2100,42 @@ body.keyboard-open .mobile-actions { display: none !important; }
                     <div id="steel-result" class="mt-4 p-3 card rounded-lg hidden"></div>
 
                     <!-- SESSION RESULTS TABLE -->
-                    <div id="steel-table-section" class="mt-4 card p-4 rounded-lg hidden">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="text-lg font-semibold header-title" data-lang="sessionResults">Session Results</h3>
-                            <button type="button" id="clear-steel-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
-                                <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="swipe-indicator">
-                            <i data-lucide="move-horizontal" class="w-4 h-4"></i>
-                            <span data-lang="swipeHint">Swipe table to view more</span>
-                        </div>
+                    <div id="steel-table-section" class="mt-4 hidden">
+                        <details class="session-details">
+                            <summary>
+                                <i data-lucide="table-2" class="sd-icon"></i>
+                                <span data-lang="sessionResults">Session Results</span>
+                                <span class="session-count">0</span>
+                                <i data-lucide="chevron-down" class="sd-chev"></i>
+                            </summary>
+                            <div class="card p-4 rounded-lg">
+                                <div class="flex justify-end items-center mb-2">
+                                    <button type="button" id="clear-steel-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                    <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                    </button>
+                                </div>
+                                <div class="swipe-indicator">
+                                <i data-lucide="move-horizontal" class="w-4 h-4"></i>
+                                <span data-lang="swipeHint">Swipe table to view more</span>
+                                </div>
 
-                        <div class="table-scroll-container">
-                            <div class="overflow-x-auto custom-scrollbar table-wrapper">
+                                <div class="table-scroll-container">
+                                <div class="overflow-x-auto custom-scrollbar table-wrapper">
                                 <table>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col" data-lang="tableHeaderElement">Element</th>
-                                            <th scope="col" data-lang="tableHeaderDesc">Description</th>
-                                            <th scope="col" data-lang="tableHeaderWeight">Total Weight</th>
-                                            <th scope="col" data-lang="tableHeaderCost">Cost</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="steel-table-body"></tbody>
+                                <thead>
+                                <tr>
+                                <th scope="col" data-lang="tableHeaderElement">Element</th>
+                                <th scope="col" data-lang="tableHeaderDims">Dimensions</th>
+                                <th scope="col" data-lang="tableHeaderWeight">Total Weight</th>
+                                <th scope="col" data-lang="tableHeaderCost">Cost</th>
+                                </tr>
+                                </thead>
+                                <tbody id="steel-table-body"></tbody>
                                 </table>
+                                </div>
+                                </div>
                             </div>
-                        </div>
+                        </details>
                     </div>
                 </div>
 
@@ -2088,34 +2189,42 @@ body.keyboard-open .mobile-actions { display: none !important; }
 
                     <div id="earthwork-result" class="mt-4 p-3 card rounded-lg hidden"></div>
 
-                   <div id="earthwork-table-section" class="mt-4 card p-4 rounded-lg hidden">
-                       <div class="flex justify-between items-center mb-2">
-                           <h3 class="text-lg font-semibold header-title" data-lang="sessionResults">Session Results</h3>
-                           <button type="button" id="clear-earthwork-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
-                               <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
-                           </button>
-                       </div>
-                       
-                       <div class="swipe-indicator">
-                            <i data-lucide="move-horizontal" class="w-4 h-4"></i>
-                            <span data-lang="swipeHint">Swipe table to view more</span>
-                        </div>
+                   <div id="earthwork-table-section" class="mt-4 hidden">
+                       <details class="session-details">
+                           <summary>
+                               <i data-lucide="table-2" class="sd-icon"></i>
+                               <span data-lang="sessionResults">Session Results</span>
+                               <span class="session-count">0</span>
+                               <i data-lucide="chevron-down" class="sd-chev"></i>
+                           </summary>
+                           <div class="card p-4 rounded-lg">
+                               <div class="flex justify-end items-center mb-2">
+                                   <button type="button" id="clear-earthwork-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                   <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                   </button>
+                               </div>
+                               <div class="swipe-indicator">
+                               <i data-lucide="move-horizontal" class="w-4 h-4"></i>
+                               <span data-lang="swipeHint">Swipe table to view more</span>
+                               </div>
 
-                        <div class="table-scroll-container">
-                           <div class="overflow-x-auto custom-scrollbar table-wrapper">
+                               <div class="table-scroll-container">
+                               <div class="overflow-x-auto custom-scrollbar table-wrapper">
                                <table>
-                                   <thead>
-                                       <tr>
-                                           <th scope="col" data-lang="tableHeaderDims">Dimensions</th>
-                                           <th scope="col" data-lang="tableHeaderQty">Quantity</th>
-                                           <th scope="col" data-lang="tableHeaderVolume">Total Volume</th>
-                                           <th scope="col" data-lang="truckLoads">Truck Loads</th>
-                                       </tr>
-                                   </thead>
-                                   <tbody id="earthwork-table-body"></tbody>
+                               <thead>
+                               <tr>
+                               <th scope="col" data-lang="tableHeaderDims">Dimensions</th>
+                               <th scope="col" data-lang="tableHeaderQty">Quantity</th>
+                               <th scope="col" data-lang="tableHeaderVolume">Total Volume</th>
+                               <th scope="col" data-lang="truckLoads">Truck Loads</th>
+                               </tr>
+                               </thead>
+                               <tbody id="earthwork-table-body"></tbody>
                                </table>
+                               </div>
+                               </div>
                            </div>
-                       </div>
+                       </details>
                    </div>
                 </div>
             </main>
