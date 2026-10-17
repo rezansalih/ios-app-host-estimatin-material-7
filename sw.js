@@ -1,4 +1,4 @@
-const CACHE = 'material-estimator-v41';
+const CACHE = 'material-estimator-v42';
 const CACHE_PREFIX = 'material-estimator-';
 const APP_SHELL = [
   './index.html',
@@ -18,7 +18,9 @@ const APP_SHELL = [
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-192.png',
-  './icon-maskable-512.png'
+  './icon-maskable-512.png',
+  './assets/fonts/nsa-arabic.woff2',
+  './assets/fonts/nsa-latin.woff2'
 ];
 
 self.addEventListener('install', event => {
