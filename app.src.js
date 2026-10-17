@@ -43,7 +43,7 @@
                     hollowBrick: "Hollow Brick (30x12x12cm)", localBrick: "Local Iraqi IQS 25 (24x11.5x7.5cm)",
                     brickLength: "Length (mm)", brickWidth: "Width (mm)", brickHeight: "Height (mm)", mortarThickness: "Mortar Thickness (cm)", costPerBrick: "Cost per Brick",
                     steelTitle: "Rebar Calculator", diameter: "Diameter (mm)", lengthPerBar: "Single Bar Length (m)", numberOfBars: "Number of Bars", costPerKg: "Cost per kg",
-                    unitWeight: "Unit Weight (kg/m)", barsLabel: "Bars", quantities: "Quantities", memberQuantity: "Number of members (same size)", lapSplicesAdvanced: "Lap splices (for long bars)", customBars: "Custom bars", addRowBtn: "Add bar row", removeRowBtn: "Remove", perMember: "per member", errCustomRows: "Add at least one bar row with diameter, number of bars, and length.",
+                    unitWeight: "Unit Weight (kg/m)", barsLabel: "Bars", quantities: "Quantities", memberQuantity: "Number of members (same size)", lapSplicesAdvanced: "Lap splices (for long bars)", customBars: "Custom bars", addRowBtn: "Add bar row", removeRowBtn: "Remove", perMember: "per member", errCustomRows: "Add at least one bar row with diameter, number of bars, and length.", helpBtn: "Help", presetBtn: "Fill typical values", sanityIntro: "Check these values:", sanityUnusual: "looks unusual — please check", hintSpacing: "Distance between two bars, measured center to center.", hintDiameter: "How thick one bar is, across its round face.", hintCalcMode: "Spacing finds the number of bars from the distance between them. Number of Bars uses the count you type.", hintCover: "Concrete between the steel and the outside face — it protects the steel. 40 mm is common.", hintStirrupSpacing: "Distance from one stirrup ring to the next.", hintStirrupDiameter: "Thickness of the stirrup ring bar. Ø8 is the usual size.", hintBarLength: "Length of one bar from the steel shop — usually 12 m. Used to count the bars to buy.", hintLapFactor: "For bars longer than shop bars, the bars overlap. 50d means the overlap is 50 × the bar diameter.", hintMemberQty: "How many identical pieces you will pour — like 5 identical footings.", hintCostPerKg: "Price of one kilogram at your supplier.", hintTruck: "How much one truck can carry, in m³.", hintSwell: "Dug soil becomes looser and takes more space. 25–30% is common.", hintMortar: "How thick the mortar joint is between blocks or bricks.", hintDryFactor: "Dry mortar shrinks when water is added. 1.33 is the common factor.", hintMixRatio: "How much sand and gravel go with one bag of cement. 1:6 is common for mortar.", hintCementDensity: "Weight of one cubic meter of loose cement. 1440 kg/m³ is common.", hintDistLength: "The length that the bars cover — the run of the strip.", hintNumberOfBars: "How many cut bars you will place in this direction.", intro1Title: "Measure", intro1Body: "Measure what you want to build — length, width and height, in meters.", intro2Title: "Enter", intro2Body: "Choose the material and type your numbers. Not sure about a field? Tap ? — or use Fill typical values.", intro3Title: "Order", intro3Body: "Press Calculate. The big number is what you need; \"What to order\" is your shopping list. Save, print or share it.", introNext: "Next", introStart: "Start estimating", bagsWord: "bags", piecesWord: "pcs",
                     earthworkTitle: "Earth Work Calculator", resultEarthwork: "Earth Work Estimation Result", excavationVolume: "Total Excavation Volume", numberOfWalls: "Number of Walls",
                     resultConcrete: "Concrete Estimation Result", totalVolume: "Total Volume concrete (Quantities)", cementBags: "Cement Bags", sand: "Sand", aggregate: "Aggregate", cementCost: "Cement Cost", sandCost: "Sand Cost", aggregateCost: "Aggregate Cost", totalCost: "Grand Total (Estimated)",
                     formworkArea: "Formwork Area", formworkCostBreakdown: "Formwork Cost", slabFormwork: "Slab Edge Formwork", columnFormwork: "Column Side Formwork", beamFormwork: "Beam Sides & Bottom Formwork",
@@ -64,7 +64,7 @@
                     concreteTitle: "هەژمارکەرێ کۆنکریتی", appType: "جورێ ئەندامێ کۆنکریتى", mixRatio: "چیمەنتۆ : قوم : حەسو، بەپێی قەبارەی سستی", slabOption: "ئەرد / بناغە", columnOption: "ستوین", beamOption: "جسر", dryVolumeFactor: "فاکتەرێ قەبارێ هشک (خەمڵاندن)", dryVolumeFactorNote: "تنێ خەمڵاندنە؛ بەرهەمی ڕاستەقینە بەپێی کەرەستە و تێکەڵکردن دەگۆڕێت.", customRatioNote: "ئەمە هێشتا رێژەیەکا بنەڕەتی یا قەبارەی سستە، نە دیزاینەکا پەسەندکراوی تێکەلیێ.", cementDensity: "چڕیا سستی چیمەنتوی (کگم/م³)", mortarMixRatio: "رێژا تێکەلا خەلتەی (چیمەنتو:قوم)", length: "درێژی (م)", width: "پانی (م)", thickness: "ستووری / قووڵی (م)", height: "بلندی / قووڵی (م)", costCementBag: "بهایێ کیسێ چیمەنتوی", costSandM3: "بهایێ م³ قوم", costAggregateM3: "بهایێ م³ حەسو", numberOfElements: "ژمارا ئەندامان (ستوین/جسر)",
                     blocksTitle: "هەژمارکەرێ بلۆکێن چیمەنتوی", calcMode: "هەژمارکرن ب رێکا", byDimensions: "ب رێکا پیڤانا ئەندامێ", blockType: "جورێ بلۆکێ", wallWidth: "پانییا دیوارى (م)", wallLength: "درێژیا دیوارى (م)", wallHeight: "بلندیا دیوارى (م)", blockLength: "درێژی (سم)", blockWidth: "پانی (سم)", blockHeight: "بلندی (سم)", solidBlock20: "تژی (٤٠×٢٠×٢٠سم)", solidBlock15: "تژی (٤٠×٢٠×١٥سم)", hollowBlock: "فالە (٤٠×٢٠×٢٠سم)", lightweightBlock: "سڤك (٦٠×٢٠×١٠سم)", costPerBlock: "بهایێ هەر بلۆکەکێ", mortarCementCost: "بهایێ چیمەنتوی/کیسەك", mortarSandCost: "بهایێ قوما/م³",
                     bricksTitle: "هەژمارکەرێ خشت", brickType: "جورێ خشتى", standardBrick: "ستاندەرد (٢١٥×١٠٢.٥×٦٥مم)", engineeringBrick: "ئەندازیاری (٢١٥×١٠٢.٥×٧٣مم)", romanBrick: "رومانی (٢٩٠×٩٠×٤٠مم)", hollowBrick: "خشتێ فالە (٣٠×١٢×١٢ سم)", localBrick: "خشتێ عيراقى IQS 25 (٢٤×١١.٥×٧.٥سم)", brickLength: "درێژی (مم)", brickWidth: "پانی (مم)", brickHeight: "بلندی (مم)", mortarThickness: "ستوورییا خەلتەی (سم)", costPerBrick: "بهایێ هەر خشتەکێ",
-                    steelTitle: "هەژمارکەرێ شیشێ", diameter: "تیرە (مم)", lengthPerBar: "درێژاهیا تاکە شیشەکێ (م)", numberOfBars: "ژمارا شیشان", costPerKg: "بهایێ هەر کیلویەکێ", unitWeight: "کێشا مەترەکێ (کگم/م)", barsLabel: "شیش", quantities: "بڕ", memberQuantity: "ژمارا ئەندامان (هەمان قەبارە)", lapSplicesAdvanced: "لێکدانا شیشان (بۆ شیشێن درێژ)", customBars: "شیشێن تایبەت", addRowBtn: "زیادکرنا ڕیزێ", removeRowBtn: "سڕینەوە", perMember: "بۆ هەر ئەندامێک", errCustomRows: "تەنها یێک ڕیز زیاد بکە دگەل تیرە و ژمارا شیشان و درێژی.",
+                    steelTitle: "هەژمارکەرێ شیشێ", diameter: "تیرە (مم)", lengthPerBar: "درێژاهیا تاکە شیشەکێ (م)", numberOfBars: "ژمارا شیشان", costPerKg: "بهایێ هەر کیلویەکێ", unitWeight: "کێشا مەترەکێ (کگم/م)", barsLabel: "شیش", quantities: "بڕ", memberQuantity: "ژمارا ئەندامان (هەمان قەبارە)", lapSplicesAdvanced: "لێکدانا شیشان (بۆ شیشێن درێژ)", customBars: "شیشێن تایبەت", addRowBtn: "زیادکرنا ڕیزێ", removeRowBtn: "سڕینەوە", perMember: "بۆ هەر ئەندامێک", errCustomRows: "تەنها یێک ڕیز زیاد بکە دگەل تیرە و ژمارا شیشان و درێژی.", helpBtn: "یارمەتی", presetBtn: "بەها باوەڕپێکراوەکان پڕبکەرەوە", sanityIntro: "ئەم بەها بپشکنە:", sanityUnusual: "نائاسایییە — تکایە بپشکنە", hintSpacing: "دووریا دێ نێڤ دو شیشەکاندایە — ژ دەڤا-دەڤەکێان.", hintDiameter: "قووریا تاکە شیشەکێ.", hintCalcMode: "ب ناڤبەرژمارا شیشان د دووریێ دەربدات. ب ژمارا شیشان: ژمارێن تۆ د دزین.", hintCover: "کۆنکریتێ نێڤ شیشێ و ڕوویا دەرڤییێ — شیشێ دپارێزت. 40 مم گشتییە.", hintStirrupSpacing: "دووریا دێ نێڤ دو ئێترییاندایە.", hintStirrupDiameter: "قووریا ئێترییێ. Ø8 گشتییە.", hintBarLength: "درێژیا تاکە شیشەکێ وەک دوکان دەفرۆشت — پێی گشتی 12 م. بۆ ژمارکرنا شیشان.", hintLapFactor: "شیشێن درێژتر ل شیشێن دوکانییان لێک دەخرێن. 50d یعنی لێکدان 50 × تیرەی شیشە.", hintMemberQty: "ژمارا ئەندامانی هەمانبەت — وەک 5 بناغەی هەمان.", hintCostPerKg: "بهایێ هەر کیلویەک.", hintTruck: "ئەوەی یێک ترومبێل دگرت ب م³.", hintSwell: "خاکی کولراو زیاتر دەبێت. 25–30% گشتییە.", hintMortar: "قووریا خەلتەی نێڤ بلۆکان/خشتان.", hintDryFactor: "خەلتێڤێ خشکە کەم دبێت کاتێئاڤ زیاد دکرێت. 1.33 گشتییە.", hintMixRatio: "چەند قوم و حەسو ب هەر خورێچیمەنتۆ. 1:6 ب خەلتە گشتییە.", hintCementDensity: "کێشا م³ چیمەنتۆی ڤێرکاو. 1440 کگم/م³ گشتییە.", hintDistLength: "ئەو درێژییێی ک شیشەکان د پێان دانا.", hintNumberOfBars: "ئەو ژمارا شیشانێی تۆ د دا ناڤ ئەم ئاراستەیێ.", intro1Title: "پێوانە بگرە", intro1Body: "ئەوەی دڤێت ساز بکەی پێوانە بگرە — درێژی، پانی و بلندی، ب مەتر.", intro2Title: "بنڤیسە", intro2Body: "ماددە هەلبژێرە و ژمارەکانت بنڤیسە. د دوودڵییت؟ ؟ دابخە — یان «بەها باوەڕپێکراوەکان» بکاربهێنە.", intro3Title: "فرۆشتن", intro3Body: "«هەژمار بکە» دابخە. ژمارە گەورەئەوەی پێویستە؛ «ئەو چی دڤێت فرۆشی» لیستا فرۆشتنە. پاشەکەوت بکە، چاپ بکە یان هاوبەش بکە.", introNext: "بێهتر", introStart: "دەستپێبکە", bagsWord: "کەسک", piecesWord: "دانە",
                     earthworkTitle: "هەژمارکەرێ کارێ ئەردی", resultEarthwork: "ئەنجامێ هەژمارا کارێ ئەردی", excavationVolume: "قەبارێ گشتیێ کولانێ", numberOfWalls: "ژمارا دیواران",
                     resultConcrete: "ئەنجامێ هەژمارا کۆنکریتی", totalVolume: "قەبارێ گشتیێ کۆنکریتی (بڕ)", cementBags: "کیسکێن چیمەنتوی", sand: "قوم", aggregate: "حەسو", cementCost: "بهایێ چیمەنتوی", sandCost: "بهایێ قومی", aggregateCost: "بهایێ حەسو", totalCost: "کۆی گشتی (تخمينکری)", formworkArea: "ڕووبەرێ قالبی", formworkCostBreakdown: "تێچووی قاڵب", slabFormwork: "ڕووبەرێ قالبی یێ دەورێ ئەردی", columnFormwork: "ڕووبەرێ قالبی یێ لایێن ستوینێ", beamFormwork: "ڕووبەرێ قالبی یێ لای و بنێ جسری",
                     resultBlocks: "ئەنجامێ هەژمارا بلۆکان", totalBlocks: "بلۆکێن پێدڤی", blockCost: "بهایێ بلۆکان", mortarCement: "چیمەنتویێ خەلتەی", mortarSand: "قوما خەلتەی", resultBricks: "ئەنجامێ هەژمارا خشتان", totalBricks: "خشتێن پێدڤی", brickCost: "بهایێ خشتان", resultSteel: "ئەنجامێ هەژمارا شیشی", totalWeight: "کێشا گشتی", barsPerTon: "ژمارا شیشان د هەر تەنەکێ دا",
@@ -80,7 +80,7 @@
                     concreteTitle: "ئەژمارکەری کۆنکریت", appType: "جۆری ئەندامی کۆنکریتی", mixRatio: "چیمەنتۆ : لم : چەو، بەپێی قەبارەی سست", slabOption: "تەختە / بناغە", columnOption: "ستوون", beamOption: "جسر", dryVolumeFactor: "فاکتەری قەبارەی وشک (خەمڵاندن)", dryVolumeFactorNote: "تەنها خەمڵاندنە؛ بەرهەمی ڕاستەقینە بە پێی کەرەستە و تێکەڵکردن دەگۆڕێت.", customRatioNote: "ئەمە هێشتا ڕێژەیەکی بنەڕەتییە بە قەبارەی سست، نە دیزاینی تێکەڵەی پەسەندکراو.", cementDensity: "چڕی سستی چیمەنتۆ (کگم/م³)", mortarMixRatio: "ڕێژەی تێکەڵەی گیراوە (چیمەنتۆ:لم)", length: "درێژی (م)", width: "پانی (م)", thickness: "ئەستووری / قووڵی (م)", height: "بەرزی / قووڵی (م)", costCementBag: "تێچووی یەک کیسە چیمەنتۆ", costSandM3: "تێچووی م³ لم", costAggregateM3: "تێچووی م³ چەو", numberOfElements: "ژمارەی ئەندامەکان (ستوون/جسر)",
                     blocksTitle: "ئەژمارکەری بلۆکی چیمەنتۆ", calcMode: "ئەژمارکردن بەپێی", byDimensions: "بەپێی پێوانەکانی ئەندام", blockType: "جۆری بلۆک", wallWidth: "پانی دیوار (م)", wallLength: "درێژی دیوار (م)", wallHeight: "بەرزی دیوار (م)", blockLength: "درێژی (سم)", blockWidth: "پانی (سم)", blockHeight: "بەرزی (سم)", solidBlock20: "تۆکمە (٤٠×٢٠×٢٠سم)", solidBlock15: "تۆکمە (٤٠×٢٠×١٥سم)", hollowBlock: "بۆش (٤٠×٢٠×٢٠سم)", lightweightBlock: "کێش سووک (٦٠×٢٠×١٠سم)", costPerBlock: "تێچووی هەر بلۆکێک", mortarCementCost: "تێچووی چیمەنتۆ/کیسە", mortarSandCost: "تێچووی لم/م³",
                     bricksTitle: "ئەژمارکەری خشت", brickType: "جۆری خشت", standardBrick: "ستاندارد (٢١٥×١٠٢.٥×٦٥مم)", engineeringBrick: "ئەندازیاری (٢١٥×١٠٢.٥×٧٣مم)", romanBrick: "ڕۆمانی (٢٩٠×٩٠×٤٠مم)", hollowBrick: "خشتی بۆش (٣٠×١٢×١٢ سم)", localBrick: "خشتی عێراقی IQS 25 (٢٤×١١.٥×٧.٥سم)", brickLength: "درێژی (مم)", brickWidth: "پانی (مم)", brickHeight: "بەرزی (مم)", mortarThickness: "ئەستووری گیراوە (سم)", costPerBrick: "تێچووی هەر خشتێک",
-                    steelTitle: "ئەژمارکەری شیش", diameter: "تیرە (مم)", lengthPerBar: "درێژی یەک شیش (م)", numberOfBars: "ژمارەی شیشەکان", costPerKg: "تێچووی هەر کیلۆیەک", unitWeight: "کێشی یەک مەتر (کگم/م)", barsLabel: "شیشەکان", quantities: "بڕەکان", memberQuantity: "ژمارەی ئەندامەکان (هەمان قەبارە)", lapSplicesAdvanced: "تێهەڵکێشی شیشەکان (بۆ شیشە درێژەکان)", customBars: "شیشی تایبەت", addRowBtn: "زیادکردنی ڕیزەکە", removeRowBtn: "سڕینەوە", perMember: "بۆ هەر ئەندامێک", errCustomRows: "لەکەمترین یەک ڕیز زیاد بکە لەگەڵ تیرە و ژمارەی شیش و درێژی.",
+                    steelTitle: "ئەژمارکەری شیش", diameter: "تیرە (مم)", lengthPerBar: "درێژی یەک شیش (م)", numberOfBars: "ژمارەی شیشەکان", costPerKg: "تێچووی هەر کیلۆیەک", unitWeight: "کێشی یەک مەتر (کگم/م)", barsLabel: "شیشەکان", quantities: "بڕەکان", memberQuantity: "ژمارەی ئەندامەکان (هەمان قەبارە)", lapSplicesAdvanced: "تێهەڵکێشی شیشەکان (بۆ شیشە درێژەکان)", customBars: "شیشی تایبەت", addRowBtn: "زیادکردنی ڕیزەکە", removeRowBtn: "سڕینەوە", perMember: "بۆ هەر ئەندامێک", errCustomRows: "لەکەمترین یەک ڕیز زیاد بکە لەگەڵ تیرە و ژمارەی شیش و درێژی.", helpBtn: "یارمەتی", presetBtn: "بەهای باوەڕپێکراوەکان پڕبکەرەوە", sanityIntro: "ئەم بەهایانە بپشکنە:", sanityUnusual: "ئاسایی نییە — تکایە بپشکنە", hintSpacing: "دووری نێوان دو شیشەوە — لە ناوەندی ناوەندییەوە.", hintDiameter: "ئەستووری یەک شیشە.", hintCalcMode: "بەپێی مەودا ژمارەی شیشەکان لە دوورییەوە دێت. بەپێی ژمارە: ژمارەی تۆ دەنووسیت.", hintCover: "کۆنکریت نێوان شیش و ڕووی دەرەوەوە — شیشەکە دەپارێزێت. 40 مم باوەڕییە.", hintStirrupSpacing: "دووری نێوان دو ئەتارییەوە.", hintStirrupDiameter: "ئەستووری ئەتارییەکە. Ø8 باوەڕییە.", hintBarLength: "درێژی یەک شیش وەک لە دووکان دەفرۆشرێت — زۆرجار 12 م. بۆ ژمارەی شیشەکانی کڕین.", hintLapFactor: "شیشە درێژەکان لەگەڵ یەکتر دەکێشرێنەوە. 50d یعنی کێشانەوە 50 × تیرەی شیشە.", hintMemberQty: "ژمارەی ئەندامەکانی هەمان جۆر — وەک 5 بناغەی هەمان.", hintCostPerKg: "نرخی هەر کیلۆیەک.", hintTruck: "ئەوەی یەک بارھەڵگر دەگرێت بە م³.", hintSwell: "خاکی کندراو گەورەتر دەبێت. 25–30% باوەڕییە.", hintMortar: "ئەستووری هێلیگیراوە نێوان بلۆک/خشتەکان.", hintDryFactor: "گیراوەی وشک کەم دەبێت کاتێئاو زیاد دەکرێت. 1.33 باوەڕییە.", hintMixRatio: "چەند خۆڵ و چەو لەگەڵ هەر پاکەی چیمەنتۆ. 1:6 بۆ گیراوە باوەڕییە.", hintCementDensity: "کێشی م³ چیمەنتۆی وشک. 1440 کگم/م³ باوەڕییە.", hintDistLength: "ئەو درێژییەی شیشەکان دەگێنە.", hintNumberOfBars: "ژمارەی شیشە بریکراوەکان لەم ئاڕاستەیە.", intro1Title: "پێوانە بکە", intro1Body: "ئەوەی دەتەوێت بیناسازی بکەیت پێوانە بکە — درێژی، پانی و بەرزی، بە مەتر.", intro2Title: "بنووسە", intro2Body: "ماددەکە هەڵبژێرە و ژمارەکانت بنووسە. دودلت هەیە؟ ؟ دابگرە — یان «بەهای باوەڕپێکراوەکان» بەکاربهێنە.", intro3Title: "کڕین", intro3Body: "«ئەژمار بکە» دابگرە. ژمارە گەورەکە ئەوەی پێویستە؛ «ئەوەی دەیکڕیت» لیستی کڕینەکەتە. پاشەکەوتی بکە، چاپی بکە یان هاوبەشی بکە.", introNext: "دواتر", introStart: "دەستپێبکە", bagsWord: "کیسە", piecesWord: "دانە",
                     earthworkTitle: "ئەژمارکەری کاری زەوی", resultEarthwork: "ئەنجامی خەمڵاندنی کاری زەوی", excavationVolume: "کۆی گشتی قەبارەی هەڵکەندن", numberOfWalls: "ژمارەی دیوارەکان",
                     resultConcrete: "ئەنجامی خەمڵاندنی کۆنکریت", totalVolume: "کۆی گشتی قەبارەی کۆنکریت (بڕەکان)", cementBags: "کیسەی چیمەنتۆ", sand: "لم", aggregate: "چەو", cementCost: "تێچووی چیمەنتۆ", sandCost: "تێچووی لم", aggregateCost: "تێچووی چەو", totalCost: "کۆی گشتی (خەمڵێنراو)", formworkArea: "ڕووبەری قاڵب", formworkCostBreakdown: "تێچووی قاڵب", slabFormwork: "قاڵبی لێواری تەختە", columnFormwork: "قاڵبی لایەکانی ستوون", beamFormwork: "قاڵبی لایەکان و بنی جسر",
                     resultBlocks: "ئەنجامی خەمڵاندنی بلۆک", totalBlocks: "بلۆکی پێویست", blockCost: "تێچووی بلۆک", mortarCement: "چیمەنتۆی گیراوە", mortarSand: "لمی گیراوە", resultBricks: "ئەنجامی خەمڵاندنی خشت", totalBricks: "خشتی پێویست", brickCost: "تێچووی خشت", resultSteel: "ئەنجامی خەمڵاندنی شیش", totalWeight: "کێشی گشتی", barsPerTon: "ژمارەی شیش لە هەر تەنێکدا",
@@ -96,7 +96,7 @@
                     concreteTitle: "حاسبة الخرسانة", appType: "نوع العنصر الخرساني", mixRatio: "إسمنت : رمل : حصى، حسب الحجم السائب", slabOption: "بلاطة / أساس", columnOption: "عمود", beamOption: "جسر", dryVolumeFactor: "معامل الحجم الجاف (تقديري)", dryVolumeFactorNote: "للتقدير فقط؛ يختلف العائد الفعلي حسب المواد وطريقة الخلط.", customRatioNote: "هذه ما تزال نسبة اسمية بالحجم السائب وليست تصميم خلطة معتمداً.", cementDensity: "الكثافة الحجمية السائبة للإسمنت (كجم/م³)", mortarMixRatio: "نسبة خلط المونة (اسمنت:رمل)", length: "الطول (م)", width: "العرض (م)", thickness: "السماكة / العمق (م)", height: "الارتفاع / العمق (م)", costCementBag: "تكلفة كيس الإسمنت", costSandM3: "تكلفة م³ من الرمل", costAggregateM3: "تكلفة م³ من الحصى", numberOfElements: "عدد العناصر (أعمدة/جسور)",
                     blocksTitle: "حاسبة بلوك الإسمنت", calcMode: "الحساب بواسطة", byDimensions: "باستخدام أبعاد العنصر", blockType: "نوع البلوك", wallWidth: "عرض الجدار (م)", wallLength: "طول الجدار (م)", wallHeight: "ارتفاع الجدار (م)", blockLength: "الطول (سم)", blockWidth: "العرض (سم)", blockHeight: "الارتفاع (سم)", solidBlock20: "مصمت (٤٠×٢٠×٢٠ سم)", solidBlock15: "مصمت (٤٠×٢٠×١٥ سم)", hollowBlock: "مفرغ (٤٠×٢٠×٢٠ سم)", lightweightBlock: "خفيف الوزن (٦٠×٢٠×١٠ سم)", costPerBlock: "تكلفة البلوك الواحد", mortarCementCost: "تكلفة الإسمنت/كيس", mortarSandCost: "تكلفة الرمل/م³",
                     bricksTitle: "حاسبة الطابوق", brickType: "نوع الطابوق", standardBrick: "قياسي (٢١٥×١٠٢.٥×٦٥ مم)", engineeringBrick: "هندسي (٢١٥×١٠٢.٥×٧٣ مم)", romanBrick: "روماني (٢٩٠×٩٠×٤٠ مم)", hollowBrick: "طابوق مفرغ (٣٠×١٢×١٢ سم)", localBrick: "طابوق عراقي IQS 25 (٢٤×١١.٥×٧.٥ سم)", brickLength: "الطول (مم)", brickWidth: "الارتفاع (مم)", brickHeight: "الارتفاع (مم)", mortarThickness: "سماكة المونة (سم)", costPerBrick: "تكلفة الطابوقة الواحدة",
-                    steelTitle: "حاسبة حديد التسليح", diameter: "القطر (مم)", lengthPerBar: "طول السيخ الواحد (م)", numberOfBars: "عدد الأسياخ", costPerKg: "التكلفة لكل كجم", unitWeight: "الوزن لكل متر (كجم/م)", barsLabel: "أسياخ", quantities: "الكميات", memberQuantity: "عدد العناصر (نفس المقاس)", lapSplicesAdvanced: "وصلات التراكب (للأسياخ الطويلة)", customBars: "أسياخ مخصصة", addRowBtn: "إضافة صف", removeRowBtn: "إزالة", perMember: "لكل عنصر", errCustomRows: "أضف صفًا واحدًا على الأقل بقطر وعدد وطول سيخ.",
+                    steelTitle: "حاسبة حديد التسليح", diameter: "القطر (مم)", lengthPerBar: "طول السيخ الواحد (م)", numberOfBars: "عدد الأسياخ", costPerKg: "التكلفة لكل كجم", unitWeight: "الوزن لكل متر (كجم/م)", barsLabel: "أسياخ", quantities: "الكميات", memberQuantity: "عدد العناصر (نفس المقاس)", lapSplicesAdvanced: "وصلات التراكب (للأسياخ الطويلة)", customBars: "أسياخ مخصصة", addRowBtn: "إضافة صف", removeRowBtn: "إزالة", perMember: "لكل عنصر", errCustomRows: "أضف صفًا واحدًا على الأقل بقطر وعدد وطول سيخ.", helpBtn: "مساعدة", presetBtn: "ملء القيم المعتادة", sanityIntro: "يرجى فحص هذه القيم:", sanityUnusual: "تبدو غير معتادة — يرجى المراجعة", hintSpacing: "المسافة بين سيخين، من المركز إلى المركز.", hintDiameter: "سماكة السيخ الواحد عبر وجهه الدائري.", hintCalcMode: "حسب المسافة: عدد الأسياخ يُحسب من المسافة بينها. حسب العدد: تكتب العدد بنفسك.", hintCover: "الخرسانة بين الحديد والوجه الخارجي — تحمي الحديد. 40 مم شائعة.", hintStirrupSpacing: "المسافة بين كانة وأخرى.", hintStirrupDiameter: "سماكة سيخ الكانة. Ø8 هو الشائع.", hintBarLength: "طول السيخ الواحد كما يباع في الأسواق — عادة 12 م. يُستخدم لحساب عدد الأسياخ للشراء.", hintLapFactor: "الأسياخ الأطول من أسياخ السوق تتراكب. 50d يعني التراكب = 50 × قطر السيخ.", hintMemberQty: "عدد العناصر المتطابقة التي ستصبها — مثل 5 أساسات متطابقة.", hintCostPerKg: "سعر الكيلوغرام الواحد عند المورد.", hintTruck: "كم يحمل الشاحنة الواحد بالمتر المكعب.", hintSwell: "التربة المحفورة تزداد حجمًا. 25–30% شائعة.", hintMortar: "سماكة فاصل المونة بين البلوك أو الطابوق.", hintDryFactor: "المونة الجافة تنكمش عند إضافة الماء. 1.33 هو المعامل الشائع.", hintMixRatio: "كم رملًا وحصًا مع كل كيس إسمنت. 1:6 شائع للمونة.", hintCementDensity: "وزن متر مكعب من الإسمنت الفائب. 1440 كجم/م³ شائع.", hintDistLength: "الطول الذي تغطيه الأسياخ — امتداد الشريط.", hintNumberOfBars: "عدد الأسياخ المقطوعة التي ستضعها في هذا الاتجاه.", intro1Title: "قِس", intro1Body: "قِس ما تريد بناءه — الطول والعرض والارتفاع، بالمتر.", intro2Title: "أدخل", intro2Body: "اختر المادة واكتب أرقامك. غير متأكد من حقل؟ اضغط ؟ — أو استخدم «ملء القيم المعتادة».", intro3Title: "اطلب", intro3Body: "اضغط احسب. الرقم الكبير هو ما تحتاجه؛ «ماذا تطلب» هي قائمة تسوقك. احفظها أو اطبعها أو شاركها.", introNext: "التالي", introStart: "ابدأ التقدير", bagsWord: "كيس", piecesWord: "قطعة",
                     earthworkTitle: "حاسبة أعمال الحفر", resultEarthwork: "نتيجة تقدير أعمال الحفر", excavationVolume: "حجم الحفر الكلي", numberOfWalls: "عدد الجدران",
                     resultConcrete: "نتيجة تقدير الخرسانة", totalVolume: "الحجم الإجمالي للخرسانة (الكميات)", cementBags: "أكياس الإسمنت", sand: "الرمل", aggregate: "الحصى", cementCost: "تكلفة الإسمنت", sandCost: "تكلفة الرمل", aggregateCost: "تكلفة الحصى", totalCost: "المجموع الكلي (التقديري)", formworkArea: "مساحة القالب", formworkCostBreakdown: "تكلفة القالب", slabFormwork: "مساحة قالب حافة البلاطة", columnFormwork: "مساحة قالب جوانب العمود", beamFormwork: "مساحة قالب جوانب وأسفل الجسر",
                     resultBlocks: "نتيجة تقدير البلوك", totalBlocks: "البلوك المطلوب", blockCost: "تكلفة البلوك", mortarCement: "إسمنت المونة", mortarSand: "رمل المونة", resultBricks: "نتيجة تقدير الطابوق", totalBricks: "الطابوق المطلوب", brickCost: "تكلفة الطابوق", resultSteel: "نتيجة تقدير الحديد", totalWeight: "الوزن الإجمالي", barsPerTon: "عدد الأسياخ في الطن",
@@ -416,6 +416,7 @@
                     });
 
                     document.getElementById(`${formId}-result`).classList.add('hidden');
+                    document.querySelectorAll('.sanity-banner').forEach(b => b.remove());
                     errorBox.classList.add('hidden');
 
                     if (sessionResults[formId]) {
@@ -503,6 +504,8 @@
                 Object.values(steelInputContainers).forEach(container => container.classList.add('hidden'));
                 const memberQtyRow = document.getElementById('steel-member-qty-row');
                 if (memberQtyRow) memberQtyRow.classList.toggle('hidden', selectedValue === 'custom');
+                const presetBtnEl = document.getElementById('steel-preset-btn');
+                if (presetBtnEl) presetBtnEl.classList.toggle('hidden', !selectedValue || selectedValue === 'custom');
                 if (selectedValue) {
                     steelInputContainers[selectedValue].classList.remove('hidden');
                     document.getElementById('steel-step-2-card').classList.remove('hidden');
@@ -551,11 +554,11 @@
                         </div>
                         <div>
                             <label class="block text-xs font-medium" data-lang="numberOfBars">${T.numberOfBars}</label>
-                            <input type="number" inputmode="numeric" min="1" step="1" class="pro-input w-full custom-count">
+                            <input type="number" inputmode="numeric" min="1" step="1" class="pro-input w-full custom-count" data-sane="1:2000:">
                         </div>
                         <div>
                             <label class="block text-xs font-medium" data-lang="barLength">${T.barLength}</label>
-                            <input type="number" inputmode="decimal" min="0.1" step="0.1" class="pro-input w-full custom-length">
+                            <input type="number" inputmode="decimal" min="0.1" step="0.1" class="pro-input w-full custom-length" data-sane="0.3:24:m">
                         </div>
                     </div>
                     <button type="button" class="custom-remove-btn" data-lang-aria="removeRowBtn" title="${T.removeRowBtn || 'Remove'}" aria-label="${T.removeRowBtn || 'Remove'}">
@@ -823,6 +826,25 @@
             function renderSessionTable(type) {
                 const tableBody = document.getElementById(`${type}-table-body`);
                 const tableSection = document.getElementById(`${type}-table-section`);
+                // Cells may hold words baked in the language active when they were
+                // calculated ("12 bags", "Beam", cost-not-entered). Map any
+                // language's wording back to the current one at render time.
+                const localizeCell = (val) => {
+                    if (typeof val !== 'string') return val;
+                    const T = translations[localStorage.getItem('language') || 'en'];
+                    const exact = {}, word = {};
+                    const exactKeys = ['costNotEntered', 'footing', 'slab', 'beam', 'column', 'oneWay', 'customBars'];
+                    const wordKeys = ['bagsWord', 'piecesWord'];
+                    Object.values(translations).forEach(L => {
+                        if (!L || typeof L !== 'object') return;
+                        exactKeys.forEach(k => { if (L[k]) exact[L[k]] = T[k]; });
+                        wordKeys.forEach(k => { if (L[k]) word[L[k]] = T[k]; });
+                    });
+                    if (exact[val]) return exact[val];
+                    const m = /^(.*?\d[\d.,]*\s+)(\S+)$/.exec(val);
+                    if (m && word[m[2]]) return m[1] + word[m[2]];
+                    return val;
+                };
                 tableBody.innerHTML = ''; 
                 const countEl = tableSection.querySelector('.session-count');
                 if (countEl) countEl.textContent = String(sessionResults[type].length);
@@ -839,7 +861,7 @@
                 let rowsHTML = '';
                 sessionResults[type].forEach(result => {
                     let row = '<tr>';
-                    Object.values(result).forEach((value, index) => { row += `<td data-label="${(headers[index] || '').replace(/"/g, '&quot;')}">${value}</td>`; });
+                    Object.values(result).forEach((value, index) => { row += `<td data-label="${(headers[index] || '').replace(/"/g, '&quot;')}">${localizeCell(value)}</td>`; });
                     row += '</tr>';
                     rowsHTML += row;
                 });
@@ -1082,6 +1104,124 @@
                     if (window.__calcHandlers?.[name]) run();
                     else loadCalc(name).then(run).catch(() => showError(translations[localStorage.getItem('language') || 'en'].errRequiredFields));
                 });
+            });
+
+            /* ===== Language switch: relabel everything that was generated at
+               calculate time. Session tables and history re-render from stored
+               data; an open result is re-calculated in the new language (its
+               session row is not duplicated, and no auto-scroll). ===== */
+            document.addEventListener('app:lang', () => {
+                ['concrete', 'blocks', 'bricks', 'steel', 'earthwork'].forEach(type => {
+                    if (sessionResults[type] && sessionResults[type].length) renderSessionTable(type);
+                });
+                if (calculationHistory.length) renderHistory();
+                const active = document.querySelector('.tab-content:not(.hidden)');
+                if (!active) return;
+                const res = document.getElementById(`${active.id}-result`);
+                if (res && !res.classList.contains('hidden')) {
+                    window.__langRecalc = true;
+                    setTimeout(() => { window.__langRecalc = false; }, 450);
+                    const btn = document.getElementById(`calculate-${active.id}`);
+                    if (btn) btn.click();
+                }
+            });
+
+            /* ===== Guided first-run intro ===== */
+            const introOverlay = document.getElementById('intro-overlay');
+            if (introOverlay && !localStorage.getItem('introSeen')) {
+                introOverlay.classList.remove('hidden');
+                let introSlide = 0;
+                const slides = introOverlay.querySelectorAll('.intro-slide');
+                const dots = introOverlay.querySelectorAll('.intro-dot');
+                const introNext = document.getElementById('intro-next');
+                const introStart = document.getElementById('intro-start');
+                const showSlide = (i) => {
+                    slides.forEach((sl, k) => sl.classList.toggle('is-active', k === i));
+                    dots.forEach((dt, k) => dt.classList.toggle('is-active', k === i));
+                    if (i >= slides.length - 1) { introNext.classList.add('hidden'); introStart.classList.remove('hidden'); }
+                };
+                introNext.addEventListener('click', () => { introSlide = Math.min(introSlide + 1, slides.length - 1); showSlide(introSlide); });
+                introStart.addEventListener('click', () => {
+                    localStorage.setItem('introSeen', '1');
+                    introOverlay.classList.add('hidden');
+                });
+            }
+
+            /* ===== Field hints: tap ? to show a plain explanation ===== */
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('.hint-btn');
+                if (!btn) return;
+                const wrap = btn.closest('.label-with-hint');
+                const hint = wrap && wrap.nextElementSibling;
+                if (hint && hint.classList.contains('field-hint')) hint.classList.toggle('hidden');
+            });
+
+            /* ===== Sanity warnings: unusual values are flagged, not blocked ===== */
+            const collectSanity = () => {
+                const active = document.querySelector('.tab-content:not(.hidden)');
+                const T = translations[localStorage.getItem('language') || 'en'];
+                if (!active) return;
+                document.querySelectorAll('.sanity-banner').forEach(b => b.remove());
+                const warnings = [];
+                active.querySelectorAll('input[data-sane]').forEach(inp => {
+                    if (inp.closest('.hidden')) return;
+                    if (inp.value === '' || !Number.isFinite(Number(inp.value))) return;
+                    const [lo, hi, unit] = inp.dataset.sane.split(':');
+                    const v = Number(inp.value), L = Number(lo), H = Number(hi);
+                    if (v < L || v > H) {
+                        const labelEl = (inp.id && active.querySelector(`label[for="${inp.id}"]`)) ||
+                                        (inp.closest('div') && inp.closest('div').querySelector('label'));
+                        const label = labelEl ? labelEl.textContent.trim() : inp.id;
+                        warnings.push(`${label}: ${inp.value}${unit ? ' ' + unit : ''} — ${T.sanityUnusual} (${lo}–${hi}${unit ? ' ' + unit : ''})`);
+                    }
+                });
+                if (!warnings.length) return;
+                const banner = document.createElement('div');
+                banner.className = 'sanity-banner';
+                banner.setAttribute('role', 'status');
+                banner.innerHTML = `<strong>${T.sanityIntro}</strong><ul>${warnings.map(w => `<li>${w}</li>`).join('')}</ul>`;
+                const resultDiv = document.getElementById(`${active.id}-result`);
+                if (resultDiv) resultDiv.parentNode.insertBefore(banner, resultDiv);
+            };
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('[id^="calculate-"], #mobile-calculate')) collectSanity();
+            }, true);
+
+            /* ===== Steel: fill typical values (assumptions only — never your measurements) ===== */
+            const steelPresets = {
+                footing: () => {
+                    const mode = document.querySelector('input[name="footing-mode"][value="spacing"]');
+                    if (mode && !mode.checked) { mode.checked = true; mode.dispatchEvent(new Event('change')); }
+                    setVal('footing-spacing-len', 150); setVal('footing-spacing-wid', 150);
+                    setSel('footing-diameter-len', 12); setSel('footing-diameter-wid', 12);
+                },
+                slab: () => {
+                    const mode = document.querySelector('input[name="slab-mode"][value="spacing"]');
+                    if (mode && !mode.checked) { mode.checked = true; mode.dispatchEvent(new Event('change')); }
+                    setVal('slab-spacing-len', 150); setVal('slab-spacing-wid', 150);
+                    setSel('slab-diameter-len', 10); setSel('slab-diameter-wid', 10);
+                },
+                beam: () => {
+                    setChk('beam-include-stirrups', true);
+                    setVal('beam-stirrup-spacing', 200); setVal('beam-cover', 40); setSel('beam-stirrup-diameter', 8);
+                    if (!getVal('beam-diameter')) setSel('beam-diameter', 16);
+                },
+                column: () => {
+                    setChk('column-include-stirrups', true);
+                    setVal('column-stirrup-spacing', 200); setVal('column-cover', 40); setSel('column-stirrup-diameter', 8);
+                    if (!getVal('column-diameter')) setSel('column-diameter', 16);
+                },
+                one_way: () => { setVal('one-way-spacing', 150); setSel('one-way-diameter', 10); },
+                custom: () => {}
+            };
+            function setVal(id, v) { const el = document.getElementById(id); if (el) el.value = String(v); }
+            function setSel(id, v) { const el = document.getElementById(id); if (el) { el.value = String(v); el.dispatchEvent(new Event('change')); } }
+            function setChk(id, on) { const el = document.getElementById(id); if (el) { el.checked = on; el.dispatchEvent(new Event('change')); } }
+            function getVal(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+            const steelPresetBtn = document.getElementById('steel-preset-btn');
+            if (steelPresetBtn) steelPresetBtn.addEventListener('click', () => {
+                const el = document.getElementById('steel-element-selector')?.value;
+                if (el && steelPresets[el]) steelPresets[el]();
             });
 
             /* ===== REPRODUCIBLE RESULT TRAILS ===== */

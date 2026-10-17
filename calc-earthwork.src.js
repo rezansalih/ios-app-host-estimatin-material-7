@@ -31,7 +31,7 @@ window.__calcHandlers.earthwork = function (ctx) {
                     truckLoads: `${totalLoads} (${truckCapacity} m³, +${swellPct}%)`
                 };
 
-                sessionResults.earthwork.push(lastCalcData.earthwork);
+                if (!window.__langRecalc) sessionResults.earthwork.push(lastCalcData.earthwork);
                 renderSessionTable('earthwork');
 
                 const resultDiv = document.getElementById('earthwork-result');
@@ -86,6 +86,6 @@ window.__calcHandlers.earthwork = function (ctx) {
                 
                 // Smooth scroll to the result
                 setTimeout(() => {
-                    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (!window.__langRecalc) resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 100);
 };

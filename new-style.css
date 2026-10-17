@@ -855,6 +855,59 @@ body.keyboard-open .mobile-actions { display: none !important; }
 .custom-bar-row .custom-remove-btn svg { width: 15px; height: 15px; }
 .custom-bar-row label { color: var(--muted); }
 .custom-bar-row .grid > div { min-width: 0; }
+
+/* Field hints: small ? button that toggles a plain-language note */
+.label-with-hint { display: flex; align-items: center; gap: 6px; }
+.label-with-hint label { margin-bottom: 0; }
+.hint-btn {
+  width: 22px; height: 22px; min-width: 22px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--muted);
+  font-size: .72rem; font-weight: 800; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.hint-btn:hover, .hint-btn:focus-visible { color: var(--accent-ink); border-color: var(--accent); }
+.field-hint {
+  font-size: .78rem; line-height: 1.45; color: var(--muted);
+  background: var(--surface-2); border-inline-start: 3px solid var(--accent);
+  border-radius: 8px; padding: 6px 9px; margin: 4px 0 2px;
+}
+
+/* Sanity warnings: unusual values flagged above the result (never blocking) */
+.sanity-banner {
+  border: 1px solid var(--warn-line, #d97706); background: var(--warn-bg, rgba(217, 119, 6, .12));
+  border-radius: var(--r-lg); padding: 10px 12px; margin: 12px 0 4px;
+  font-size: .82rem; line-height: 1.5;
+}
+.sanity-banner strong { display: block; margin-bottom: 4px; }
+.sanity-banner ul { margin: 0; padding-inline-start: 18px; }
+.sanity-banner li { margin: 2px 0; }
+
+/* First-run guide */
+.intro-overlay {
+  position: fixed; inset: 0; z-index: 90; background: rgba(15, 23, 42, .55);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.intro-card {
+  width: 100%; max-width: 420px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 18px; padding: 22px 20px 18px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, .35); text-align: center;
+}
+.intro-slide { display: none; }
+.intro-slide.is-active { display: block; animation: popIn .28s ease both; }
+.intro-icon {
+  width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 18px;
+  background: var(--surface-2); border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center; color: var(--accent-ink);
+}
+.intro-icon svg { width: 30px; height: 30px; }
+.intro-slide h3 { font-size: 1.15rem; font-weight: 800; margin: 0 0 8px; }
+.intro-slide p { font-size: .92rem; line-height: 1.6; color: var(--muted); margin: 0; }
+.intro-dots { display: flex; gap: 8px; justify-content: center; margin: 16px 0 14px; }
+.intro-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--line); }
+.intro-dot.is-active { background: var(--accent); width: 22px; }
+.intro-actions { display: flex; gap: 10px; }
+.intro-actions .btn { flex: 1; min-height: 48px; }
+@media print { .intro-overlay, .sanity-banner, .hint-btn { display: none !important; } }
 .result-ready .result-hero { animation: popIn .32s ease both; }
 
 /* ------------------------------------------------- edit-inputs bar ----- */

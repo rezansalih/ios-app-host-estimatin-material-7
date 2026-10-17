@@ -131,13 +131,13 @@ window.__calcHandlers.bricks = function (ctx) {
 
                 lastCalcData.bricks = {
                     volume: `${totalWallVolume.toFixed(2)} m³`,
-                    bricks: `${bricksNeeded} pcs`,
-                    cement: includeMortar ? `${cementBags} bags` : 'N/A',
+                    bricks: `${bricksNeeded} ${T.piecesWord}`,
+                    cement: includeMortar ? `${cementBags} ${T.bagsWord}` : 'N/A',
                     sand: includeMortar ? `${sandVolume.toFixed(2)} m³` : 'N/A',
                     cost: materialCostsComplete ? `${currency}${totalCost.toFixed(2)}` : T.costNotEntered
                 };
 
-                sessionResults.bricks.push(lastCalcData.bricks);
+                if (!window.__langRecalc) sessionResults.bricks.push(lastCalcData.bricks);
                 renderSessionTable('bricks');
 
                 const resultDiv = document.getElementById('bricks-result');
@@ -146,7 +146,7 @@ window.__calcHandlers.bricks = function (ctx) {
                 if (includeMortar && mortarVolumeOrder > 1e-6) {
                     mortarResultsHTML = `
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="blending"></i><span><strong class="font-semibold block">${T.mortarVolume}</strong> ${mortarVolumeOrder.toFixed(3)} m³ <span class="text-xs opacity-75">(${mortarVolumeNet.toFixed(3)} ${T.netWord} + ${(mortarVolumeOrder - mortarVolumeNet).toFixed(3)} ${T.wasteWord})</span></span></div>
-                        <div class="result-item flex items-center gap-2" data-kind="order"><i data-lucide="shopping-bag"></i><span><strong class="font-semibold block">${T.cementBags}</strong> ${cementBags} bags</span></div>
+                        <div class="result-item flex items-center gap-2" data-kind="order"><i data-lucide="shopping-bag"></i><span><strong class="font-semibold block">${T.cementBags}</strong> ${cementBags} ${T.bagsWord}</span></div>
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="scale"></i><span><strong class="font-semibold block">${T.cementWeight}</strong> ${cementWeight.toFixed(2)} kg</span></div>
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="droplets"></i><span><strong class="font-semibold block">${T.mixingWaterEstimate}</strong> ${fill(T.trailWaterPerKg, { v: mixingWaterLitres.toFixed(1) })}</span></div>
                         <div class="result-item flex items-center gap-2 col-span-2" data-kind="order"><i data-lucide="waves"></i><span><strong class="font-semibold block">${T.sand}</strong> ${sandVolume.toFixed(3)} m³</span></div>
@@ -211,6 +211,6 @@ window.__calcHandlers.bricks = function (ctx) {
                 
                 // Smooth scroll to the result
                 setTimeout(() => {
-                    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (!window.__langRecalc) resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 100);
 };

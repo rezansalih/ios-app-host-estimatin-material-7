@@ -35,6 +35,7 @@ async function boot(w = 390, h = 844) {
         addEventListener() {}, removeEventListener() {}, dispatchEvent: () => false });
       win.scrollTo = () => {};
       win.Element.prototype.scrollIntoView = () => {};
+      win.localStorage.setItem('introSeen', '1');
       Object.defineProperty(win, 'innerWidth', { value: w, configurable: true });
       Object.defineProperty(win, 'innerHeight', { value: h, configurable: true });
     },
@@ -213,6 +214,15 @@ const vis = (d, sel) => {
     ok('steel: custom bars element exists', /id="steel-custom-inputs"/.test(htmlSrc) && /data-lang="customBars">/.test(htmlSrc));
     ok('steel: diameter lists include 8 and 32', /value="8">8</.test(htmlSrc) && /value="32">32</.test(htmlSrc));
     ok('steel: shop bar length field present', /id="steel-standard-bar-length"/.test(htmlSrc) && /data-lang="standardBarLength">/.test(htmlSrc));
+
+    console.log('\n=== 6d. Anyone-can-use aids are in place ===');
+    ok('field hint buttons on technical labels', (htmlSrc.match(/class="hint-btn"/g) || []).length >= 40,
+       `(${(htmlSrc.match(/class="hint-btn"/g) || []).length})`);
+    ok('plain-language hint texts present', (htmlSrc.match(/class="field-hint hidden"/g) || []).length >= 40);
+    ok('sanity ranges on measured inputs', (htmlSrc.match(/data-sane="/g) || []).length >= 60,
+       `(${(htmlSrc.match(/data-sane="/g) || []).length})`);
+    ok('first-run intro overlay present', /id="intro-overlay"/.test(htmlSrc) && /id="intro-next"/.test(htmlSrc) && /id="intro-start"/.test(htmlSrc));
+    ok('steel "Fill typical values" button present', /id="steel-preset-btn"/.test(htmlSrc));
   }
 
   console.log('\n=== 7. Home screen translates (ar / ku / ks) ===');

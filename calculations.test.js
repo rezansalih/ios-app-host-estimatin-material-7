@@ -14,14 +14,30 @@ const concrete = ({ length, width, thickness, ratio = [1, 2, 4], dryFactor = 1.5
   const cementBags = Math.ceil((dry * ratio[0] / sum * density * (1 + waste / 100)) / bagKg);
   return { wet, dry, cementBags };
 };
-const masonry = ({ wallVolume, wallThickness, unitLength, unitThickness, unitHeight, leaves, mortarCm = 1, waste = 5 }) => {
+const masonry = ({ wallVolume, wallThickness, unitLength, unitThickness, unitHeight, leaves, mortarCm = 1, waste = 5, mortarRatio = [1, 6], density = 1440, bagKg = 50, dryFactor = 1.33 }) => {
   const mortar = mortarCm / 100;
   const impliedThickness = leaves * unitThickness + Math.max(0, leaves - 1) * mortar;
   assert.ok(Math.abs(impliedThickness - wallThickness) <= 0.011, 'wall thickness must match leaves and joints');
   const unitFace = (unitLength + mortar) * (unitHeight + mortar);
   const theoretical = (wallVolume / wallThickness / unitFace) * leaves;
   const mortarVolume = wallVolume - theoretical * (unitLength * unitThickness * unitHeight);
-  return { theoretical, order: ceilWaste(theoretical, waste), mortarVolume };
+  // Cement/sand from dry mortar; wastage applied once to the wet mortar (bricks flow),
+  // which equals the blocks flow (wet mortar -> dry -> parts, wastage on cement/sand).
+  const mortarOrder = mortarVolume * (1 + waste / 100);
+  const dryMortar = mortarOrder * dryFactor;
+  const sum = mortarRatio[0] + mortarRatio[1];
+  const cementWeight = (dryMortar * mortarRatio[0] / sum) * density;
+  const sandVolume = dryMortar * mortarRatio[1] / sum;
+  return {
+    theoretical,
+    order: ceilWaste(theoretical, waste),
+    mortarVolume,
+    mortarOrder,
+    cementWeight,
+    cementBags: Math.ceil(cementWeight / bagKg),
+    sandVolume,
+    mixingWaterLitres: cementWeight * 0.6
+  };
 };
 const steelKg = (diameterMm, lengthM, bars, waste = 5) => (diameterMm ** 2 / 162) * lengthM * bars * (1 + waste / 100);
 const earthwork = ({ length, width, height, sections, swell, truckCapacity }) => {
@@ -77,6 +93,52 @@ assert.ok(Math.abs(1.1 * 1.33 - 1.463) < 1e-12, 'mortar dry factor must be expli
 const brick = masonry({ wallVolume: 3.45, wallThickness: .115, unitLength: .24, unitThickness: .115, unitHeight: .075, leaves: 1 });
 assert.equal(brick.order, 1483);
 assert.ok(brick.mortarVolume > 0);
+
+// --- Hand-verified masonry material vectors (wall 10 x 3 x 0.2, solid 40x20x20 block,
+// 1 cm joints, 1:6 mortar, density 1440, 50 kg bags, 5% waste) ---
+const blockMat = masonry({ wallVolume: 6, wallThickness: .2, unitLength: .4, unitThickness: .2, unitHeight: .2, leaves: 1 });
+assert.equal(blockMat.order, 366);                                    // ceil(348.432 x 1.05)
+assert.ok(Math.abs(blockMat.mortarVolume - 0.425081) < 0.001, String(blockMat.mortarVolume));   // 6 - 348.432x0.016
+assert.equal(blockMat.cementBags, 3);                                  // 116.31 kg x 1.05 / 50 -> 2.44 -> 3 bags
+assert.ok(Math.abs(blockMat.sandVolume - 0.508845) < 0.001, String(blockMat.sandVolume));
+// Brick 10 x 3 x 0.115 wall (3.45 m3): mortar = 15.3% joint fraction -> 0.5276 m3;
+// water = 0.6 L per kg cement
+assert.ok(Math.abs(brick.mortarVolume - 0.527647) < 0.001, String(brick.mortarVolume));
+assert.ok(brick.mixingWaterLitres > 0 && Math.abs(brick.mixingWaterLitres - brick.cementWeight * 0.6) < 1e-9);
+
+// --- Hand-verified steel formula vectors (mirror of calc-steel.src.js) ---
+// Lap splices: stock bars needed per run = ceil((L - O) / (S - O)); order length = L + splices x O.
+const lap = (L, bars, diaMm, S = 12, lapFactor = 50) => {
+  const O = lapFactor * (diaMm / 1000);
+  const splicesPerBar = L <= S ? 0 : Math.max(0, Math.ceil((L - O) / (S - O)) - 1);
+  return { splices: splicesPerBar * bars, totalLength: L * bars + splicesPerBar * bars * O };
+};
+const lapVec = lap(20, 2, 12);                                          // 20 m run, 2x Ø12, 12 m stock, 50d
+assert.equal(lapVec.splices, 2);                                        // 1 splice per bar
+assert.ok(Math.abs(lapVec.totalLength - 41.2) < 1e-9, String(lapVec.totalLength));
+assert.ok(Math.abs(lapVec.totalLength * (144 / 162) * 1.05 - 38.45) < 0.02);
+assert.equal(lap(3, 4, 16).splices, 0);                                 // fits in one stock bar
+assert.equal(lap(24, 1, 12).splices, 2);                                // ceil(23.4/11.4)-1 = 2
+// Stirrups: cutting length = 2(w-2c) + 2(d-2c) + 2x10d hooks; count = ceil(L/s) + 1
+const stirrup = (wMm, dMm, coverMm, diaMm, lengthM, spacingMm) => {
+  const single = (2 * (wMm - 2 * coverMm) + 2 * (dMm - 2 * coverMm) + 2 * (10 * diaMm)) / 1000;
+  const count = Math.ceil((lengthM * 1000) / spacingMm) + 1;
+  return { single, count, totalLength: single * count };
+};
+const st = stirrup(300, 500, 40, 8, 3, 200);                            // 30x50 beam, cover 40, Ø8 @200
+assert.ok(Math.abs(st.single - 1.44) < 1e-9, String(st.single));
+assert.equal(st.count, 16);
+assert.ok(Math.abs(st.totalLength * (64 / 162) * 1.05 - 9.56) < 0.02);
+// Beam 4Ø16 x 3 m + stirrups above = 19.91 + 9.56 = 29.47 kg
+assert.ok(Math.abs(12 * (256 / 162) * 1.05 + st.totalLength * (64 / 162) * 1.05 - 29.47) < 0.02);
+// One-way strip: bars = ceil(dist/spacing) + 1, each barLength long
+const oneWayBars = Math.ceil((6 * 1000) / 200) + 1;                     // 6 m run @200 -> 31
+assert.equal(oneWayBars, 31);
+assert.ok(Math.abs(31 * 5 * (100 / 162) * 1.05 - 100.46) < 0.02);
+// Footing mesh (D2 cross-check): counts from spacing equal explicit number mode
+assert.equal(Math.ceil((2 * 1000) / 150) + 1, 15);                      // lengthwise bars across 2 m
+assert.equal(Math.ceil((3 * 1000) / 150) + 1, 21);                      // widthwise bars across 3 m
+assert.ok(Math.abs((15 * 3 * (144 / 162) + 21 * 2 * (100 / 162)) * 1.05 - 69.22) < 0.02);
 const brickFaceRate = 1 / ((.24 + .01) * (.075 + .01));
 assert.ok(Math.abs(brickFaceRate - 47.06) < .02, 'brick face-rate sanity check');
 assert.ok(Math.abs(steelKg(12, 10, 4) - 37.33) < .02);
@@ -165,6 +227,18 @@ for (const m of html.matchAll(/data-(width|length|height)="([^"]+)"[^>]*data-lan
   assert.ok(Number(m[2]) >= 1, `brick preset ${m[3]} ${m[1]} looks like metres, not mm: ${m[2]}`);
 }
 assert.match(html, /T\.bricksPerM2/);
+// Formula-audit guards: result HTML must not hardcode the English word "bags",
+// and block preset data-width is METRES while bricks are MILLIMETRES (handler conventions).
+for (const f of ['calc-blocks.src.js', 'calc-bricks.src.js', 'calc-concrete.src.js']) {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'src', f), 'utf8');
+  assert.equal(/\$\{cementBags\} bags/.test(src), false, `${f} hardcodes "bags" in output`);
+}
+{
+  const blockOpts = [...html.matchAll(/<option[^>]*data-width="([^"]+)"[^>]*data-lang="(?:solidBlock20|solidBlock15|hollowBlock|lightweightBlock)"/g)].map(m => Number(m[1]));
+  assert.ok(blockOpts.length >= 4 && blockOpts.every(v => v < 1), `block preset widths must be metres (handler does not divide): ${blockOpts}`);
+  const brickOpts = [...html.matchAll(/<option[^>]*data-width="([^"]+)"[^>]*data-lang="(?:localBrick|standardBrick|engineeringBrick|romanBrick|hollowBrick)"/g)].map(m => Number(m[1]));
+  assert.ok(brickOpts.length >= 3 && brickOpts.every(v => v >= 1), `brick preset widths must be millimetres: ${brickOpts}`);
+}
 assert.match(html, /T\.mixingWaterEstimate/);
 assert.match(html, /const mixingWaterLitres = cementWeight \* MORTAR_WATER_PER_KG_CEMENT/);
 const brickHandler = html.slice(html.indexOf("__calcHandlers.bricks"), html.indexOf("__calcHandlers.steel"));

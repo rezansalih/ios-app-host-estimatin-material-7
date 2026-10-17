@@ -877,6 +877,59 @@ body.keyboard-open .mobile-actions { display: none !important; }
 .custom-bar-row .custom-remove-btn svg { width: 15px; height: 15px; }
 .custom-bar-row label { color: var(--muted); }
 .custom-bar-row .grid > div { min-width: 0; }
+
+/* Field hints: small ? button that toggles a plain-language note */
+.label-with-hint { display: flex; align-items: center; gap: 6px; }
+.label-with-hint label { margin-bottom: 0; }
+.hint-btn {
+  width: 22px; height: 22px; min-width: 22px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--muted);
+  font-size: .72rem; font-weight: 800; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.hint-btn:hover, .hint-btn:focus-visible { color: var(--accent-ink); border-color: var(--accent); }
+.field-hint {
+  font-size: .78rem; line-height: 1.45; color: var(--muted);
+  background: var(--surface-2); border-inline-start: 3px solid var(--accent);
+  border-radius: 8px; padding: 6px 9px; margin: 4px 0 2px;
+}
+
+/* Sanity warnings: unusual values flagged above the result (never blocking) */
+.sanity-banner {
+  border: 1px solid var(--warn-line, #d97706); background: var(--warn-bg, rgba(217, 119, 6, .12));
+  border-radius: var(--r-lg); padding: 10px 12px; margin: 12px 0 4px;
+  font-size: .82rem; line-height: 1.5;
+}
+.sanity-banner strong { display: block; margin-bottom: 4px; }
+.sanity-banner ul { margin: 0; padding-inline-start: 18px; }
+.sanity-banner li { margin: 2px 0; }
+
+/* First-run guide */
+.intro-overlay {
+  position: fixed; inset: 0; z-index: 90; background: rgba(15, 23, 42, .55);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.intro-card {
+  width: 100%; max-width: 420px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 18px; padding: 22px 20px 18px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, .35); text-align: center;
+}
+.intro-slide { display: none; }
+.intro-slide.is-active { display: block; animation: popIn .28s ease both; }
+.intro-icon {
+  width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 18px;
+  background: var(--surface-2); border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center; color: var(--accent-ink);
+}
+.intro-icon svg { width: 30px; height: 30px; }
+.intro-slide h3 { font-size: 1.15rem; font-weight: 800; margin: 0 0 8px; }
+.intro-slide p { font-size: .92rem; line-height: 1.6; color: var(--muted); margin: 0; }
+.intro-dots { display: flex; gap: 8px; justify-content: center; margin: 16px 0 14px; }
+.intro-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--line); }
+.intro-dot.is-active { background: var(--accent); width: 22px; }
+.intro-actions { display: flex; gap: 10px; }
+.intro-actions .btn { flex: 1; min-height: 48px; }
+@media print { .intro-overlay, .sanity-banner, .hint-btn { display: none !important; } }
 .result-ready .result-hero { animation: popIn .32s ease both; }
 
 /* ------------------------------------------------- edit-inputs bar ----- */
@@ -1133,7 +1186,7 @@ body.keyboard-open .mobile-actions { display: none !important; }
                     <h2 class="text-xl font-semibold header-title" data-lang="concreteTitle">Concrete Calculator</h2>
 
                     <div class="mb-2 ps-1 text-start">
-                        <label id="calcmode-lbl-1" class="block text-sm font-medium mb-1" data-lang="calcMode">Calculate By</label>
+                        <span class="label-with-hint"><label id="calcmode-lbl-1" class="block text-sm font-medium mb-1" data-lang="calcMode">Calculate By</label><button type="button" class="hint-btn" data-hint="hintCalcMode" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCalcMode">Spacing finds the number of bars from the distance between them. Number of Bars uses the count you type.</p>
                         <div role="radiogroup" aria-labelledby="calcmode-lbl-1" class="flex flex-wrap gap-x-4 gap-y-2">
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="concrete-mode" value="dims" class="h-4 w-4" checked>
@@ -1164,28 +1217,28 @@ body.keyboard-open .mobile-actions { display: none !important; }
                             </div>
                             <div id="concrete-quantity-wrapper" class="hidden">
                                 <label for="concrete-quantity" class="block text-sm font-medium" data-lang="numberOfElements">Number of elements</label>
-                                <input type="number" inputmode="decimal" id="concrete-quantity" value="1" min="1" class="pro-input">
+                                <input type="number" inputmode="decimal" id="concrete-quantity" value="1" min="1" class="pro-input" data-sane="1:200:">
                             </div>
                         </div>
 
                         <div id="concrete-dims-inputs" class="grid grid-cols-3 gap-2">
                             <div>
                                 <label id="concrete-length-label" for="concrete-length" class="block text-xs sm:text-sm font-medium" data-lang="length">Length (m)</label>
-                                <input type="number" inputmode="decimal" id="concrete-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L">
+                                <input type="number" inputmode="decimal" id="concrete-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L" data-sane="0.3:200:m">
                             </div>
                             <div>
                                 <label id="concrete-width-label" for="concrete-width" class="block text-xs sm:text-sm font-medium" data-lang="width">Width (m)</label>
-                                <input type="number" inputmode="decimal" id="concrete-width" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W">
+                                <input type="number" inputmode="decimal" id="concrete-width" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W" data-sane="0.3:200:m">
                             </div>
                             <div>
                                 <label id="concrete-thickness-label" for="concrete-thickness" class="block text-xs sm:text-sm font-medium" data-lang="thickness">Thickness (m)</label>
-                                <input type="number" inputmode="decimal" id="concrete-thickness" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="T/D">
+                                <input type="number" inputmode="decimal" id="concrete-thickness" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="T/D" data-sane="0.05:2:m">
                             </div>
                         </div>
 
                         <div id="concrete-volume-input" class="hidden">
                             <label class="block text-sm font-medium" data-lang="totalVolumeInput">Total Concrete Volume (m³)</label>
-                            <input type="number" inputmode="decimal" id="concrete-total-volume" min="0" step="0.01" class="pro-input">
+                            <input type="number" inputmode="decimal" id="concrete-total-volume" min="0" step="0.01" class="pro-input" data-sane="0.1:5000:m3">
                         </div>
                     </div>
 
@@ -1219,11 +1272,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                             </div>
                             <div id="concrete-dry-factor-wrap">
                                 <label for="concrete-dry-factor" class="block text-sm font-medium" data-lang="dryVolumeFactor">Dry-volume factor (estimate)</label>
-                                <input type="number" inputmode="decimal" id="concrete-dry-factor" value="1.54" min="1" step="0.01" class="pro-input"><p class="text-xs opacity-70 mt-1" data-lang="dryVolumeFactorNote">Estimate only; actual yield varies by materials and batching.</p>
+                                <input type="number" inputmode="decimal" id="concrete-dry-factor" value="1.54" min="1" step="0.01" class="pro-input" data-sane="0.5:2.5:"><p class="text-xs opacity-70 mt-1" data-lang="dryVolumeFactorNote">Estimate only; actual yield varies by materials and batching.</p>
                             </div>
                             <div id="concrete-cement-density-wrap">
-                                <label for="concrete-cement-density" class="block text-sm font-medium" data-lang="cementDensity">Loose cement bulk density (kg/m³)</label>
-                                <input type="number" inputmode="decimal" id="concrete-cement-density" value="1440" min="1" class="pro-input">
+                                <span class="label-with-hint"><label for="concrete-cement-density" class="block text-sm font-medium" data-lang="cementDensity">Loose cement bulk density (kg/m³)</label><button type="button" class="hint-btn" data-hint="hintCementDensity" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCementDensity">Weight of one cubic meter of loose cement. 1440 kg/m³ is common.</p>
+                                <input type="number" inputmode="decimal" id="concrete-cement-density" value="1440" min="1" class="pro-input" data-sane="800:1600:">
                             </div>
                         </div>
                     </div>
@@ -1316,7 +1369,7 @@ body.keyboard-open .mobile-actions { display: none !important; }
                     <h2 class="text-xl font-semibold header-title" data-lang="blocksTitle">Cement Block Calculator</h2>
                     
                     <div class="mb-2 ps-1 text-start">
-                       <label id="calcmode-lbl-2" class="block text-sm font-medium mb-1" data-lang="calcMode">Calculate By</label>
+                       <span class="label-with-hint"><label id="calcmode-lbl-2" class="block text-sm font-medium mb-1" data-lang="calcMode">Calculate By</label><button type="button" class="hint-btn" data-hint="hintCalcMode" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCalcMode">Spacing finds the number of bars from the distance between them. Number of Bars uses the count you type.</p>
                         <div role="radiogroup" aria-labelledby="calcmode-lbl-2" class="flex flex-wrap gap-x-4 gap-y-2">
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="block-mode" value="dims" class="h-4 w-4" checked> 
@@ -1335,17 +1388,17 @@ body.keyboard-open .mobile-actions { display: none !important; }
                             <div class="grid grid-cols-3 gap-2">
                                 <div>
                                     <label class="block text-xs sm:text-sm font-medium" data-lang="wallLength">Length (m)</label>
-                                    <input type="number" inputmode="decimal" id="block-wall-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L">
+                                    <input type="number" inputmode="decimal" id="block-wall-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L" data-sane="0.5:300:m">
                                 </div>
                                 <div>
                                     <label class="block text-xs sm:text-sm font-medium" data-lang="wallHeight">Height (m)</label>
-                                    <input type="number" inputmode="decimal" id="block-wall-height" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="H">
+                                    <input type="number" inputmode="decimal" id="block-wall-height" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="H" data-sane="1:20:m">
                                 </div>
                                 <div>
                                     <label class="block text-xs sm:text-sm font-medium" data-lang="wallWidth">Width (m)</label>
-                                    <input type="number" inputmode="decimal" id="block-wall-width-input" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W">
+                                    <input type="number" inputmode="decimal" id="block-wall-width-input" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W" data-sane="0.05:1.5:m">
                                 </div>
-                                <div><label class="block text-xs sm:text-sm font-medium" data-upgrade-label="wallLeaves">Wall leaves</label><input type="number" inputmode="numeric" id="block-leaves" min="1" step="1" value="1" class="pro-input text-sm !p-2"></div>
+                                <div><label class="block text-xs sm:text-sm font-medium" data-upgrade-label="wallLeaves">Wall leaves</label><input type="number" inputmode="numeric" id="block-leaves" min="1" step="1" value="1" class="pro-input text-sm !p-2" data-sane="1:3:"></div>
                             </div>
                             <div class="pt-2 border-t border-gray-600" id="block-openings-section">
                                 <div class="openings-toggle flex items-center gap-2 mb-2" id="block-openings-toggle">
@@ -1356,16 +1409,16 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
                                         <div>
                                             <label class="block text-sm font-medium" data-lang="numWindows">Number of Windows</label>
-                                            <input type="number" inputmode="numeric" id="block-num-windows" min="0" step="1" class="pro-input" value="0">
+                                            <input type="number" inputmode="numeric" id="block-num-windows" min="0" step="1" class="pro-input" value="0" data-sane="0:200:">
                                         </div>
-                                        <div><label class="block text-sm font-medium" data-lang="openingWidth">Window width (m)</label><input type="number" inputmode="decimal" id="block-window-width" min="0" step="0.01" class="pro-input" value="0"></div>
-                                        <div><label class="block text-sm font-medium" data-lang="openingHeight">Window height (m)</label><input type="number" inputmode="decimal" id="block-window-height" min="0" step="0.01" class="pro-input" value="0"></div>
+                                        <div><label class="block text-sm font-medium" data-lang="openingWidth">Window width (m)</label><input type="number" inputmode="decimal" id="block-window-width" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
+                                        <div><label class="block text-sm font-medium" data-lang="openingHeight">Window height (m)</label><input type="number" inputmode="decimal" id="block-window-height" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
                                         <div>
                                             <label class="block text-sm font-medium" data-lang="numDoors">Number of Doors</label>
-                                            <input type="number" inputmode="numeric" id="block-num-doors" min="0" step="1" class="pro-input" value="0">
+                                            <input type="number" inputmode="numeric" id="block-num-doors" min="0" step="1" class="pro-input" value="0" data-sane="0:200:">
                                         </div>
-                                        <div><label class="block text-sm font-medium" data-lang="openingWidth">Door width (m)</label><input type="number" inputmode="decimal" id="block-door-width" min="0" step="0.01" class="pro-input" value="0"></div>
-                                        <div><label class="block text-sm font-medium" data-lang="openingHeight">Door height (m)</label><input type="number" inputmode="decimal" id="block-door-height" min="0" step="0.01" class="pro-input" value="0"></div>
+                                        <div><label class="block text-sm font-medium" data-lang="openingWidth">Door width (m)</label><input type="number" inputmode="decimal" id="block-door-width" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
+                                        <div><label class="block text-sm font-medium" data-lang="openingHeight">Door height (m)</label><input type="number" inputmode="decimal" id="block-door-height" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
                                     </div>
                                     <div id="block-openings-summary" class="text-sm text-gray-400 mb-2"></div>
                                 </div>
@@ -1375,7 +1428,7 @@ body.keyboard-open .mobile-actions { display: none !important; }
                         <div id="block-volume-input" class="hidden card p-3 rounded-lg space-y-2 text-start">
                             <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1Dimensions">1. Wall Volume</h3>
                             <label class="block text-sm font-medium" data-lang="totalWallVolumeInput">Total Wall Volume (m³)</label>
-                           <input type="number" inputmode="decimal" id="block-wall-volume" min="0" step="0.01" class="pro-input">
+                           <input type="number" inputmode="decimal" id="block-wall-volume" min="0" step="0.01" class="pro-input" data-sane="0.1:5000:m3">
                         </div>
                         
                         <div class="card p-3 rounded-lg space-y-2 text-start">
@@ -1400,11 +1453,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                            </div>
                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                                <div>
-                                   <label class="block text-sm font-medium" data-lang="mortarThickness">Mortar Thickness (cm)</label>
-                                   <input type="number" inputmode="decimal" id="block-mortar-thickness" value="1.0" min="0" step="0.1" class="pro-input">
+                                   <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="mortarThickness">Mortar Thickness (cm)</label><button type="button" class="hint-btn" data-hint="hintMortar" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintMortar">How thick the mortar joint is between blocks or bricks.</p>
+                                   <input type="number" inputmode="decimal" id="block-mortar-thickness" value="1.0" min="0" step="0.1" class="pro-input" data-sane="0.2:5:">
                                </div>
                                <div>
-                                   <label for="block-mortar-ratio" class="block text-sm font-medium" data-lang="mortarMixRatio">Mortar Mix Ratio (Cement:Sand)</label>
+                                   <span class="label-with-hint"><label for="block-mortar-ratio" class="block text-sm font-medium" data-lang="mortarMixRatio">Mortar Mix Ratio (Cement:Sand)</label><button type="button" class="hint-btn" data-hint="hintMixRatio" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintMixRatio">How much sand and gravel go with one bag of cement. 1:6 is common for mortar.</p>
                                    <select id="block-mortar-ratio" class="pro-input w-full">
                                        <option value="1:3" selected>1:3</option>
                                        <option value="1:4">1:4</option>
@@ -1413,10 +1466,10 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                    </select>
                                 </div>
                                <div class="sm:col-span-2">
-                                    <label for="block-cement-density" class="block text-sm font-medium" data-lang="cementDensity">Cement Density (kg/m³)</label>
-                                    <input type="number" inputmode="decimal" id="block-cement-density" value="1440" min="1" class="pro-input">
+                                    <span class="label-with-hint"><label for="block-cement-density" class="block text-sm font-medium" data-lang="cementDensity">Cement Density (kg/m³)</label><button type="button" class="hint-btn" data-hint="hintCementDensity" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCementDensity">Weight of one cubic meter of loose cement. 1440 kg/m³ is common.</p>
+                                    <input type="number" inputmode="decimal" id="block-cement-density" value="1440" min="1" class="pro-input" data-sane="800:1600:">
                                 </div>
-                                <div class="sm:col-span-2"><label for="block-mortar-dry-factor" class="block text-sm font-medium" data-lang="mortarDryFactor">Mortar dry-volume factor (estimate)</label><input type="number" inputmode="decimal" id="block-mortar-dry-factor" value="1.33" min="1" step="0.01" class="pro-input"><p class="text-xs opacity-70 mt-1" data-lang="mortarDryFactorNote">Estimate only; actual mortar yield varies by materials and batching.</p></div>
+                                <div class="sm:col-span-2"><span class="label-with-hint"><label for="block-mortar-dry-factor" class="block text-sm font-medium" data-lang="mortarDryFactor">Mortar dry-volume factor (estimate)</label><button type="button" class="hint-btn" data-hint="hintDryFactor" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDryFactor">Dry mortar shrinks when water is added. 1.33 is the common factor.</p><input type="number" inputmode="decimal" id="block-mortar-dry-factor" value="1.33" min="1" step="0.01" class="pro-input" data-sane="0.5:2.5:"><p class="text-xs opacity-70 mt-1" data-lang="mortarDryFactorNote">Estimate only; actual mortar yield varies by materials and batching.</p></div>
                            </div>
                         </div>
 
@@ -1501,7 +1554,7 @@ body.keyboard-open .mobile-actions { display: none !important; }
                     <h2 class="text-xl font-semibold header-title" data-lang="bricksTitle">Brick Calculator</h2>
 
                     <div class="mb-2 ps-1 text-start">
-                        <label id="calcmode-lbl-3" class="block text-sm font-medium mb-1" data-lang="calcMode">Calculate By</label>
+                        <span class="label-with-hint"><label id="calcmode-lbl-3" class="block text-sm font-medium mb-1" data-lang="calcMode">Calculate By</label><button type="button" class="hint-btn" data-hint="hintCalcMode" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCalcMode">Spacing finds the number of bars from the distance between them. Number of Bars uses the count you type.</p>
                         <div role="radiogroup" aria-labelledby="calcmode-lbl-3" class="flex flex-wrap gap-x-4 gap-y-2">
                            <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="brick-mode" value="dims" class="h-4 w-4" checked> 
@@ -1520,17 +1573,17 @@ body.keyboard-open .mobile-actions { display: none !important; }
                             <div class="grid grid-cols-3 gap-2">
                                 <div>
                                     <label class="block text-xs sm:text-sm font-medium" data-lang="wallLength">Length (m)</label>
-                                    <input type="number" inputmode="decimal" id="brick-wall-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L">
+                                    <input type="number" inputmode="decimal" id="brick-wall-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L" data-sane="0.5:300:m">
                                 </div>
                                 <div>
                                     <label class="block text-xs sm:text-sm font-medium" data-lang="wallHeight">Height (m)</label>
-                                    <input type="number" inputmode="decimal" id="brick-wall-height" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="H">
+                                    <input type="number" inputmode="decimal" id="brick-wall-height" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="H" data-sane="1:20:m">
                                 </div>
                                 <div>
                                     <label class="block text-xs sm:text-sm font-medium" data-lang="wallWidth">Width (m)</label>
-                                    <input type="number" inputmode="decimal" id="brick-wall-width-input" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W">
+                                    <input type="number" inputmode="decimal" id="brick-wall-width-input" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W" data-sane="0.05:1.5:m">
                                 </div>
-                                <div><label class="block text-xs sm:text-sm font-medium" data-upgrade-label="wallLeaves">Wall leaves</label><input type="number" inputmode="numeric" id="brick-leaves" min="1" step="1" value="1" class="pro-input text-sm !p-2"></div>
+                                <div><label class="block text-xs sm:text-sm font-medium" data-upgrade-label="wallLeaves">Wall leaves</label><input type="number" inputmode="numeric" id="brick-leaves" min="1" step="1" value="1" class="pro-input text-sm !p-2" data-sane="1:3:"></div>
                             </div>
                             <div class="pt-2 border-t border-gray-600" id="brick-openings-section">
                                 <div class="openings-toggle flex items-center gap-2 mb-2" id="brick-openings-toggle">
@@ -1541,16 +1594,16 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
                                         <div>
                                             <label class="block text-sm font-medium" data-lang="numWindows">Number of Windows</label>
-                                            <input type="number" inputmode="numeric" id="brick-num-windows" min="0" step="1" class="pro-input" value="0">
+                                            <input type="number" inputmode="numeric" id="brick-num-windows" min="0" step="1" class="pro-input" value="0" data-sane="0:200:">
                                         </div>
-                                        <div><label class="block text-sm font-medium" data-lang="openingWidth">Window width (m)</label><input type="number" inputmode="decimal" id="brick-window-width" min="0" step="0.01" class="pro-input" value="0"></div>
-                                        <div><label class="block text-sm font-medium" data-lang="openingHeight">Window height (m)</label><input type="number" inputmode="decimal" id="brick-window-height" min="0" step="0.01" class="pro-input" value="0"></div>
+                                        <div><label class="block text-sm font-medium" data-lang="openingWidth">Window width (m)</label><input type="number" inputmode="decimal" id="brick-window-width" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
+                                        <div><label class="block text-sm font-medium" data-lang="openingHeight">Window height (m)</label><input type="number" inputmode="decimal" id="brick-window-height" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
                                         <div>
                                             <label class="block text-sm font-medium" data-lang="numDoors">Number of Doors</label>
-                                            <input type="number" inputmode="numeric" id="brick-num-doors" min="0" step="1" class="pro-input" value="0">
+                                            <input type="number" inputmode="numeric" id="brick-num-doors" min="0" step="1" class="pro-input" value="0" data-sane="0:200:">
                                         </div>
-                                        <div><label class="block text-sm font-medium" data-lang="openingWidth">Door width (m)</label><input type="number" inputmode="decimal" id="brick-door-width" min="0" step="0.01" class="pro-input" value="0"></div>
-                                        <div><label class="block text-sm font-medium" data-lang="openingHeight">Door height (m)</label><input type="number" inputmode="decimal" id="brick-door-height" min="0" step="0.01" class="pro-input" value="0"></div>
+                                        <div><label class="block text-sm font-medium" data-lang="openingWidth">Door width (m)</label><input type="number" inputmode="decimal" id="brick-door-width" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
+                                        <div><label class="block text-sm font-medium" data-lang="openingHeight">Door height (m)</label><input type="number" inputmode="decimal" id="brick-door-height" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
                                     </div>
                                     <div id="brick-openings-summary" class="text-sm text-gray-400 mb-2"></div>
                                 </div>
@@ -1560,7 +1613,7 @@ body.keyboard-open .mobile-actions { display: none !important; }
                         <div id="brick-volume-input" class="hidden card p-3 rounded-lg space-y-2 text-start">
                             <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1Dimensions">1. Wall Volume</h3>
                             <label class="block text-sm font-medium" data-lang="totalWallVolumeInput">Total Wall Volume (m³)</label>
-                            <input type="number" inputmode="decimal" id="brick-wall-volume" min="0" step="0.01" class="pro-input">
+                            <input type="number" inputmode="decimal" id="brick-wall-volume" min="0" step="0.01" class="pro-input" data-sane="0.1:5000:m3">
                         </div>
 
                         <div class="card p-3 rounded-lg space-y-2 text-start">
@@ -1586,11 +1639,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                                 <div>
-                                    <label class="block text-sm font-medium" data-lang="mortarThickness">Mortar Thickness (cm)</label>
-                                    <input type="number" inputmode="decimal" id="brick-mortar-thickness" value="1.0" min="0" step="0.1" class="pro-input">
+                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="mortarThickness">Mortar Thickness (cm)</label><button type="button" class="hint-btn" data-hint="hintMortar" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintMortar">How thick the mortar joint is between blocks or bricks.</p>
+                                    <input type="number" inputmode="decimal" id="brick-mortar-thickness" value="1.0" min="0" step="0.1" class="pro-input" data-sane="0.2:5:">
                                 </div>
                                 <div>
-                                    <label for="brick-mortar-ratio" class="block text-sm font-medium" data-lang="mortarMixRatio">Mortar Mix Ratio (Cement:Sand)</label>
+                                    <span class="label-with-hint"><label for="brick-mortar-ratio" class="block text-sm font-medium" data-lang="mortarMixRatio">Mortar Mix Ratio (Cement:Sand)</label><button type="button" class="hint-btn" data-hint="hintMixRatio" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintMixRatio">How much sand and gravel go with one bag of cement. 1:6 is common for mortar.</p>
                                     <select id="brick-mortar-ratio" class="pro-input w-full">
                                         <option value="1:3" selected>1:3</option>
                                         <option value="1:4">1:4</option>
@@ -1599,10 +1652,10 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                     </select>
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label for="brick-cement-density" class="block text-sm font-medium" data-lang="cementDensity">Cement Density (kg/m³)</label>
-                                    <input type="number" inputmode="decimal" id="brick-cement-density" value="1440" min="1" class="pro-input">
+                                    <span class="label-with-hint"><label for="brick-cement-density" class="block text-sm font-medium" data-lang="cementDensity">Cement Density (kg/m³)</label><button type="button" class="hint-btn" data-hint="hintCementDensity" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCementDensity">Weight of one cubic meter of loose cement. 1440 kg/m³ is common.</p>
+                                    <input type="number" inputmode="decimal" id="brick-cement-density" value="1440" min="1" class="pro-input" data-sane="800:1600:">
                                 </div>
-                                <div class="sm:col-span-2"><label for="brick-mortar-dry-factor" class="block text-sm font-medium" data-lang="mortarDryFactor">Mortar dry-volume factor (estimate)</label><input type="number" inputmode="decimal" id="brick-mortar-dry-factor" value="1.33" min="1" step="0.01" class="pro-input"><p class="text-xs opacity-70 mt-1" data-lang="mortarDryFactorNote">Estimate only; actual mortar yield varies by materials and batching.</p></div>
+                                <div class="sm:col-span-2"><span class="label-with-hint"><label for="brick-mortar-dry-factor" class="block text-sm font-medium" data-lang="mortarDryFactor">Mortar dry-volume factor (estimate)</label><button type="button" class="hint-btn" data-hint="hintDryFactor" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDryFactor">Dry mortar shrinks when water is added. 1.33 is the common factor.</p><input type="number" inputmode="decimal" id="brick-mortar-dry-factor" value="1.33" min="1" step="0.01" class="pro-input" data-sane="0.5:2.5:"><p class="text-xs opacity-70 mt-1" data-lang="mortarDryFactorNote">Estimate only; actual mortar yield varies by materials and batching.</p></div>
                             </div>
                         </div>
                         
@@ -1702,12 +1755,12 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                 <option value="custom" data-lang="customBars">Custom bars</option>
                             </select>
                             <div id="steel-member-qty-row">
-                                <label for="steel-member-quantity" class="block text-sm font-medium mt-2" data-lang="memberQuantity">Number of members (same size)</label>
-                                <input type="number" id="steel-member-quantity" min="1" step="1" value="1" class="pro-input w-full">
+                                <span class="label-with-hint"><label for="steel-member-quantity" class="block text-sm font-medium mt-2" data-lang="memberQuantity">Number of members (same size)</label><button type="button" class="hint-btn" data-hint="hintMemberQty" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintMemberQty">How many identical pieces you will pour — like 5 identical footings.</p>
+                                <input type="number" id="steel-member-quantity" min="1" step="1" value="1" class="pro-input w-full" data-sane="1:200:">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium mt-2" data-lang="standardBarLength">Bar length in shops (m)</label>
-                                <input type="number" inputmode="decimal" id="steel-standard-bar-length" class="pro-input w-full" value="12">
+                                <span class="label-with-hint"><label class="block text-sm font-medium mt-2" data-lang="standardBarLength">Bar length in shops (m)</label><button type="button" class="hint-btn" data-hint="hintBarLength" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintBarLength">Length of one bar from the steel shop — usually 12 m. Used to count the bars to buy.</p>
+                                <input type="number" inputmode="decimal" id="steel-standard-bar-length" class="pro-input w-full" value="12" data-sane="2:24:m">
                             </div>
                         </div>
                     </div>
@@ -1715,10 +1768,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                     <!-- Step 2: Dynamic Inputs -->
                     <div id="steel-step-2-card" class="card p-3 rounded-lg space-y-3 hidden text-start">
                         <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step2Details">2. Element Details</h3>
+                        <button type="button" id="steel-preset-btn" class="btn btn-secondary w-full" data-lang="presetBtn">Fill typical values</button>
                         
                         <div id="steel-footing-inputs" class="hidden mt-2 space-y-3">
                             <div class="flex flex-wrap items-center gap-4">
-                                 <label class="block text-sm font-medium" data-lang="calcMode">Calculate By</label>
+                                 <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="calcMode">Calculate By</label><button type="button" class="hint-btn" data-hint="hintCalcMode" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCalcMode">Spacing finds the number of bars from the distance between them. Number of Bars uses the count you type.</p>
                                 <label class="flex items-center cursor-pointer">
                                     <input type="radio" name="footing-mode" value="spacing" class="h-4 w-4" checked> 
                                     <span class="ms-2" data-lang="bySpacing">Spacing</span>
@@ -1732,11 +1786,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-sm font-medium" data-lang="footingLength">Footing Length (m)</label>
-                                    <input type="number" inputmode="decimal" id="footing-length" class="pro-input w-full">
+                                    <input type="number" inputmode="decimal" id="footing-length" class="pro-input w-full" data-sane="0.3:100:m">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium" data-lang="footingWidth">Footing Width (m)</label>
-                                    <input type="number" inputmode="decimal" id="footing-width" class="pro-input w-full">
+                                    <input type="number" inputmode="decimal" id="footing-width" class="pro-input w-full" data-sane="0.3:100:m">
                                 </div>
                              </div>
                             
@@ -1745,11 +1799,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                     <p class="text-sm font-medium mb-1" data-lang="lengthwiseBars">Bars parallel to Length</p>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                                         <div>
-                                            <label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label>
-                                            <input type="number" inputmode="decimal" id="footing-spacing-len" class="pro-input w-full">
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSpacing">Distance between two bars, measured center to center.</p>
+                                            <input type="number" inputmode="decimal" id="footing-spacing-len" class="pro-input w-full" data-sane="40:300:mm">
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                             <select id="footing-diameter-len" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                                 <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -1762,11 +1816,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                      <p class="text-sm font-medium mb-1" data-lang="widthwiseBars">Bars parallel to Width</p>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                                         <div>
-                                            <label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label>
-                                            <input type="number" inputmode="decimal" id="footing-spacing-wid" class="pro-input w-full">
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSpacing">Distance between two bars, measured center to center.</p>
+                                            <input type="number" inputmode="decimal" id="footing-spacing-wid" class="pro-input w-full" data-sane="40:300:mm">
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                             <select id="footing-diameter-wid" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                                 <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -1782,11 +1836,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                      <p class="text-sm font-medium mb-1" data-lang="lengthwiseBars">Bars parallel to Length</p>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                                          <div>
-                                             <label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label>
-                                             <input type="number" inputmode="decimal" id="footing-number-len" class="pro-input w-full">
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label><button type="button" class="hint-btn" data-hint="hintNumberOfBars" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintNumberOfBars">How many cut bars you will place in this direction.</p>
+                                             <input type="number" inputmode="decimal" id="footing-number-len" class="pro-input w-full" data-sane="1:2000:">
                                          </div>
                                         <div>
-                                            <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                             <select id="footing-diameter-len-alt" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                                 <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -1799,11 +1853,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                      <p class="text-sm font-medium mb-1" data-lang="widthwiseBars">Bars parallel to Width</p>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                                          <div>
-                                             <label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label>
-                                             <input type="number" inputmode="decimal" id="footing-number-wid" class="pro-input w-full">
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label><button type="button" class="hint-btn" data-hint="hintNumberOfBars" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintNumberOfBars">How many cut bars you will place in this direction.</p>
+                                             <input type="number" inputmode="decimal" id="footing-number-wid" class="pro-input w-full" data-sane="1:2000:">
                                          </div>
                                         <div>
-                                            <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                             <select id="footing-diameter-wid-alt" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                                 <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -1817,7 +1871,7 @@ body.keyboard-open .mobile-actions { display: none !important; }
 
                         <div id="steel-slab-inputs" class="hidden mt-2 space-y-3">
                              <div class="flex flex-wrap items-center gap-4">
-                                 <label class="block text-sm font-medium" data-lang="calcMode">Calculate By</label>
+                                 <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="calcMode">Calculate By</label><button type="button" class="hint-btn" data-hint="hintCalcMode" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCalcMode">Spacing finds the number of bars from the distance between them. Number of Bars uses the count you type.</p>
                                 <label class="flex items-center cursor-pointer">
                                     <input type="radio" name="slab-mode" value="spacing" class="h-4 w-4" checked> 
                                     <span class="ms-2" data-lang="bySpacing">Spacing</span>
@@ -1831,11 +1885,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-sm font-medium" data-lang="slabLength">Slab Length (m)</label>
-                                    <input type="number" inputmode="decimal" id="slab-length" class="pro-input w-full">
+                                    <input type="number" inputmode="decimal" id="slab-length" class="pro-input w-full" data-sane="0.3:100:m">
                                 </div>
                                  <div>
                                      <label class="block text-sm font-medium" data-lang="slabWidth">Slab Width (m)</label>
-                                     <input type="number" inputmode="decimal" id="slab-width" class="pro-input w-full">
+                                     <input type="number" inputmode="decimal" id="slab-width" class="pro-input w-full" data-sane="0.3:100:m">
                                  </div>
                             </div>
                             
@@ -1844,11 +1898,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                      <p class="text-sm font-medium mb-1" data-lang="lengthwiseBars">Bars parallel to Length</p>
                                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                                          <div>
-                                             <label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label>
-                                             <input type="number" inputmode="decimal" id="slab-spacing-len" class="pro-input w-full">
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSpacing">Distance between two bars, measured center to center.</p>
+                                             <input type="number" inputmode="decimal" id="slab-spacing-len" class="pro-input w-full" data-sane="40:300:mm">
                                          </div>
                                          <div>
-                                             <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                              <select id="slab-diameter-len" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                                 <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -1861,11 +1915,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                      <p class="text-sm font-medium mb-1" data-lang="widthwiseBars">Bars parallel to Width</p>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                                          <div>
-                                             <label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label>
-                                             <input type="number" inputmode="decimal" id="slab-spacing-wid" class="pro-input w-full">
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSpacing">Distance between two bars, measured center to center.</p>
+                                             <input type="number" inputmode="decimal" id="slab-spacing-wid" class="pro-input w-full" data-sane="40:300:mm">
                                          </div>
                                         <div>
-                                            <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                             <select id="slab-diameter-wid" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                                 <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -1881,11 +1935,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                      <p class="text-sm font-medium mb-1" data-lang="lengthwiseBars">Bars parallel to Length</p>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                                          <div>
-                                             <label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label>
-                                             <input type="number" inputmode="decimal" id="slab-number-len" class="pro-input w-full">
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label><button type="button" class="hint-btn" data-hint="hintNumberOfBars" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintNumberOfBars">How many cut bars you will place in this direction.</p>
+                                             <input type="number" inputmode="decimal" id="slab-number-len" class="pro-input w-full" data-sane="1:2000:">
                                          </div>
                                         <div>
-                                            <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                             <select id="slab-diameter-len-alt" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                                 <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -1898,11 +1952,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                      <p class="text-sm font-medium mb-1" data-lang="widthwiseBars">Bars parallel to Width</p>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                                          <div>
-                                             <label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label>
-                                             <input type="number" inputmode="decimal" id="slab-number-wid" class="pro-input w-full">
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label><button type="button" class="hint-btn" data-hint="hintNumberOfBars" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintNumberOfBars">How many cut bars you will place in this direction.</p>
+                                             <input type="number" inputmode="decimal" id="slab-number-wid" class="pro-input w-full" data-sane="1:2000:">
                                          </div>
                                          <div>
-                                             <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                              <select id="slab-diameter-wid-alt" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                                 <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -1919,14 +1973,14 @@ body.keyboard-open .mobile-actions { display: none !important; }
                              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                  <div>
                                      <label class="block text-sm font-medium" data-lang="beamLength">Beam Length (m)</label>
-                                     <input type="number" inputmode="decimal" id="beam-length" class="pro-input w-full">
+                                     <input type="number" inputmode="decimal" id="beam-length" class="pro-input w-full" data-sane="0.3:60:m">
                                  </div>
                                  <div>
-                                     <label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label>
-                                     <input type="number" inputmode="decimal" id="beam-bars" class="pro-input w-full">
+                                     <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label><button type="button" class="hint-btn" data-hint="hintNumberOfBars" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintNumberOfBars">How many cut bars you will place in this direction.</p>
+                                     <input type="number" inputmode="decimal" id="beam-bars" class="pro-input w-full" data-sane="1:2000:">
                                  </div>
                                  <div class="sm:col-span-2">
-                                    <label class="block text-sm font-medium" data-lang="diameter">Bar Diameter (mm)</label>
+                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Bar Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                     <select id="beam-diameter" class="pro-input w-full">
                                         <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                         <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -1944,22 +1998,22 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                                          <div>
                                              <label class="block text-sm font-medium" data-lang="beamWidthDim">Beam Width (mm)</label>
-                                             <input type="number" inputmode="decimal" id="beam-width-dim" class="pro-input w-full">
+                                             <input type="number" inputmode="decimal" id="beam-width-dim" class="pro-input w-full" data-sane="100:2500:mm">
                                          </div>
                                          <div>
                                              <label class="block text-sm font-medium" data-lang="beamDepthDim">Beam Depth (mm)</label>
-                                             <input type="number" inputmode="decimal" id="beam-depth-dim" class="pro-input w-full">
+                                             <input type="number" inputmode="decimal" id="beam-depth-dim" class="pro-input w-full" data-sane="100:2500:mm">
                                          </div>
                                          <div>
-                                             <label class="block text-sm font-medium" data-lang="concreteCover">Concrete Cover (mm)</label>
-                                             <input type="number" inputmode="decimal" id="beam-cover" class="pro-input w-full" value="40">
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="concreteCover">Concrete Cover (mm)</label><button type="button" class="hint-btn" data-hint="hintCover" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCover">Concrete between the steel and the outside face — it protects the steel. 40 mm is common.</p>
+                                             <input type="number" inputmode="decimal" id="beam-cover" class="pro-input w-full" value="40" data-sane="15:120:mm">
                                          </div>
                                          <div>
-                                             <label class="block text-sm font-medium" data-lang="stirrupSpacing">Stirrup Spacing (mm)</label>
-                                             <input type="number" inputmode="decimal" id="beam-stirrup-spacing" class="pro-input w-full">
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stirrupSpacing">Stirrup Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintStirrupSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStirrupSpacing">Distance from one stirrup ring to the next.</p>
+                                             <input type="number" inputmode="decimal" id="beam-stirrup-spacing" class="pro-input w-full" data-sane="40:300:mm">
                                          </div>
                                          <div class="sm:col-span-2">
-                                            <label class="block text-sm font-medium" data-lang="stirrupDiameter">Stirrup Diameter (mm)</label>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stirrupDiameter">Stirrup Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintStirrupDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStirrupDiameter">Thickness of the stirrup ring bar. Ø8 is the usual size.</p>
                                             <select id="beam-stirrup-diameter" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                                 <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -1976,14 +2030,14 @@ body.keyboard-open .mobile-actions { display: none !important; }
                              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                   <div>
                                       <label class="block text-sm font-medium" data-lang="columnHeight">Column Height (m)</label>
-                                      <input type="number" inputmode="decimal" id="column-height" class="pro-input w-full">
+                                      <input type="number" inputmode="decimal" id="column-height" class="pro-input w-full" data-sane="1:30:m">
                                   </div>
                                   <div>
-                                      <label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label>
-                                      <input type="number" inputmode="decimal" id="column-bars" class="pro-input w-full">
+                                      <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label><button type="button" class="hint-btn" data-hint="hintNumberOfBars" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintNumberOfBars">How many cut bars you will place in this direction.</p>
+                                      <input type="number" inputmode="decimal" id="column-bars" class="pro-input w-full" data-sane="1:2000:">
                                   </div>
                                   <div class="sm:col-span-2">
-                                    <label class="block text-sm font-medium" data-lang="diameter">Bar Diameter (mm)</label>
+                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Bar Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                     <select id="column-diameter" class="pro-input w-full">
                                         <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                         <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -2001,22 +2055,22 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                                          <div>
                                              <label class="block text-sm font-medium" data-lang="columnWidthDim">Column Width (mm)</label>
-                                             <input type="number" inputmode="decimal" id="column-width-dim" class="pro-input w-full">
+                                             <input type="number" inputmode="decimal" id="column-width-dim" class="pro-input w-full" data-sane="100:2500:mm">
                                          </div>
                                         <div>
                                             <label class="block text-sm font-medium" data-lang="columnDepthDim">Column Depth (mm)</label>
-                                            <input type="number" inputmode="decimal" id="column-depth-dim" class="pro-input w-full">
+                                            <input type="number" inputmode="decimal" id="column-depth-dim" class="pro-input w-full" data-sane="100:2500:mm">
                                         </div>
                                          <div>
-                                             <label class="block text-sm font-medium" data-lang="concreteCover">Concrete Cover (mm)</label>
-                                             <input type="number" inputmode="decimal" id="column-cover" class="pro-input w-full" value="40">
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="concreteCover">Concrete Cover (mm)</label><button type="button" class="hint-btn" data-hint="hintCover" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCover">Concrete between the steel and the outside face — it protects the steel. 40 mm is common.</p>
+                                             <input type="number" inputmode="decimal" id="column-cover" class="pro-input w-full" value="40" data-sane="15:120:mm">
                                          </div>
                                          <div>
-                                             <label class="block text-sm font-medium" data-lang="stirrupSpacing">Tie Spacing (mm)</label>
-                                             <input type="number" inputmode="decimal" id="column-stirrup-spacing" class="pro-input w-full">
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stirrupSpacing">Tie Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintStirrupSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStirrupSpacing">Distance from one stirrup ring to the next.</p>
+                                             <input type="number" inputmode="decimal" id="column-stirrup-spacing" class="pro-input w-full" data-sane="40:300:mm">
                                          </div>
                                          <div class="sm:col-span-2">
-                                            <label class="block text-sm font-medium" data-lang="stirrupDiameter">Tie Diameter (mm)</label>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stirrupDiameter">Tie Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintStirrupDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStirrupDiameter">Thickness of the stirrup ring bar. Ø8 is the usual size.</p>
                                             <select id="column-stirrup-diameter" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                                 <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -2031,19 +2085,19 @@ body.keyboard-open .mobile-actions { display: none !important; }
                          <div id="steel-one-way-inputs" class="hidden mt-2 space-y-3">
                              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                                  <div>
-                                     <label class="block text-sm font-medium" data-lang="distLength">Distribution Length (m)</label>
-                                     <input type="number" inputmode="decimal" id="one-way-dist-length" class="pro-input w-full">
+                                     <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="distLength">Distribution Length (m)</label><button type="button" class="hint-btn" data-hint="hintDistLength" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDistLength">The length that the bars cover — the run of the strip.</p>
+                                     <input type="number" inputmode="decimal" id="one-way-dist-length" class="pro-input w-full" data-sane="0.5:150:m">
                                  </div>
                                   <div>
                                       <label class="block text-sm font-medium" data-lang="barLength">Single Bar Length (m)</label>
-                                      <input type="number" inputmode="decimal" id="one-way-bar-length" class="pro-input w-full">
+                                      <input type="number" inputmode="decimal" id="one-way-bar-length" class="pro-input w-full" data-sane="0.3:24:m">
                                  </div>
                                  <div>
-                                     <label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label>
-                                     <input type="number" inputmode="decimal" id="one-way-spacing" class="pro-input w-full">
+                                     <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSpacing">Distance between two bars, measured center to center.</p>
+                                     <input type="number" inputmode="decimal" id="one-way-spacing" class="pro-input w-full" data-sane="40:300:mm">
                                  </div>
                                  <div>
-                                    <label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label>
+                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                     <select id="one-way-diameter" class="pro-input w-full">
                                         <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
                                         <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
@@ -2064,8 +2118,8 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                 <span data-lang="lapSplicesAdvanced">Lap splices (for long bars)</span>
                             </summary>
                             <div class="pt-2">
-                                <label class="block text-sm font-medium" data-lang="lapSpliceFactor">Lap Splice Factor (e.g., 50d)</label>
-                                <input type="number" inputmode="decimal" id="steel-lap-splice-factor" class="pro-input w-full" value="50">
+                                <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="lapSpliceFactor">Lap Splice Factor (e.g., 50d)</label><button type="button" class="hint-btn" data-hint="hintLapFactor" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintLapFactor">For bars longer than shop bars, the bars overlap. 50d means the overlap is 50 × the bar diameter.</p>
+                                <input type="number" inputmode="decimal" id="steel-lap-splice-factor" class="pro-input w-full" value="50" data-sane="20:100:">
                             </div>
                         </details>
                     </div>
@@ -2081,7 +2135,7 @@ body.keyboard-open .mobile-actions { display: none !important; }
                         </button>
                         <div id="steel-cost-container" class="hidden mt-3 pt-3 border-t border-gray-700/60">
                             <div>
-                                <label class="block text-sm font-medium" data-lang="costPerKg">Cost per kg</label>
+                                <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="costPerKg">Cost per kg</label><button type="button" class="hint-btn" data-hint="hintCostPerKg" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCostPerKg">Price of one kilogram at your supplier.</p>
                                 <input type="number" inputmode="decimal" id="steel-cost" min="0" step="0.01" class="pro-input w-full">
                             </div>
                         </div>
@@ -2148,15 +2202,15 @@ body.keyboard-open .mobile-actions { display: none !important; }
                             <div class="sm:col-span-3"><label for="earthwork-shape" class="block text-sm font-medium" data-lang="excavShape">Excavation shape</label><select id="earthwork-shape" class="pro-input"><option value="rectangular" data-lang="shapeRectangular">Rectangular pit</option><option value="trench" data-lang="shapeTrench">Trench / strip</option><option value="custom" data-lang="shapeCustom">Custom profile (same L × W × H basis)</option></select></div>
                             <div>
                                 <label for="earthwork-length" class="block text-xs sm:text-sm font-medium" data-lang="length">Length (m)</label>
-                                <input type="number" inputmode="decimal" id="earthwork-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L">
+                                <input type="number" inputmode="decimal" id="earthwork-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L" data-sane="0.3:300:m">
                             </div>
                             <div>
                                 <label for="earthwork-width" class="block text-xs sm:text-sm font-medium" data-lang="width">Width (m)</label>
-                               <input type="number" inputmode="decimal" id="earthwork-width" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W">
+                               <input type="number" inputmode="decimal" id="earthwork-width" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W" data-sane="0.3:300:m">
                             </div>
                             <div>
                                 <label for="earthwork-height" class="block text-xs sm:text-sm font-medium" data-lang="height">Height (m)</label>
-                                <input type="number" inputmode="decimal" id="earthwork-height" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="H">
+                                <input type="number" inputmode="decimal" id="earthwork-height" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="H" data-sane="0.2:30:m">
                             </div>
                        </div>
                        </div>
@@ -2165,15 +2219,15 @@ body.keyboard-open .mobile-actions { display: none !important; }
                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                            <div>
                                 <label for="earthwork-quantity" class="block text-sm font-medium" data-lang="numberOfWalls">Number of Walls / Sections</label>
-                                <input type="number" inputmode="decimal" id="earthwork-quantity" value="1" min="1" class="pro-input">
+                                <input type="number" inputmode="decimal" id="earthwork-quantity" value="1" min="1" class="pro-input" data-sane="1:500:">
                             </div>
                             <div class="sm:col-span-2 border-t border-gray-700 pt-2">
-                                <label for="earthwork-truck-capacity" class="block text-sm font-medium" data-lang="truckCapacityLabel">Truck Capacity (m³)</label>
-                                <input type="number" inputmode="decimal" id="earthwork-truck-capacity" value="4" min="0.1" step="0.1" class="pro-input" placeholder="e.g., 4">
+                                <span class="label-with-hint"><label for="earthwork-truck-capacity" class="block text-sm font-medium" data-lang="truckCapacityLabel">Truck Capacity (m³)</label><button type="button" class="hint-btn" data-hint="hintTruck" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintTruck">How much one truck can carry, in m³.</p>
+                                <input type="number" inputmode="decimal" id="earthwork-truck-capacity" value="4" min="0.1" step="0.1" class="pro-input" placeholder="e.g., 4" data-sane="1:50:m3">
                             </div>
                             <div class="sm:col-span-2">
-                                <label for="earthwork-swell" class="block text-sm font-medium" data-lang="swellFactorLabel">Soil Swell Factor (%)</label>
-                                <input type="number" inputmode="decimal" id="earthwork-swell" value="25" min="0" max="100" step="1" class="pro-input" placeholder="sand ~12, gravel ~15, clay ~30, rock ~50">
+                                <span class="label-with-hint"><label for="earthwork-swell" class="block text-sm font-medium" data-lang="swellFactorLabel">Soil Swell Factor (%)</label><button type="button" class="hint-btn" data-hint="hintSwell" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSwell">Dug soil becomes looser and takes more space. 25–30% is common.</p>
+                                <input type="number" inputmode="decimal" id="earthwork-swell" value="25" min="0" max="100" step="1" class="pro-input" placeholder="sand ~12, gravel ~15, clay ~30, rock ~50" data-sane="0:100:%">
                             </div>
                        </div>
                    </div>
@@ -2254,6 +2308,32 @@ body.keyboard-open .mobile-actions { display: none !important; }
     </div>
 
     <div id="print-area"></div>
+
+    <!-- First-run guide -->
+    <div id="intro-overlay" class="intro-overlay hidden" role="dialog" aria-modal="true">
+      <div class="intro-card">
+        <div class="intro-slide is-active" data-slide="0">
+          <div class="intro-icon"><i data-lucide="ruler"></i></div>
+          <h3 data-lang="intro1Title">Measure</h3>
+          <p data-lang="intro1Body">Measure what you want to build — length, width and height, in meters.</p>
+        </div>
+        <div class="intro-slide" data-slide="1">
+          <div class="intro-icon"><i data-lucide="pencil-line"></i></div>
+          <h3 data-lang="intro2Title">Enter</h3>
+          <p data-lang="intro2Body">Choose the material and type your numbers. Not sure about a field? Tap ? — or use Fill typical values.</p>
+        </div>
+        <div class="intro-slide" data-slide="2">
+          <div class="intro-icon"><i data-lucide="shopping-cart"></i></div>
+          <h3 data-lang="intro3Title">Order</h3>
+          <p data-lang="intro3Body">Press Calculate. The big number is what you need; &quot;What to order&quot; is your shopping list. Save, print or share it.</p>
+        </div>
+        <div class="intro-dots"><span class="intro-dot is-active"></span><span class="intro-dot"></span><span class="intro-dot"></span></div>
+        <div class="intro-actions">
+          <button type="button" id="intro-next" class="btn btn-primary" data-lang="introNext">Next</button>
+          <button type="button" id="intro-start" class="btn btn-primary hidden" data-lang="introStart">Start estimating</button>
+        </div>
+      </div>
+    </div>
 
     <script src="./concrete-calculations.js" defer></script>
     <script src="./app.js" defer></script>

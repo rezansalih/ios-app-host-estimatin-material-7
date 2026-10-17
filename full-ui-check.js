@@ -11,7 +11,7 @@ const tick = ms => new Promise(r => setTimeout(r, ms));
 let fails = 0;
 const ok = (label, cond, extra = '') => { if (!cond) fails++; console.log(' ', cond ? 'PASS' : 'FAIL', label, extra); };
 
-async function boot(w = 390, h = 844, lang = 'en') {
+async function boot(w = 390, h = 844, lang = 'en', intro = false) {
   const vc = new VirtualConsole(); const errs = [];
   vc.on('jsdomError', e => errs.push(String(e.message).split('\n')[0]));
   const dom = await JSDOM.fromURL(URL_, {
@@ -22,6 +22,7 @@ async function boot(w = 390, h = 844, lang = 'en') {
       Object.defineProperty(win, 'innerWidth', { value: w, configurable: true });
       Object.defineProperty(win, 'innerHeight', { value: h, configurable: true });
       win.localStorage.setItem('language', lang);
+      if (!intro) win.localStorage.setItem('introSeen', '1');
     },
   });
   await tick(1200);
@@ -264,6 +265,290 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     ok('bricks result hidden after reset', d.getElementById('bricks-result').classList.contains('hidden'));
     ok('bricks fields cleared', d.getElementById('brick-wall-length').value === '');
     ok('no errors on bricks reset', errs.length === 0, errs.join(' | '));
+  }
+
+  console.log('\n=== D4. Anyone-can-use aids: intro, hints, presets, sanity ===');
+  {
+    const { dom, errs } = await boot(390, 844, 'en', true);   // intro = true -> first-run state
+    const d = dom.window.document;
+    const intro = d.getElementById('intro-overlay');
+    ok('intro shows on first run', intro && !intro.classList.contains('hidden'));
+    ok('intro starts on slide 1', !!intro.querySelector('.intro-slide.is-active[data-slide="0"]'));
+    d.getElementById('intro-next').click();
+    d.getElementById('intro-next').click();
+    ok('start button appears on last slide', !d.getElementById('intro-start').classList.contains('hidden'));
+    d.getElementById('intro-start').click();
+    ok('intro dismisses and remembers', intro.classList.contains('hidden') && !!dom.window.localStorage.getItem('introSeen'));
+
+    d.querySelector('.bn-item[data-goto="steel"]').click();
+    await tick(150);
+    const hintBtn = d.querySelector('#steel .hint-btn');
+    const hintP = hintBtn && hintBtn.closest('.label-with-hint').nextElementSibling;
+    ok('hint note starts hidden', !!hintP && hintP.classList.contains('field-hint') && hintP.classList.contains('hidden'));
+    hintBtn.click();
+    ok('hint opens on tap', !hintP.classList.contains('hidden'));
+    hintBtn.click();
+    ok('hint closes on tap', hintP.classList.contains('hidden'));
+
+    const sel = d.getElementById('steel-element-selector');
+    sel.value = 'footing';
+    sel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(50);
+    ok('preset button visible for footing', !d.getElementById('steel-preset-btn').classList.contains('hidden'));
+    d.getElementById('steel-preset-btn').click();
+    ok('preset fills spacing 150', d.getElementById('footing-spacing-len').value === '150' &&
+       d.getElementById('footing-spacing-wid').value === '150');
+    ok('preset selects diameters', d.getElementById('footing-diameter-len').value === '12' &&
+       d.getElementById('footing-diameter-wid').value === '12');
+    ok('preset leaves measurements empty', d.getElementById('footing-length').value === '' &&
+       d.getElementById('footing-width').value === '');
+    sel.value = 'beam';
+    sel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(50);
+    d.getElementById('steel-preset-btn').click();
+    ok('beam preset fills stirrup assumptions', d.getElementById('beam-stirrup-spacing').value === '200' &&
+       d.getElementById('beam-cover').value === '40' &&
+       d.getElementById('beam-stirrup-diameter').value === '8');
+    ok('beam preset enables stirrups', d.getElementById('beam-include-stirrups').checked);
+    sel.value = 'custom';
+    sel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(50);
+    ok('preset button hidden for custom', d.getElementById('steel-preset-btn').classList.contains('hidden'));
+    ok('no errors on intro/hints/presets', errs.length === 0, errs.join(' | '));
+  }
+  {
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="bricks"]').click();
+    await tick(150);
+    d.getElementById('brick-wall-length').value = '10';
+    d.getElementById('brick-wall-height').value = '30';   // unusual (usually 1-20 m)
+    d.getElementById('brick-wall-width-input').value = '0.115';
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    const banner = d.querySelector('.sanity-banner');
+    ok('sanity banner appears for odd height', !!banner && /30/.test(banner.textContent),
+       (banner?.textContent || '').replace(/\s+/g, ' ').slice(0, 90));
+    ok('calculation still runs (warning is not blocking)', !d.getElementById('bricks-result').classList.contains('hidden'));
+    d.querySelector('.reset-btn[data-form="bricks"]').click();
+    await tick(150);
+    ok('banner cleared on reset', !d.querySelector('.sanity-banner'));
+    ok('no errors with sanity warnings', errs.length === 0, errs.join(' | '));
+  }
+  {
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="bricks"]').click();
+    await tick(150);
+    d.getElementById('brick-wall-length').value = '10';
+    d.getElementById('brick-wall-height').value = '3';
+    d.getElementById('brick-wall-width-input').value = '0.115';
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    ok('no banner for normal values', !d.querySelector('.sanity-banner'));
+    ok('no errors', errs.length === 0, errs.join(' | '));
+  }
+
+  console.log('\n=== D5. Language switch re-labels results and session rows ===');
+  {
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="bricks"]').click();
+    await tick(150);
+    d.getElementById('brick-wall-length').value = '10';
+    d.getElementById('brick-wall-height').value = '3';
+    d.getElementById('brick-wall-width-input').value = '0.115';
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    ok('result is in English', /Bricks Required/.test(d.getElementById('bricks-result').textContent));
+    const rowsBefore = d.querySelectorAll('#bricks-table-body tr').length;
+    ok('session row exists (English words)', /bags|pcs/.test(d.querySelector('#bricks-table-body').textContent),
+       d.querySelector('#bricks-table-body').textContent.replace(/\s+/g, ' ').slice(0, 80));
+    const sel = d.getElementById('language-selector');
+    sel.value = 'ar';
+    sel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(700);
+    const res = d.getElementById('bricks-result');
+    ok('result re-rendered in Arabic', /الطابوق المطلوب/.test(res.textContent),
+       res.textContent.replace(/\s+/g, ' ').slice(0, 70));
+    ok('hero label switched language', !/Bricks Required/.test(res.querySelector('.result-hero')?.textContent || '') &&
+       /الطابوق/.test(res.querySelector('.result-hero')?.textContent || ''));
+    const cell = d.querySelector('#bricks-table-body').textContent;
+    ok('session row localized to Arabic', /كيس/.test(cell) && !/\bbags\b/.test(cell),
+       cell.replace(/\s+/g, ' ').slice(0, 80));
+    ok('no duplicate session row after switch', d.querySelectorAll('#bricks-table-body tr').length === rowsBefore,
+       `(${d.querySelectorAll('#bricks-table-body tr').length} vs ${rowsBefore})`);
+    ok('no errors on language switch', errs.length === 0, errs.join(' | '));
+  }
+  {
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="steel"]').click();
+    await tick(150);
+    const elSel = d.getElementById('steel-element-selector');
+    elSel.value = 'footing';
+    elSel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(50);
+    d.getElementById('footing-length').value = '3';
+    d.getElementById('footing-width').value = '2';
+    d.getElementById('footing-spacing-len').value = '150';
+    d.getElementById('footing-diameter-len').value = '12';
+    d.getElementById('footing-spacing-wid').value = '150';
+    d.getElementById('footing-diameter-wid').value = '10';
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    ok('steel session row in English', /Footing/.test(d.querySelector('#steel-table-body').textContent));
+    const sel = d.getElementById('language-selector');
+    sel.value = 'ar';
+    sel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(700);
+    const cell = d.querySelector('#steel-table-body').textContent;
+    ok('steel element name localized', /أساس/.test(cell) && !/Footing/.test(cell),
+       cell.replace(/\s+/g, ' ').slice(0, 80));
+    ok('steel result in Arabic', /الوزن الإجمالي|نتيجة/.test(d.getElementById('steel-result').textContent));
+    ok('no errors', errs.length === 0, errs.join(' | '));
+  }
+
+  console.log('\n=== D6. Formula vectors against the live calculators ===');
+  {
+    // Steel beam with lap splices: 20 m run, 2x Ø12, 12 m shop bars, 50d laps, 5% waste
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="steel"]').click();
+    await tick(150);
+    const elSel = d.getElementById('steel-element-selector');
+    elSel.value = 'beam';
+    elSel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(50);
+    d.getElementById('beam-length').value = '20';
+    d.getElementById('beam-bars').value = '2';
+    d.getElementById('beam-diameter').value = '12';
+    d.getElementById('steel-lap-details').open = true;
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    const t = d.getElementById('steel-result').textContent;
+    ok('lap: 20 m x2Ø12 -> 38.45 kg', /38\.45 kg/.test(t), t.replace(/\s+/g, ' ').slice(0, 100));
+    ok('lap: 2 splices, 1.20 m added', /2(\s*)$/.test('2') && /1\.20 m/.test(t) && /Total number of splices|Splices|عدد|ژمارا/.test(t));
+  }
+  {
+    // Beam stirrups: 3x0.3x0.5 m, cover 40, Ø8 @200 + 4Ø16 mains -> 29.47 kg
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="steel"]').click();
+    await tick(150);
+    const elSel = d.getElementById('steel-element-selector');
+    elSel.value = 'beam';
+    elSel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(50);
+    d.getElementById('beam-length').value = '3';
+    d.getElementById('beam-bars').value = '4';
+    d.getElementById('beam-diameter').value = '16';
+    d.getElementById('beam-include-stirrups').checked = true;
+    d.getElementById('beam-include-stirrups').dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(30);
+    d.getElementById('beam-width-dim').value = '300';
+    d.getElementById('beam-depth-dim').value = '500';
+    d.getElementById('beam-cover').value = '40';
+    d.getElementById('beam-stirrup-spacing').value = '200';
+    d.getElementById('beam-stirrup-diameter').value = '8';
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    const t = d.getElementById('steel-result').textContent;
+    ok('stirrups: 3m beam 4Ø16 + Ø8@200 -> 29.47 kg', /29\.47 kg/.test(t), t.replace(/\s+/g, ' ').slice(0, 110));
+  }
+  {
+    // One-way strip: 6 m run @200, 5 m bars Ø10 -> 100.46 kg
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="steel"]').click();
+    await tick(150);
+    const elSel = d.getElementById('steel-element-selector');
+    elSel.value = 'one_way';
+    elSel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(50);
+    d.getElementById('one-way-dist-length').value = '6';
+    d.getElementById('one-way-bar-length').value = '5';
+    d.getElementById('one-way-spacing').value = '200';
+    d.getElementById('one-way-diameter').value = '10';
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    const t = d.getElementById('steel-result').textContent;
+    ok('one-way: 6m @200, 5m bars Ø10 -> 100.46 kg', /100\.46 kg/.test(t), t.replace(/\s+/g, ' ').slice(0, 110));
+    ok('one-way: 31 bars', /31/.test(t));
+    ok('one-way: element name is not undefined', !/undefined/.test(d.getElementById('steel-result').textContent));
+  }
+  {
+    // Footing number-of-bars mode must equal spacing mode: 15x3m Ø12 + 21x2m Ø10 -> 69.22 kg
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="steel"]').click();
+    await tick(150);
+    const elSel = d.getElementById('steel-element-selector');
+    elSel.value = 'footing';
+    elSel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(50);
+    const numMode = d.querySelector('input[name="footing-mode"][value="number"]');
+    numMode.checked = true;
+    numMode.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(30);
+    d.getElementById('footing-length').value = '3';
+    d.getElementById('footing-width').value = '2';
+    d.getElementById('footing-number-len').value = '15';
+    d.getElementById('footing-diameter-len-alt').value = '12';
+    d.getElementById('footing-number-wid').value = '21';
+    d.getElementById('footing-diameter-wid-alt').value = '10';
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    const t = d.getElementById('steel-result').textContent;
+    ok('footing number mode = 69.22 kg (matches spacing mode)', /69\.22 kg/.test(t), t.replace(/\s+/g, ' ').slice(0, 110));
+  }
+  {
+    // Concrete formwork: slab 5x4x0.2 x2 -> edges 7.20 m² + suspended soffit 40.00 m²
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="concrete"]').click();
+    await tick(150);
+    const dims = d.querySelector('input[name="concrete-mode"][value="dims"]');
+    dims.checked = true;
+    dims.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(30);
+    d.getElementById('concrete-type').value = 'slab';
+    d.getElementById('concrete-type').dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(30);
+    d.getElementById('concrete-length').value = '5';
+    d.getElementById('concrete-width').value = '4';
+    d.getElementById('concrete-thickness').value = '0.2';
+    d.getElementById('concrete-quantity').value = '2';
+    const sup = d.getElementById('concrete-slab-support');
+    if (sup) {
+      sup.value = 'suspended';
+      sup.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    }
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    const t = d.getElementById('concrete-result').textContent;
+    ok('slab edge formwork 7.20 m²', /7\.20 m²/.test(t), t.replace(/\s+/g, ' ').slice(0, 120));
+    ok('suspended soffit formwork 40.00 m²', /40\.00 m²/.test(t));
+  }
+  {
+    // Blocks with mortar: 10x3x0.2 wall, solid 40x20x20, 1cm joints, 1:6 -> 366 blocks, 3 bags
+    const { dom, errs } = await boot();
+    const d = dom.window.document;
+    d.querySelector('.bn-item[data-goto="blocks"]').click();
+    await tick(150);
+    const dims = d.querySelector('input[name="block-mode"][value="dims"]');
+    dims.checked = true;
+    dims.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    await tick(30);
+    d.getElementById('block-wall-length').value = '10';
+    d.getElementById('block-wall-height').value = '3';
+    d.getElementById('block-wall-width-input').value = '0.2';
+    d.getElementById('block-include-mortar').checked = true;
+    d.getElementById('mobile-calculate').click();
+    await tick(300);
+    const t = d.getElementById('blocks-result').textContent;
+    ok('blocks: 366 blocks', /366/.test(t), t.replace(/\s+/g, ' ').slice(0, 110));
+    ok('blocks: 3 bags of mortar cement', /3/.test(t) && /bags|كيس|کەسک|کیسە/.test(t));
   }
 
   console.log('\n=== E. Touch steppers ===');

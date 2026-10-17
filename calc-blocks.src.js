@@ -2,7 +2,7 @@
    (tab open or Calculate tap); registers its handler instead of running at startup. */
 window.__calcHandlers = window.__calcHandlers || {};
 window.__calcHandlers.blocks = function (ctx) {
-  const { translations, getCementBagMass, getCurrency, getWastageFactor, renderSessionTable, showError, sessionResults, lastCalcData, errorBox } = ctx;
+  const { translations, fill, getCementBagMass, getCurrency, getWastageFactor, renderSessionTable, showError, sessionResults, lastCalcData, errorBox } = ctx;
                 const lang = localStorage.getItem('language') || 'en';
                 const T = translations[lang];
 
@@ -124,13 +124,13 @@ window.__calcHandlers.blocks = function (ctx) {
 
                 lastCalcData.blocks = {
                     volume: `${totalWallVolume.toFixed(2)} m³`,
-                    blocks: `${blocksNeeded} pcs`,
-                    cement: includeMortar ? `${cementBags} bags` : 'N/A',
+                    blocks: `${blocksNeeded} ${T.piecesWord}`,
+                    cement: includeMortar ? `${cementBags} ${T.bagsWord}` : 'N/A',
                     sand: includeMortar ? `${sandVolume.toFixed(2)} m³` : 'N/A',
                     cost: materialCostsComplete ? `${currency}${totalCost.toFixed(2)}` : T.costNotEntered
                 };
                 
-                sessionResults.blocks.push(lastCalcData.blocks);
+                if (!window.__langRecalc) sessionResults.blocks.push(lastCalcData.blocks);
                 renderSessionTable('blocks');
                 
                 const resultDiv = document.getElementById('blocks-result');
@@ -139,7 +139,7 @@ window.__calcHandlers.blocks = function (ctx) {
                 if (includeMortar && mortarVolume > 0) {
                     mortarResultsHTML = `
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="blending"></i><span><strong class="font-semibold block">${T.mortarVolume}</strong> ${mortarVolume.toFixed(3)} m³</span></div>
-                        <div class="result-item flex items-center gap-2" data-kind="order"><i data-lucide="shopping-bag"></i><span><strong class="font-semibold block">${T.cementBags}</strong> ${cementBags} bags</span></div>
+                        <div class="result-item flex items-center gap-2" data-kind="order"><i data-lucide="shopping-bag"></i><span><strong class="font-semibold block">${T.cementBags}</strong> ${cementBags} ${T.bagsWord}</span></div>
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="scale"></i><span><strong class="font-semibold block">${T.cementWeight}</strong> ${cementWeight.toFixed(2)} kg</span></div>
                         <div class="result-item flex items-center gap-2" data-kind="order"><i data-lucide="waves"></i><span><strong class="font-semibold block">${T.sand}</strong> ${sandVolume.toFixed(3)} m³</span></div>
                     `;
@@ -182,7 +182,7 @@ window.__calcHandlers.blocks = function (ctx) {
 
                                  ${hasOpenings ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start" data-kind="detail"><i data-lucide="scan"></i><span><strong class="font-semibold block">${T.totalOpeningVolume}</strong> ${totalOpeningVolumeForDisplay}</span></div>` : ''}
                                 ${hollowGroutNote ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start"><i data-lucide="info"></i><span>${hollowGroutNote}</span></div>` : ''}
-                                <details class="calculation-trail card p-3 mt-2 sm:col-span-2 text-sm text-start"><summary class="font-semibold">${T.calculationDetails || 'Calculation details'}</summary><div class="mt-2 space-y-1"><div>${mode === 'volume' ? `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³` : `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³; ${T.wallWidth}: ${wallThicknessM.toFixed(3)} m; ${T.wallLeaves}: ${leaves}`}</div><div>${T.totalBlocks}: ${blocksNeededUnwasted.toFixed(2)} ${T.trailBeforeWaste} + ${(blocksNeeded - blocksNeededUnwasted).toFixed(2)} ${T.wasteWord} = ${blocksNeeded} ${T.orderedWord}</div><div>${T.mortarVolume}: ${mortarVolume.toFixed(3)} m³; ${T.mortarDryFactor}: ${mortarDryFactor.toFixed(2)}; ${T.mortarMixRatio}: ${mortarRatioParts.join(':')}</div>${hasOpenings ? `<div>${T.totalOpeningVolume}: ${totalOpeningVolumeForDisplay}</div>` : ''}${hollowGroutNote ? `<div>${hollowGroutNote}</div>` : ''}</div></details>
+                                <details class="calculation-trail card p-3 mt-2 sm:col-span-2 text-sm text-start"><summary class="font-semibold">${T.calculationDetails || 'Calculation details'}</summary><div class="mt-2 space-y-1"><div>${mode === 'volume' ? `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³` : `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³; ${T.wallWidth}: ${wallThicknessM.toFixed(3)} m; ${T.wallLeaves}: ${leaves}`}</div><div>${T.totalBlocks}: ${blocksNeededUnwasted.toFixed(2)} ${T.trailBeforeWaste} + ${(blocksNeeded - blocksNeededUnwasted).toFixed(2)} ${T.wasteWord} = ${blocksNeeded} ${T.orderedWord}</div><div>${T.mortarVolume}: ${fill(T.trailNetToBatch, { a: mortarVolume.toFixed(3), b: (mortarVolume * mortarDryFactor > 0 ? (mortarVolume * wastageFactor).toFixed(3) : '0.000'), c: (mortarVolume * wastageFactor - mortarVolume).toFixed(3) })}; ${T.mortarDryFactor}: ${mortarDryFactor.toFixed(2)}; ${T.mortarMixRatio}: ${mortarRatioParts.join(':')}</div>${hasOpenings ? `<div>${T.totalOpeningVolume}: ${totalOpeningVolumeForDisplay}</div>` : ''}${hollowGroutNote ? `<div>${hollowGroutNote}</div>` : ''}</div></details>
                                
                                 <div class="sm:col-span-2 mt-2 pt-2 border-t border-gray-700">
                                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-start">
@@ -202,6 +202,6 @@ window.__calcHandlers.blocks = function (ctx) {
                 
                 // Smooth scroll to the result
                 setTimeout(() => {
-                    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (!window.__langRecalc) resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 100);
 };

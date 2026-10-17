@@ -239,7 +239,8 @@ window.__calcHandlers.steel = function (ctx) {
     return;
   }
 
-  const elementName = isCustom ? T.customBars : T[selectedElement];
+  const elementKey = { one_way: 'oneWay' }[selectedElement] || selectedElement;
+  const elementName = isCustom ? T.customBars : (T[elementKey] || selectedElement);
   lastCalcData.steel = {
     element: elementName,
     description: description,
@@ -247,7 +248,7 @@ window.__calcHandlers.steel = function (ctx) {
     cost: `${currency}${results.totalCost.toFixed(2)}`
   };
 
-  sessionResults.steel.push(lastCalcData.steel);
+  if (!window.__langRecalc) sessionResults.steel.push(lastCalcData.steel);
   renderSessionTable('steel');
 
   /* ---- flat result rows: breakdown (details) -> order by diameter ->
@@ -308,6 +309,6 @@ window.__calcHandlers.steel = function (ctx) {
 
   // Smooth scroll to the result
   setTimeout(() => {
-    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!window.__langRecalc) resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 100);
 };
