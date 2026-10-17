@@ -18,13 +18,17 @@ window.__calcHandlers.bricks = function (ctx) {
                     return;
                 }
 
-                const brickCost = Number(document.getElementById('brick-cost').value || 0);
-                const cementCost = Number(document.getElementById('brick-cement-cost').value || 0);
-                const sandCost = Number(document.getElementById('brick-sand-cost').value || 0);
+                const brickCostRaw = document.getElementById('brick-cost').value.trim();
+                const cementCostRaw = document.getElementById('brick-cement-cost').value.trim();
+                const sandCostRaw = document.getElementById('brick-sand-cost').value.trim();
+                // An empty price field means "not entered" — it must never show as 0 cost.
+                const brickCost = brickCostRaw === '' ? null : Number(brickCostRaw);
+                const cementCost = cementCostRaw === '' ? null : Number(cementCostRaw);
+                const sandCost = sandCostRaw === '' ? null : Number(sandCostRaw);
                 const includeMortar = document.getElementById('brick-include-mortar').checked;
                 const mortarRatioParts = document.getElementById('brick-mortar-ratio').value.split(':').map(Number);
                 const cementDensity = Number(document.getElementById('brick-cement-density').value);
-                if ([brickCost, cementCost, sandCost].some(v => !Number.isFinite(v) || v < 0) || !Number.isFinite(cementDensity) || cementDensity <= 0 || mortarRatioParts.some(v => !Number.isFinite(v) || v <= 0)) { showError(T.errRequiredFields); return; }
+                if ([brickCost, cementCost, sandCost].filter(v => v !== null).some(v => !Number.isFinite(v) || v < 0) || !Number.isFinite(cementDensity) || cementDensity <= 0 || mortarRatioParts.some(v => !Number.isFinite(v) || v <= 0)) { showError(T.errRequiredFields); return; }
 
                 const mode = document.querySelector('input[name="brick-mode"]:checked').value;
                 let totalWallVolume, length, height, dimsWallWidth = null;
@@ -115,12 +119,11 @@ window.__calcHandlers.bricks = function (ctx) {
                 }
 
                 const bricksNeeded = Math.ceil(bricksNeededUnwasted * wastageFactor);
-                const totalBrickCost = bricksNeeded * brickCost;
-                const totalCementCost = cementBags * cementCost;
-                const totalSandCost = sandVolume * sandCost;
-                const totalCost = totalBrickCost + totalCementCost + totalSandCost;
-                
-                const materialCostsComplete = [brickCost, cementCost, sandCost].every(v => Number.isFinite(v) && v >= 0);
+                const totalBrickCost = brickCost === null ? null : bricksNeeded * brickCost;
+                const totalCementCost = cementCost === null ? null : cementBags * cementCost;
+                const totalSandCost = sandCost === null ? null : sandVolume * sandCost;
+                const materialCostsComplete = [brickCost, cementCost, sandCost].every(v => v !== null && Number.isFinite(v) && v >= 0);
+                const totalCost = materialCostsComplete ? totalBrickCost + totalCementCost + totalSandCost : null;
                 const currency = getCurrency();
                 const hollowBrickNote = brickOpt.value === 'hollow_brick' ? T.hollowBrickNote : '';
                 // Masonry mortar needs roughly 0.6 L of water per kg of cement. Use the cement
@@ -134,7 +137,14 @@ window.__calcHandlers.bricks = function (ctx) {
                     bricks: `${bricksNeeded} ${T.piecesWord}`,
                     cement: includeMortar ? `${cementBags} ${T.bagsWord}` : 'N/A',
                     sand: includeMortar ? `${sandVolume.toFixed(2)} m³` : 'N/A',
-                    cost: materialCostsComplete ? `${currency}${totalCost.toFixed(2)}` : T.costNotEntered
+                    cost: materialCostsComplete ? `${currency}${totalCost.toFixed(2)}` : T.costNotEntered,
+                    quoteLines: [
+                        { item: T.totalBricks, qty: `${bricksNeeded} ${T.piecesWord}`, unitPrice: brickCost },
+                        ...(includeMortar ? [
+                            { item: T.cementBags, qty: `${cementBags} ${T.bagsWord}`, unitPrice: cementCost },
+                            { item: T.sand, qty: `${sandVolume.toFixed(2)} m³`, unitPrice: sandCost }
+                        ] : [])
+                    ]
                 };
 
                 if (!window.__langRecalc) sessionResults.bricks.push(lastCalcData.bricks);
@@ -143,6 +153,11 @@ window.__calcHandlers.bricks = function (ctx) {
                 const resultDiv = document.getElementById('bricks-result');
                 let mortarResultsHTML = '', costResultsHTML = '';
                 
+                const costRow = (label, value) => `<div class="result-item flex items-center gap-2" data-kind="cost"><i data-lucide="wallet"></i><span><strong class="font-semibold block">${label}</strong> ${value}</span></div>`;
+                const rowsCost = [];
+                if (totalBrickCost !== null) rowsCost.push(costRow(T.brickCost, `${currency}${totalBrickCost.toFixed(2)}`));
+                if (totalCementCost !== null) rowsCost.push(costRow(T.cementCost, `${currency}${totalCementCost.toFixed(2)}`));
+                if (totalSandCost !== null) rowsCost.push(costRow(T.sandCost, `${currency}${totalSandCost.toFixed(2)}`));
                 if (includeMortar && mortarVolumeOrder > 1e-6) {
                     mortarResultsHTML = `
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="blending"></i><span><strong class="font-semibold block">${T.mortarVolume}</strong> ${mortarVolumeOrder.toFixed(3)} m³ <span class="text-xs opacity-75">(${mortarVolumeNet.toFixed(3)} ${T.netWord} + ${(mortarVolumeOrder - mortarVolumeNet).toFixed(3)} ${T.wasteWord})</span></span></div>
@@ -151,15 +166,9 @@ window.__calcHandlers.bricks = function (ctx) {
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="droplets"></i><span><strong class="font-semibold block">${T.mixingWaterEstimate}</strong> ${fill(T.trailWaterPerKg, { v: mixingWaterLitres.toFixed(1) })}</span></div>
                         <div class="result-item flex items-center gap-2 col-span-2" data-kind="order"><i data-lucide="waves"></i><span><strong class="font-semibold block">${T.sand}</strong> ${sandVolume.toFixed(3)} m³</span></div>
                     `;
-                    costResultsHTML = `
-                        <div class="result-item flex items-center gap-2" data-kind="cost"><i data-lucide="wallet"></i><span><strong class="font-semibold block">${T.brickCost}</strong> ${currency}${totalBrickCost.toFixed(2)}</span></div>
-                        <div class="result-item flex items-center gap-2" data-kind="cost"><i data-lucide="wallet"></i><span><strong class="font-semibold block">${T.cementCost}</strong> ${currency}${totalCementCost.toFixed(2)}</span></div>
-                        <div class="result-item flex items-center gap-2 col-span-2" data-kind="cost"><i data-lucide="wallet"></i><span><strong class="font-semibold block">${T.sandCost}</strong> ${currency}${totalSandCost.toFixed(2)}</span></div>
-                    `;
+                    costResultsHTML = rowsCost.join('');
                 } else {
-                    costResultsHTML = `
-                        <div class="result-item flex items-center gap-2 col-span-2" data-kind="cost"><i data-lucide="wallet"></i><span><strong class="font-semibold block">${T.brickCost}</strong> ${currency}${totalBrickCost.toFixed(2)}</span></div>
-                    `;
+                    costResultsHTML = rowsCost.join('');
                 }
                 
                 resultDiv.innerHTML = `
@@ -179,6 +188,10 @@ window.__calcHandlers.bricks = function (ctx) {
                                     <i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i>
                                     <span data-lang="pdfBtn">${T.pdfBtn}</span>
                                 </button>
+<button type="button" class="btn btn-secondary result-action-btn quote-btn" title="${T.quoteBtn}">
+                                    <i data-lucide="file-text" class="w-4 h-4 pointer-events-none"></i>
+                                    <span data-lang="quoteBtn">${T.quoteBtn}</span>
+                                </button>
                              </div>
                         </div>
                         <div class="result-content">
@@ -191,7 +204,7 @@ window.__calcHandlers.bricks = function (ctx) {
 
                                  ${hasOpenings ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start" data-kind="detail"><i data-lucide="scan"></i><span><strong class="font-semibold block">${T.totalOpeningVolume}</strong> ${totalOpeningVolumeForDisplay}</span></div>` : ''}
                                 ${hollowBrickNote ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start"><i data-lucide="info"></i><span>${hollowBrickNote}</span></div>` : ''}
-                                <details class="calculation-trail card p-3 mt-2 sm:col-span-2 text-sm text-start"><summary class="font-semibold">${T.brickCalculationDetails}</summary><div class="mt-2 space-y-1"><div>${mode === 'volume' ? `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³` : `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³; ${T.wallWidth}: ${wallThicknessM.toFixed(3)} m; ${T.wallLeaves}: ${leaves}`}</div><div>${T.totalBricks}: ${bricksNeededUnwasted.toFixed(2)} ${T.trailBeforeWaste} + ${(bricksNeeded - bricksNeededUnwasted).toFixed(2)} ${T.wasteWord} = ${bricksNeeded} ${T.orderedWord}</div><div>${T.mortarVolume}: ${fill(T.trailNetToBatch, { a: mortarVolumeNet.toFixed(3), b: mortarVolumeOrder.toFixed(3), c: (mortarVolumeOrder - mortarVolumeNet).toFixed(3) })}; ${T.mortarDryFactor}: ${mortarDryFactor.toFixed(2)}; ${T.mortarMixRatio}: ${mortarRatioParts.join(':')}</div><div>${T.cementWeight}: ${fill(T.trailCementOrdered, { a: cementWeight.toFixed(2), b: cementBags, kg: getCementBagMass(), c: cementOrderedKg.toFixed(0), d: (cementOrderedKg - cementWeight).toFixed(2) })}</div><div>${T.mixingWaterEstimate}: ${fill(T.trailWaterPerKg, { v: mixingWaterLitres.toFixed(1) })}</div>${hasOpenings ? `<div>${T.totalOpeningVolume}: ${totalOpeningVolumeForDisplay}</div>` : ''}${hollowBrickNote ? `<div>${hollowBrickNote}</div>` : ''}</div></details>
+                                <details class="calculation-trail card p-3 mt-2 sm:col-span-2 text-sm text-start"><summary class="font-semibold">${T.brickCalculationDetails}</summary><div class="mt-2 space-y-1"><div>${mode === 'volume' ? `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³` : `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³; ${T.wallWidth}: ${wallThicknessM.toFixed(3)} m; ${T.wallLeaves}: ${leaves}`}</div><div>${T.totalBricks}: ${bricksNeededUnwasted.toFixed(2)} ${T.trailBeforeWaste} + ${(bricksNeeded - bricksNeededUnwasted).toFixed(2)} ${T.wasteWord} = ${bricksNeeded} ${T.orderedWord}</div><div>${T.mortarVolume}: ${fill(T.trailNetToBatch, { a: mortarVolumeNet.toFixed(3), b: mortarVolumeOrder.toFixed(3), c: (mortarVolumeOrder - mortarVolumeNet).toFixed(3) })}; ${T.mortarDryFactor}: ${mortarDryFactor.toFixed(2)}; ${T.mortarMixRatio}: <bdi dir="ltr">${mortarRatioParts.join(':')}</bdi></div><div>${T.cementWeight}: ${fill(T.trailCementOrdered, { a: cementWeight.toFixed(2), b: cementBags, kg: getCementBagMass(), c: cementOrderedKg.toFixed(0), d: (cementOrderedKg - cementWeight).toFixed(2) })}</div><div>${T.mixingWaterEstimate}: ${fill(T.trailWaterPerKg, { v: mixingWaterLitres.toFixed(1) })}</div>${hasOpenings ? `<div>${T.totalOpeningVolume}: ${totalOpeningVolumeForDisplay}</div>` : ''}${hollowBrickNote ? `<div>${hollowBrickNote}</div>` : ''}</div></details>
                                 
                                  <div class="sm:col-span-2 mt-2 pt-2 border-t border-gray-700">
                                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-start">
@@ -200,7 +213,7 @@ window.__calcHandlers.bricks = function (ctx) {
                                  </div>
                                 
                                  <div class="col-span-2 text-center mt-2 pt-2 border-t border-gray-700 total-cost-print">
-                                     <strong class="font-bold text-lg header-title">${T.totalCost} ${currency}${totalCost.toFixed(2)}</strong>
+                                     <strong class="font-bold text-lg header-title">${T.totalCost} ${materialCostsComplete ? `${currency}${totalCost.toFixed(2)}` : T.costNotEntered}</strong>
                                  </div>
                              </div>
                          </div>

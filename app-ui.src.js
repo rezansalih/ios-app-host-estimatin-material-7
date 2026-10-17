@@ -348,6 +348,7 @@
       headIdx = items.length - 1;
       while (headIdx > 0 &&
              (items[headIdx].getAttribute('data-kind') === 'detail' ||
+              items[headIdx].getAttribute('data-kind') === 'cost' ||
               isMoneyLike(rawValue(items[headIdx])))) {
         headIdx--;
       }
@@ -536,6 +537,13 @@
     var rows = doc.createElement('div'); rows.className = 'order-rows';
     order.forEach(function (it) { rows.appendChild(it); });
     section.appendChild(heading); section.appendChild(rows);
+    if (resultEl.id === 'steel-result') {
+      var barsNote = doc.createElement('p');
+      barsNote.className = 'order-note';
+      barsNote.setAttribute('data-lang', 'orderBarsNote');
+      barsNote.textContent = t('orderBarsNote', 'Yards sell steel as standard 12 m commercial bars — the counts above are bars to order.');
+      rows.appendChild(barsNote);
+    }
 
     grid.insertBefore(section, grid.firstChild);
 

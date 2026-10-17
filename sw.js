@@ -1,4 +1,4 @@
-const CACHE = 'material-estimator-v43';
+const CACHE = 'material-estimator-v47';
 const CACHE_PREFIX = 'material-estimator-';
 const APP_SHELL = [
   './index.html',

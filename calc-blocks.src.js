@@ -17,13 +17,17 @@ window.__calcHandlers.blocks = function (ctx) {
                     return;
                 }
 
-                const blockCost = Number(document.getElementById('block-cost').value || 0);
-                const cementCost = Number(document.getElementById('block-cement-cost').value || 0);
-                const sandCost = Number(document.getElementById('block-sand-cost').value || 0);
+                const blockCostRaw = document.getElementById('block-cost').value.trim();
+                const cementCostRaw = document.getElementById('block-cement-cost').value.trim();
+                const sandCostRaw = document.getElementById('block-sand-cost').value.trim();
+                // An empty price field means "not entered" — it must never show as 0 cost.
+                const blockCost = blockCostRaw === '' ? null : Number(blockCostRaw);
+                const cementCost = cementCostRaw === '' ? null : Number(cementCostRaw);
+                const sandCost = sandCostRaw === '' ? null : Number(sandCostRaw);
                 const includeMortar = document.getElementById('block-include-mortar').checked;
                 const mortarRatioParts = document.getElementById('block-mortar-ratio').value.split(':').map(Number);
                 const cementDensity = Number(document.getElementById('block-cement-density').value);
-                if ([blockCost, cementCost, sandCost].some(v => !Number.isFinite(v) || v < 0) || !Number.isFinite(cementDensity) || cementDensity <= 0 || mortarRatioParts.some(v => !Number.isFinite(v) || v <= 0)) { showError(T.errRequiredFields); return; }
+                if ([blockCost, cementCost, sandCost].filter(v => v !== null).some(v => !Number.isFinite(v) || v < 0) || !Number.isFinite(cementDensity) || cementDensity <= 0 || mortarRatioParts.some(v => !Number.isFinite(v) || v <= 0)) { showError(T.errRequiredFields); return; }
 
                 const mode = document.querySelector('input[name="block-mode"]:checked').value;
                 let totalWallVolume, length, height, dimsWallWidth = null;
@@ -85,6 +89,13 @@ window.__calcHandlers.blocks = function (ctx) {
                 const mortarThicknessM = includeMortar ? Number(document.getElementById('block-mortar-thickness').value) / 100 : 0;
                 const mortarDryFactor = includeMortar ? Number(document.getElementById('block-mortar-dry-factor').value) : 1;
                 const wallThicknessM = dimsWallWidth || blockWidthM;
+                const glueMode = includeMortar && document.getElementById('block-joint-type')?.value === 'glue';
+                const glueRate = glueMode ? Number(document.getElementById('block-glue-rate').value) : null;
+                const glueBagSize = glueMode ? Number(document.getElementById('block-glue-bag').value) : null;
+                const glueCostRaw = glueMode ? document.getElementById('block-glue-cost').value.trim() : '';
+                const gluePrice = glueCostRaw === '' ? null : Number(glueCostRaw);
+                if (glueMode && (!Number.isFinite(glueRate) || glueRate <= 0 || !Number.isFinite(glueBagSize) || glueBagSize <= 0 ||
+                    (gluePrice !== null && (!Number.isFinite(gluePrice) || gluePrice < 0)))) { showError(T.errRequiredFields); return; }
                 if (!Number.isFinite(mortarThicknessM) || mortarThicknessM < 0 || !Number.isFinite(mortarDryFactor) || mortarDryFactor < 1 || !Number.isFinite(wallThicknessM) || wallThicknessM <= 0) { showError(T.errRequiredFields); return; }
                 const requestedLeaves = mode === 'dims' ? Number(document.getElementById('block-leaves')?.value) : 1;
                 if (!Number.isInteger(requestedLeaves) || requestedLeaves < 1) { showError(T.errDimsWallWidth); return; }
@@ -97,7 +108,12 @@ window.__calcHandlers.blocks = function (ctx) {
                 const netWallArea = totalWallVolume / wallThicknessM;
                 const unitFaceArea = (blockLengthM + mortarThicknessM) * (blockHeightM + mortarThicknessM);
                 blocksNeededUnwasted = (netWallArea / unitFaceArea) * leaves;
-                if (includeMortar) {
+                let glueKg = 0, glueBags = 0;
+                if (glueMode) {
+                    glueKg = netWallArea * leaves * glueRate * wastageFactor;
+                    glueBags = Math.ceil(glueKg / glueBagSize);
+                }
+                if (includeMortar && !glueMode) {
                     mortarVolume = totalWallVolume - (blocksNeededUnwasted * singleBlockVolume);
                     if (mortarVolume < -1e-9) { showError(T.errRequiredFields); return; }
                     mortarVolume = Math.max(0, mortarVolume);
@@ -113,21 +129,35 @@ window.__calcHandlers.blocks = function (ctx) {
                 }
                 
                 const blocksNeeded = Math.ceil(blocksNeededUnwasted * wastageFactor);
-                const totalBlockCost = blocksNeeded * blockCost;
-                const totalCementCost = cementBags * cementCost;
-                const totalSandCost = sandVolume * sandCost;
-                const totalCost = totalBlockCost + totalCementCost + totalSandCost;
-                
-                const materialCostsComplete = [blockCost, cementCost, sandCost].every(v => Number.isFinite(v) && v >= 0);
+                const totalBlockCost = blockCost === null ? null : blocksNeeded * blockCost;
+                const totalCementCost = (!glueMode && cementCost !== null) ? cementBags * cementCost : null;
+                const totalSandCost = (!glueMode && sandCost !== null) ? sandVolume * sandCost : null;
+                const totalGlueCost = glueMode ? (gluePrice === null ? null : glueBags * gluePrice) : null;
+                const materialCostsComplete = (glueMode
+                    ? [blockCost, gluePrice]
+                    : [blockCost, cementCost, sandCost]
+                ).every(v => v !== null && Number.isFinite(v) && v >= 0);
+                const totalCost = materialCostsComplete
+                    ? totalBlockCost + (glueMode ? totalGlueCost : totalCementCost + totalSandCost)
+                    : null;
                 const currency = getCurrency();
-                const hollowGroutNote = blockOpt.value === 'hollow' ? T.hollowBlockNote : '';
+                const hollowGroutNote = ['hollow', 'thermo_20', 'thermo_15'].includes(blockOpt.value) ? T.hollowBlockNote : '';
 
                 lastCalcData.blocks = {
                     volume: `${totalWallVolume.toFixed(2)} m³`,
                     blocks: `${blocksNeeded} ${T.piecesWord}`,
-                    cement: includeMortar ? `${cementBags} ${T.bagsWord}` : 'N/A',
-                    sand: includeMortar ? `${sandVolume.toFixed(2)} m³` : 'N/A',
-                    cost: materialCostsComplete ? `${currency}${totalCost.toFixed(2)}` : T.costNotEntered
+                    cement: glueMode ? `${glueBags} ${T.bagsWord}` : (includeMortar ? `${cementBags} ${T.bagsWord}` : 'N/A'),
+                    sand: (!glueMode && includeMortar) ? `${sandVolume.toFixed(2)} m³` : 'N/A',
+                    cost: materialCostsComplete ? `${currency}${totalCost.toFixed(2)}` : T.costNotEntered,
+                    quoteLines: [
+                        { item: T.totalBlocks, qty: `${blocksNeeded} ${T.piecesWord}`, unitPrice: blockCost },
+                        ...(glueMode
+                            ? [{ item: T.glueAdhesive, qty: `${glueBags} ${T.bagsWord} (${glueKg.toFixed(1)} kg)`, unitPrice: gluePrice }]
+                            : (includeMortar ? [
+                                { item: T.cementBags, qty: `${cementBags} ${T.bagsWord}`, unitPrice: cementCost },
+                                { item: T.sand, qty: `${sandVolume.toFixed(2)} m³`, unitPrice: sandCost }
+                            ] : []))
+                    ]
                 };
                 
                 if (!window.__langRecalc) sessionResults.blocks.push(lastCalcData.blocks);
@@ -136,22 +166,27 @@ window.__calcHandlers.blocks = function (ctx) {
                 const resultDiv = document.getElementById('blocks-result');
                 let mortarResultsHTML = '', costResultsHTML = '';
                 
-                if (includeMortar && mortarVolume > 0) {
+                const costRow = (label, value) => `<div class="result-item flex items-center gap-2" data-kind="cost"><i data-lucide="wallet"></i><span><strong class="font-semibold block">${label}</strong> ${value}</span></div>`;
+                const rowsCost = [];
+                if (totalBlockCost !== null) rowsCost.push(costRow(T.blockCost, `${currency}${totalBlockCost.toFixed(2)}`));
+                if (totalCementCost !== null) rowsCost.push(costRow(T.cementCost, `${currency}${totalCementCost.toFixed(2)}`));
+                if (totalSandCost !== null) rowsCost.push(costRow(T.sandCost, `${currency}${totalSandCost.toFixed(2)}`));
+                if (totalGlueCost !== null) rowsCost.push(costRow(T.glueAdhesive, `${currency}${totalGlueCost.toFixed(2)}`));
+                if (glueMode) {
+                    mortarResultsHTML = `
+                        <div class="result-item flex items-center gap-2" data-kind="order"><i data-lucide="shopping-bag"></i><span><strong class="font-semibold block">${T.glueAdhesive}</strong> ${glueKg.toFixed(1)} kg · ${glueBags} ${T.bagsWord} × ${glueBagSize} kg</span></div>
+                    `;
+                    costResultsHTML = rowsCost.join('');
+                } else if (includeMortar && mortarVolume > 0) {
                     mortarResultsHTML = `
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="blending"></i><span><strong class="font-semibold block">${T.mortarVolume}</strong> ${mortarVolume.toFixed(3)} m³</span></div>
                         <div class="result-item flex items-center gap-2" data-kind="order"><i data-lucide="shopping-bag"></i><span><strong class="font-semibold block">${T.cementBags}</strong> ${cementBags} ${T.bagsWord}</span></div>
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="scale"></i><span><strong class="font-semibold block">${T.cementWeight}</strong> ${cementWeight.toFixed(2)} kg</span></div>
                         <div class="result-item flex items-center gap-2" data-kind="order"><i data-lucide="waves"></i><span><strong class="font-semibold block">${T.sand}</strong> ${sandVolume.toFixed(3)} m³</span></div>
                     `;
-                    costResultsHTML = `
-                        <div class="result-item flex items-center gap-2" data-kind="cost"><i data-lucide="wallet"></i><span><strong class="font-semibold block">${T.blockCost}</strong> ${currency}${totalBlockCost.toFixed(2)}</span></div>
-                        <div class="result-item flex items-center gap-2" data-kind="cost"><i data-lucide="wallet"></i><span><strong class="font-semibold block">${T.cementCost}</strong> ${currency}${totalCementCost.toFixed(2)}</span></div>
-                        <div class="result-item flex items-center gap-2 col-span-2" data-kind="cost"><i data-lucide="wallet"></i><span><strong class="font-semibold block">${T.sandCost}</strong> ${currency}${totalSandCost.toFixed(2)}</span></div>
-                    `;
+                    costResultsHTML = rowsCost.join('');
                 } else {
-                    costResultsHTML = `
-                        <div class="result-item flex items-center gap-2 col-span-2" data-kind="cost"><i data-lucide="wallet"></i><span><strong class="font-semibold block">${T.blockCost}</strong> ${currency}${totalBlockCost.toFixed(2)}</span></div>
-                    `;
+                    costResultsHTML = rowsCost.join('');
                 }
 
                 resultDiv.innerHTML = `
@@ -171,6 +206,10 @@ window.__calcHandlers.blocks = function (ctx) {
                                     <i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i>
                                     <span data-lang="pdfBtn">${T.pdfBtn}</span>
                                 </button>
+<button type="button" class="btn btn-secondary result-action-btn quote-btn" title="${T.quoteBtn}">
+                                    <i data-lucide="file-text" class="w-4 h-4 pointer-events-none"></i>
+                                    <span data-lang="quoteBtn">${T.quoteBtn}</span>
+                                </button>
                              </div>
                         </div>
                         <div class="result-content">
@@ -182,7 +221,7 @@ window.__calcHandlers.blocks = function (ctx) {
 
                                  ${hasOpenings ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start" data-kind="detail"><i data-lucide="scan"></i><span><strong class="font-semibold block">${T.totalOpeningVolume}</strong> ${totalOpeningVolumeForDisplay}</span></div>` : ''}
                                 ${hollowGroutNote ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start"><i data-lucide="info"></i><span>${hollowGroutNote}</span></div>` : ''}
-                                <details class="calculation-trail card p-3 mt-2 sm:col-span-2 text-sm text-start"><summary class="font-semibold">${T.calculationDetails || 'Calculation details'}</summary><div class="mt-2 space-y-1"><div>${mode === 'volume' ? `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³` : `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³; ${T.wallWidth}: ${wallThicknessM.toFixed(3)} m; ${T.wallLeaves}: ${leaves}`}</div><div>${T.totalBlocks}: ${blocksNeededUnwasted.toFixed(2)} ${T.trailBeforeWaste} + ${(blocksNeeded - blocksNeededUnwasted).toFixed(2)} ${T.wasteWord} = ${blocksNeeded} ${T.orderedWord}</div><div>${T.mortarVolume}: ${fill(T.trailNetToBatch, { a: mortarVolume.toFixed(3), b: (mortarVolume * mortarDryFactor > 0 ? (mortarVolume * wastageFactor).toFixed(3) : '0.000'), c: (mortarVolume * wastageFactor - mortarVolume).toFixed(3) })}; ${T.mortarDryFactor}: ${mortarDryFactor.toFixed(2)}; ${T.mortarMixRatio}: ${mortarRatioParts.join(':')}</div>${hasOpenings ? `<div>${T.totalOpeningVolume}: ${totalOpeningVolumeForDisplay}</div>` : ''}${hollowGroutNote ? `<div>${hollowGroutNote}</div>` : ''}</div></details>
+                                <details class="calculation-trail card p-3 mt-2 sm:col-span-2 text-sm text-start"><summary class="font-semibold">${T.calculationDetails || 'Calculation details'}</summary><div class="mt-2 space-y-1"><div>${mode === 'volume' ? `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³` : `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³; ${T.wallWidth}: ${wallThicknessM.toFixed(3)} m; ${T.wallLeaves}: ${leaves}`}</div><div>${T.totalBlocks}: ${blocksNeededUnwasted.toFixed(2)} ${T.trailBeforeWaste} + ${(blocksNeeded - blocksNeededUnwasted).toFixed(2)} ${T.wasteWord} = ${blocksNeeded} ${T.orderedWord}</div><div>${T.mortarVolume}: ${fill(T.trailNetToBatch, { a: mortarVolume.toFixed(3), b: (mortarVolume * mortarDryFactor > 0 ? (mortarVolume * wastageFactor).toFixed(3) : '0.000'), c: (mortarVolume * wastageFactor - mortarVolume).toFixed(3) })}; ${T.mortarDryFactor}: ${mortarDryFactor.toFixed(2)}; ${T.mortarMixRatio}: <bdi dir="ltr">${mortarRatioParts.join(':')}</bdi></div>${hasOpenings ? `<div>${T.totalOpeningVolume}: ${totalOpeningVolumeForDisplay}</div>` : ''}${hollowGroutNote ? `<div>${hollowGroutNote}</div>` : ''}</div></details>
                                
                                 <div class="sm:col-span-2 mt-2 pt-2 border-t border-gray-700">
                                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-start">
@@ -191,7 +230,7 @@ window.__calcHandlers.blocks = function (ctx) {
                                  </div>
 
                                 <div class="col-span-2 text-center mt-2 pt-2 border-t border-gray-700 total-cost-print">
-                                     <strong class="font-bold text-lg header-title">${T.totalCost} ${currency}${totalCost.toFixed(2)}</strong>
+                                     <strong class="font-bold text-lg header-title">${T.totalCost} ${materialCostsComplete ? `${currency}${totalCost.toFixed(2)}` : T.costNotEntered}</strong>
                                  </div>
                             </div>
                          </div>

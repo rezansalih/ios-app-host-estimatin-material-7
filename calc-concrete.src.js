@@ -56,7 +56,7 @@ window.__calcHandlers.concrete = function (ctx) {
                 const dryVolumeText = isApprovedRecipe ? T.approvedDryVolumeNote : `${dryVolume.toFixed(3)} m³ (${dryFactor} ${T.trailDryFactorNote})`;
                 const mixDetailsText = isApprovedRecipe
                     ? `${T.approvedRecipePerM3}: ${T.approvedCementWord} ${approvedRecipe.cementKgPerM3} kg, ${T.approvedWaterWord} ${approvedRecipe.waterLitresPerM3} L, ${T.approvedSandWord} ${approvedRecipe.sandKgPerM3} kg, ${T.approvedAggregateWord} ${approvedRecipe.aggregateKgPerM3} kg, ${T.approvedAdmixtureRateWord} ${approvedRecipe.admixturePerM3 || 0} ${approvedRecipe.admixtureUnit}/m³.`
-                    : `${mixMode === 'custom' ? T.customNominalWord : T.nominalWord} ${T.ratioLooseVolume}: ${ratio.join(':')}; ${T.looseDensity}: ${cementDensity} kg/m³`;
+                    : `${mixMode === 'custom' ? T.customNominalWord : T.nominalWord} ${T.ratioLooseVolume}: <bdi dir="ltr">${ratio.join(':')}</bdi>; ${T.looseDensity}: ${cementDensity} kg/m³`;
                 const costsValid = [cementCost, sandCost, aggregateCost, formworkCostPerM2].filter(v => v !== null).every(v => Number.isFinite(v) && v >= 0);
                 if (!costsValid) { showError(T.errRequiredFields); return; }
                 const materialCostsComplete = cementCost !== null && sandCost !== null && aggregateCost !== null;
@@ -75,7 +75,12 @@ window.__calcHandlers.concrete = function (ctx) {
                     cement: `${cementBags} ${T.bagsWord}`,
                     sand: `${sandVolume.toFixed(2)} ${materialUnit}`,
                     aggregate: `${aggregateVolume.toFixed(2)} ${materialUnit}`,
-                    cost: materialCostsComplete ? `${currency}${totalCost.toFixed(2)}` : T.costNotEntered
+                    cost: materialCostsComplete ? `${currency}${totalCost.toFixed(2)}` : T.costNotEntered,
+                    quoteLines: [
+                        { item: T.cementBags, qty: `${cementBags} ${T.bagsWord}`, unitPrice: (document.getElementById('concrete-cement-cost').value.trim() === '' ? null : Number(document.getElementById('concrete-cement-cost').value)) },
+                        { item: T.sand, qty: `${sandVolume.toFixed(2)} ${materialUnit}`, unitPrice: (document.getElementById('concrete-sand-cost').value.trim() === '' ? null : Number(document.getElementById('concrete-sand-cost').value)) },
+                        { item: T.aggregate, qty: `${aggregateVolume.toFixed(2)} ${materialUnit}`, unitPrice: (document.getElementById('concrete-aggregate-cost').value.trim() === '' ? null : Number(document.getElementById('concrete-aggregate-cost').value)) }
+                    ]
                 };
                 
                 let additionalResultsHTML = '';
@@ -145,6 +150,10 @@ window.__calcHandlers.concrete = function (ctx) {
                                 <button type="button" class="btn btn-secondary result-action-btn export-btn" title="${T.exportPdfTitle}">
                                     <i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i>
                                     <span data-lang="pdfBtn">${T.pdfBtn}</span>
+                                </button>
+<button type="button" class="btn btn-secondary result-action-btn quote-btn" title="${T.quoteBtn}">
+                                    <i data-lucide="file-text" class="w-4 h-4 pointer-events-none"></i>
+                                    <span data-lang="quoteBtn">${T.quoteBtn}</span>
                                 </button>
                             </div>
                         </div>

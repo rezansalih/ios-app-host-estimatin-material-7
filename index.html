@@ -949,6 +949,40 @@ body.keyboard-open .mobile-actions { display: none !important; }
 
 .rh-value, .rh-cost strong, .order-row bdi { unicode-bidi: isolate; }
 
+
+/* ===== Client quote sheet (printable A4) ===== */
+#quote-overlay { position: fixed; inset: 0; z-index: 80; background: rgba(10, 20, 22, 0.55); overflow: auto; padding: 12px; }
+.quote-sheet { max-width: 820px; margin: 0 auto; background: #fff; color: #16323a; border-radius: 12px; padding: 18px; }
+.quote-toolbar { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 10px; }
+.quote-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-bottom: 2px solid #0d9488; padding-bottom: 8px; margin-bottom: 12px; }
+.quote-title { font-size: 22px; font-weight: 800; margin: 0; }
+.quote-date-line { font-size: 12.5px; opacity: 0.8; }
+.quote-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; margin-bottom: 10px; }
+.quote-fields label, .quote-notes label { display: block; font-size: 11px; opacity: 0.75; margin-bottom: 2px; }
+.quote-input { width: 100%; border: 1px solid #c9d7dc; border-radius: 6px; padding: 6px 8px; font-size: 14px; background: #fff; color: inherit; }
+.quote-hint { font-size: 11.5px; opacity: 0.7; margin: 4px 0 8px; }
+.quote-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.quote-table th, .quote-table td { border: 1px solid #c9d7dc; padding: 6px 8px; text-align: start; }
+.quote-table th { background: #eef6f6; }
+.quote-table tfoot td { font-weight: 700; }
+.quote-notes { margin-top: 10px; }
+.quote-signs { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 34px; text-align: center; font-size: 12.5px; }
+.quote-sign-line { border-top: 1.5px solid #16323a; margin-bottom: 6px; }
+.order-note { font-size: 11.5px; opacity: 0.75; margin-top: 6px; }
+@media print {
+  /* ---- Quote printing: ONLY the quote overlay prints ----
+     The base print rule (body > *:not(#print-area)) would otherwise hide the
+     quote sheet and re-show a stale #print-area, so these rules must win. */
+  body.printing-quote > *:not(#quote-overlay) { display: none !important; }
+  body.printing-quote #quote-overlay { display: block !important; position: static; background: #fff; padding: 0; overflow: visible; }
+  body.printing-quote #print-area { display: none !important; }
+  body.printing-quote .quote-sheet { max-width: none; border-radius: 0; padding: 0; box-shadow: none; }
+  body.printing-quote .quote-toolbar, body.printing-quote .quote-hint { display: none !important; }
+  body.printing-quote .quote-input { border: 1px solid #c9d7dc; }
+  /* ---- Normal app printing (PDF button): the quote overlay NEVER prints ---- */
+  body:not(.printing-quote) #quote-overlay { display: none !important; }
+}
+
 </style>
 <!-- APP_STYLES_END -->
 <script>
@@ -1156,6 +1190,22 @@ body.keyboard-open .mobile-actions { display: none !important; }
                     <div><label for="cement-bag-mass" class="block text-sm font-medium mb-1" data-upgrade-label="cementBagSize">Cement bag size</label><select id="cement-bag-mass" class="pro-input w-full"><option value="25" data-upgrade-label="bag25">25 kg</option><option value="40" data-upgrade-label="bag40">40 kg</option><option value="50" selected data-upgrade-label="bag50">50 kg</option></select></div>
                  </div>
             </div>
+
+            <div class="card p-4 rounded-lg mb-4 text-start">
+                <h2 class="text-lg font-semibold header-title mb-1" data-lang="backupSection">Data backup</h2>
+                <p class="text-xs mb-3" style="color: var(--muted);" data-lang="backupHint">Saves settings, projects, session rows and history into one JSON file you can keep or move to another device.</p>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" id="backup-btn" class="btn btn-primary">
+                        <i data-lucide="download" class="w-4 h-4 mr-1 pointer-events-none"></i>
+                        <span data-lang="backupBtn">Back up (JSON)</span>
+                    </button>
+                    <button type="button" id="restore-btn" class="btn btn-secondary">
+                        <i data-lucide="upload" class="w-4 h-4 mr-1 pointer-events-none"></i>
+                        <span data-lang="restoreBtn">Restore from file</span>
+                    </button>
+                    <input type="file" id="restore-file" accept="application/json,.json" class="hidden" aria-hidden="true">
+                </div>
+            </div>
         </div>
         
         <div>
@@ -1260,10 +1310,11 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                 <div id="concrete-nominal-ratio-wrap">
                                     <label for="concrete-ratio" class="block text-sm font-medium" data-lang="mixRatio">Cement : sand : coarse aggregate, by loose volume</label>
                                     <select id="concrete-ratio" class="pro-input">
-                                        <option value="1:1.5:3">Nominal 1:1.5:3</option>
-                                        <option value="1:2:4" selected>Nominal 1:2:4</option>
-                                        <option value="1:3:6">Nominal 1:3:6</option>
+                                        <option value="1:1.5:3" data-lang="gradeOptC25">C25–C30 · High strength (1:1.5:3)</option>
+                                        <option value="1:2:4" selected data-lang="gradeOptC20">C20 · Ordinary (1:2:4)</option>
+                                        <option value="1:3:6" data-lang="gradeOptC15">C15 · Blinding (1:3:6)</option>
                                     </select>
+                                    <p id="concrete-grade-note" class="text-xs opacity-75 mt-1" data-lang="gradeNoteC20">Ordinary concrete for footings, walls and slabs. About 300–350 kg cement per m³.</p>
                                 </div>
                                 <select id="concrete-mix-basis" class="pro-input mt-2"><option value="nominal" data-lang="mixModeNominal">Nominal ratio</option><option value="custom" data-lang="mixModeCustom">Custom nominal ratio</option><option value="approved" data-lang="mixModeApproved">Approved recipe per m³</option></select>
                                 <div id="concrete-approved-profile" class="hidden mt-2"><input id="concrete-approved-ratio" class="pro-input" value="1:2:4" placeholder="Custom cement:sand:coarse aggregate ratio"><p class="text-xs opacity-70 mt-1" data-lang="customRatioNote">This is still a nominal loose-volume ratio, not an approved mix design.</p></div>
@@ -1449,7 +1500,12 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                     <option value="solid_20" data-width="0.2" data-length="400" data-height="200" data-lang="solidBlock20">Solid (40x20x20cm)</option>
                                     <option value="solid_15" data-width="0.15" data-length="400" data-height="200" data-lang="solidBlock15">Solid (40x20x15cm)</option>
                                     <option value="hollow" data-width="0.2" data-length="400" data-height="200" data-lang="hollowBlock">Hollow (40x20x20cm)</option>
-                                    <option value="lightweight" data-width="0.1" data-length="600" data-height="200" data-lang="lightweightBlock">Lightweight (60x20x10cm)</option><option value="custom" data-lang="customProduct">Custom site product</option>
+                                    <option value="lightweight" data-width="0.1" data-length="600" data-height="200" data-lang="lightweightBlock">Lightweight (60x20x10cm)</option>
+                                    <option value="thermo_20" data-width="0.2" data-length="600" data-height="200" data-lang="thermoBlock20">Thermo-stone hollow (60x20x20cm)</option>
+                                    <option value="thermo_15" data-width="0.15" data-length="600" data-height="200" data-lang="thermoBlock15">Thermo-stone hollow (60x20x15cm)</option>
+                                    <option value="aac_20" data-width="0.2" data-length="600" data-height="200" data-lang="aacBlock20">AAC block (60x20x20cm)</option>
+                                    <option value="aac_15" data-width="0.15" data-length="600" data-height="200" data-lang="aacBlock15">AAC block (60x20x15cm)</option>
+                                    <option value="custom" data-lang="customProduct">Custom site product</option>
                                 </select>
                                 <p id="block-hollow-note" class="hidden text-xs opacity-75 mt-2" data-lang="hollowBlockNote">Hollow blocks are counted by external dimensions and joint mortar only. Grouted cells are not included; add a separate grout estimate if required.</p>
                                 <div id="block-custom-profile" class="hidden grid grid-cols-3 gap-2 mt-2"><input id="block-custom-length" type="number" class="pro-input" placeholder="Length (mm)"><input id="block-custom-width" type="number" class="pro-input" placeholder="Thickness (mm)"><input id="block-custom-height" type="number" class="pro-input" placeholder="Height (mm)"></div>
@@ -1461,7 +1517,23 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                     <span class="ms-2" data-lang="includeMortar">Calculate with Mortar</span>
                                 </label>
                            </div>
-                           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                           <div id="block-joint-type-wrap" class="mt-2">
+                                <label for="block-joint-type" class="block text-sm font-medium" data-lang="glueJointLabel">Joint type</label>
+                                <select id="block-joint-type" class="pro-input w-full">
+                                    <option value="mortar" data-lang="glueMortar">Cement mortar (conventional)</option>
+                                    <option value="glue" data-lang="glueThinBed">Thin-bed adhesive</option>
+                                </select>
+                           </div>
+                           <div id="block-glue-fields" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
+                                <div>
+                                    <span class="label-with-hint"><label for="block-glue-rate" class="block text-sm font-medium" data-lang="glueRate">Glue per m² of wall (kg)</label><button type="button" class="hint-btn" data-hint="hintGlue" data-lang-aria="helpBtn" aria-label="Help">?</button></span>
+                                    <p class="field-hint hidden" data-lang="hintGlue">Thin-bed adhesive for thermo-stone and AAC blocks, applied 2–3 mm thick. About 4 kg per m² of wall is typical.</p>
+                                    <input type="number" inputmode="decimal" id="block-glue-rate" class="pro-input" value="4" min="0.5" step="0.5" data-sane="0.5:20:kg">
+                                </div>
+                                <div><label class="block text-sm font-medium" data-lang="glueBag">Glue bag size (kg)</label><input type="number" inputmode="decimal" id="block-glue-bag" class="pro-input" value="25" min="1" step="1"></div>
+                                <div><label class="block text-sm font-medium" data-lang="glueCost">Price per glue bag</label><input type="number" inputmode="decimal" id="block-glue-cost" class="pro-input" min="0" step="0.01"></div>
+                           </div>
+                           <div id="block-mortar-fields" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                                <div>
                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="mortarThickness">Mortar Thickness (cm)</label><button type="button" class="hint-btn" data-hint="hintMortar" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintMortar">How thick the mortar joint is between blocks or bricks.</p>
                                    <input type="number" inputmode="decimal" id="block-mortar-thickness" value="1.0" min="0" step="0.1" class="pro-input" data-sane="0.2:5:">
@@ -1762,6 +1834,7 @@ body.keyboard-open .mobile-actions { display: none !important; }
                                 <option value="beam" data-lang="beam">Beam</option>
                                 <option value="column" data-lang="column">Column</option>
                                 <option value="one_way" data-lang="oneWay">One-Way Reinforcement</option>
+                                <option value="brc" data-lang="brcMesh">BRC wire mesh</option>
                                 <option value="custom" data-lang="customBars">Custom bars</option>
                             </select>
                             <div id="steel-member-qty-row">
@@ -2122,6 +2195,31 @@ body.keyboard-open .mobile-actions { display: none !important; }
                             <button type="button" id="steel-custom-add-row" class="btn btn-secondary w-full" data-lang="addRowBtn">Add bar row</button>
                         </div>
 
+                        <div id="steel-brc-inputs" class="hidden mt-2 space-y-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="block text-sm font-medium" data-lang="length">Length (m)</label><input type="number" inputmode="decimal" id="brc-area-len" class="pro-input" min="0.1" step="0.1"></div>
+                                <div><label class="block text-sm font-medium" data-lang="width">Width (m)</label><input type="number" inputmode="decimal" id="brc-area-wid" class="pro-input" min="0.1" step="0.1"></div>
+                            </div>
+                            <div>
+                                <span class="label-with-hint"><label for="brc-mode" class="block text-sm font-medium" data-lang="brcSoldAs">Sold as</label><button type="button" class="hint-btn" data-hint="hintBrc" data-lang-aria="helpBtn" aria-label="Help">?</button></span>
+                                <p class="field-hint hidden" data-lang="hintBrc">Ground slabs and driveways often use pre-welded wire mesh instead of tied bars. The count comes from the area plus an overlap allowance.</p>
+                                <select id="brc-mode" class="pro-input w-full">
+                                    <option value="roll" data-lang="brcRolls">Rolls</option>
+                                    <option value="sheet" data-lang="brcSheets">Sheets (panels)</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="block text-sm font-medium" data-lang="brcPieceW">Piece width (m)</label><input type="number" inputmode="decimal" id="brc-width" class="pro-input" value="2.0" min="0.5" step="0.1" data-sane="0.5:10:m"></div>
+                                <div><label class="block text-sm font-medium" data-lang="brcPieceL">Piece length (m)</label><input type="number" inputmode="decimal" id="brc-length" class="pro-input" value="20" min="1" step="0.5" data-sane="1:50:m"></div>
+                            </div>
+                            <div>
+                                <span class="label-with-hint"><label for="brc-overlap" class="block text-sm font-medium" data-lang="brcOverlap">Overlap / waste allowance (%)</label><button type="button" class="hint-btn" data-hint="hintOverlap" data-lang-aria="helpBtn" aria-label="Help">?</button></span>
+                                <p class="field-hint hidden" data-lang="hintOverlap">Extra mesh for overlaps and cutting waste. 10% is common.</p>
+                                <input type="number" inputmode="decimal" id="brc-overlap" class="pro-input" value="10" min="0" max="50" step="1" data-sane="0:50:%">
+                            </div>
+                            <div><label class="block text-sm font-medium" data-lang="priceEach">Price per piece</label><input type="number" inputmode="decimal" id="brc-cost" class="pro-input" min="0" step="0.01"></div>
+                        </div>
+
                         <details id="steel-lap-details" class="advanced-details">
                             <summary>
                                 <i data-lucide="chevron-right" class="sd-chev adv-chev"></i>
@@ -2210,6 +2308,27 @@ body.keyboard-open .mobile-actions { display: none !important; }
                         <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1Excavation">1. Excavation Details</h3>
                         <div class="grid grid-cols-3 gap-2">
                             <div class="sm:col-span-3"><label for="earthwork-shape" class="block text-sm font-medium" data-lang="excavShape">Excavation shape</label><select id="earthwork-shape" class="pro-input"><option value="rectangular" data-lang="shapeRectangular">Rectangular pit</option><option value="trench" data-lang="shapeTrench">Trench / strip</option><option value="custom" data-lang="shapeCustom">Custom profile (same L × W × H basis)</option></select></div>
+                            <details class="sm:col-span-3 card p-2 text-start">
+                                <summary class="cursor-pointer text-sm font-medium header-title" data-lang="convTitle">Land area converter</summary>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
+                                    <div><label class="block text-xs font-medium" data-lang="convValue">Area</label>
+                                        <div class="flex gap-1">
+                                            <input type="number" inputmode="decimal" id="land-area-value" class="pro-input" min="0" step="0.01">
+                                            <select id="land-area-unit" class="pro-input">
+                                                <option value="m2" data-lang="convM2">m²</option>
+                                                <option value="dunum" data-lang="convDunum">Dunum (2,500 m²)</option>
+                                                <option value="olak" data-lang="convOlak">Olak (100 m²)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div><label class="block text-xs font-medium" data-lang="convM2">Square meters (m²)</label><input type="text" id="land-out-m2" class="pro-input" readonly></div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div><label class="block text-xs font-medium" data-lang="convDunum">Dunum (2,500 m²)</label><input type="text" id="land-out-dunum" class="pro-input" readonly></div>
+                                        <div><label class="block text-xs font-medium" data-lang="convOlak">Olak (100 m²)</label><input type="text" id="land-out-olak" class="pro-input" readonly></div>
+                                    </div>
+                                </div>
+                                <p class="text-xs opacity-75 mt-1" data-lang="convHint">Type an area in one unit to see it in the others. 1 dunum = 2,500 m²; 1 olak = 100 m².</p>
+                            </details>
                             <div>
                                 <label for="earthwork-length" class="block text-xs sm:text-sm font-medium" data-lang="length">Length (m)</label>
                                 <input type="number" inputmode="decimal" id="earthwork-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L" data-sane="0.3:300:m">
@@ -2536,5 +2655,61 @@ if ('serviceWorker' in navigator) {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script>
+<div id="quote-overlay" class="hidden" aria-hidden="true">
+    <div class="quote-sheet" id="quote-sheet">
+        <div class="quote-toolbar">
+            <button type="button" id="quote-close-btn" class="btn btn-secondary">
+                <i data-lucide="x" class="w-4 h-4 mr-1 pointer-events-none"></i>
+                <span data-lang="quoteCloseBtn">Close</span>
+            </button>
+            <button type="button" id="quote-print-btn" class="btn btn-primary">
+                <i data-lucide="printer" class="w-4 h-4 mr-1 pointer-events-none"></i>
+                <span data-lang="quotePrintBtn">Print / Save as PDF</span>
+            </button>
+            <button type="button" id="quote-whatsapp-btn" class="btn btn-primary">
+                <i data-lucide="message-circle" class="w-4 h-4 mr-1 pointer-events-none"></i>
+                <span data-lang="quoteWhatsappBtn">Send to WhatsApp</span>
+            </button>
+        </div>
+        <div class="quote-doc" id="quote-doc">
+            <div class="quote-head">
+                <h1 class="quote-title" data-lang="quoteTitle">Material Quote</h1>
+                <div class="quote-date-line"><span data-lang="quoteDateLabel">Date</span>: <span id="quote-date-val"></span></div>
+            </div>
+            <div class="quote-fields">
+                <div><label data-lang="quoteProject">Project name</label><input id="quote-project" class="quote-input" type="text"></div>
+                <div><label data-lang="quoteClient">Client name</label><input id="quote-client" class="quote-input" type="text"></div>
+                <div><label data-lang="quoteContractor">Contractor / Engineer name</label><input id="quote-contractor" class="quote-input" type="text"></div>
+                <div><label data-lang="quoteContact">Contact</label><input id="quote-contact" class="quote-input" type="text"></div>
+            </div>
+            <p class="quote-hint" data-lang="quotePriceHint">Type the agreed unit price for each line — the amounts and grand total fill in automatically.</p>
+            <table class="quote-table" id="quote-table">
+                <thead>
+                    <tr>
+                        <th data-lang="quoteItemCol">Item</th>
+                        <th data-lang="quoteQtyCol">Quantity</th>
+                        <th data-lang="quotePriceCol">Unit price</th>
+                        <th data-lang="quoteAmountCol">Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="quote-items"></tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" data-lang="quoteTotalLabel">Grand total</td>
+                        <td id="quote-total"></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="quote-notes">
+                <label data-lang="quoteNotesLabel">Notes</label>
+                <textarea id="quote-notes" class="quote-input" rows="2"></textarea>
+            </div>
+            <div class="quote-signs">
+                <div><div class="quote-sign-line"></div><div data-lang="quoteSignContractor">Contractor signature</div></div>
+                <div><div class="quote-sign-line"></div><div data-lang="quoteSignClient">Client signature</div></div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

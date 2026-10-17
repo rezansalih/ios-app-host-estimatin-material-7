@@ -28,7 +28,10 @@ window.__calcHandlers.earthwork = function (ctx) {
                     description: `${length}x${width}x${height} m`,
                     quantity: quantity,
                     volume: `${volume.toFixed(2)} m³`,
-                    truckLoads: `${totalLoads} (${truckCapacity} m³, +${swellPct}%)`
+                    truckLoads: `${totalLoads} (${truckCapacity} m³, +${swellPct}%)`,
+                    quoteLines: [
+                        { item: T.truckLoads, qty: `${totalLoads} × ${truckCapacity} m³`, unitPrice: null }
+                    ]
                 };
 
                 if (!window.__langRecalc) sessionResults.earthwork.push(lastCalcData.earthwork);
@@ -51,6 +54,10 @@ window.__calcHandlers.earthwork = function (ctx) {
                                 <button type="button" class="btn btn-secondary result-action-btn export-btn" title="${T.exportPdfTitle}">
                                     <i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i>
                                     <span data-lang="pdfBtn">${T.pdfBtn}</span>
+                                </button>
+<button type="button" class="btn btn-secondary result-action-btn quote-btn" title="${T.quoteBtn}">
+                                    <i data-lucide="file-text" class="w-4 h-4 pointer-events-none"></i>
+                                    <span data-lang="quoteBtn">${T.quoteBtn}</span>
                                 </button>
                             </div>
                         </div>

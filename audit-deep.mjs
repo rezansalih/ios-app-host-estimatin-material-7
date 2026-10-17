@@ -70,7 +70,7 @@ const ALL_KEYS = new Set([...htmlKeys, ...dynKeys].filter(k => k !== 'lang'));
 
 console.log('================ 1. LANGUAGE COVERAGE ================');
 const LATIN = /[A-Za-z]{2,}/g;
-const LATIN_OK = /^(m|cm|mm|ft|in|kg|L|pcs|USD|IQD|CSV|PDF|FIELDNOTE|TAG|OK|mm|cm|3d|40x20x20|40x20x15|60x20x10|215x102\.5x65|215x102\.5x73|290x90x40|30x12x12|24x11\.5x7\.5|Rezan|Salih|Noori|e\.g|IQS|Lap|Splice)$/;;
+const LATIN_OK = /^(m|cm|mm|ft|in|kg|L|pcs|USD|IQD|CSV|PDF|JSON|BRC|AAC|FIELDNOTE|TAG|OK|mm|cm|3d|40x20x20|40x20x15|60x20x10|215x102\.5x65|215x102\.5x73|290x90x40|30x12x12|24x11\.5x7\.5|Rezan|Salih|Noori|e\.g|IQS|Lap|Splice)$/;;
 
 for (const lang of LANGS) {
   const tbl = T[lang];
@@ -211,7 +211,7 @@ console.log('\n================ 4. BOTTOM BUTTONS ================');
   const row = d.querySelector('#bricks-result .result-actions');
   ok('result action row exists', !!row);
   const rbtns = [...row.querySelectorAll('button')];
-  ok('3 action buttons (Save / CSV / PDF)', rbtns.length === 3, `${rbtns.length}`);
+  ok('4 action buttons (Save / CSV / PDF / Quote)', rbtns.length === 4, `${rbtns.length}`);
   for (const b of rbtns) {
     const label = (b.textContent.trim()) || b.getAttribute('aria-label') || b.getAttribute('title');
     ok('action btn clearly named: "' + (label || 'NONE').slice(0, 28) + '"', !!label);

@@ -2,7 +2,7 @@
    (tab open or Calculate tap); registers its handler instead of running at startup. */
 window.__calcHandlers = window.__calcHandlers || {};
 window.__calcHandlers.steel = function (ctx) {
-  const { translations, getCurrency, getWastageFactor, renderSessionTable, showError, sessionResults, lastCalcData, errorBox } = ctx;
+  const { translations, fill, getCurrency, getWastageFactor, renderSessionTable, showError, sessionResults, lastCalcData, errorBox } = ctx;
 
   const calculateLengthWithLap = (singleBarLength, numberOfBars, diameter, includeLap, standardLength, lapFactor) => {
     if (!includeLap || singleBarLength <= standardLength) {
@@ -29,7 +29,9 @@ window.__calcHandlers.steel = function (ctx) {
   const currency = getCurrency();
   const wastageFactor = getWastageFactor();
   if (wastageFactor === null) return;
-  const costPerKg = Number(document.getElementById('steel-cost').value || 0);
+  const costPerKgRaw = document.getElementById('steel-cost').value.trim();
+  // An empty price field means "not entered" — it must never show as 0 cost.
+  const costPerKg = costPerKgRaw === '' ? null : Number(costPerKgRaw);
   const selectedElement = document.getElementById('steel-element-selector').value;
   if (!selectedElement) {
     showError(T.errSelectElement);
@@ -38,7 +40,7 @@ window.__calcHandlers.steel = function (ctx) {
   const isCustom = selectedElement === 'custom';
   const memberQuantity = isCustom ? 1 : Number(document.getElementById('steel-member-quantity')?.value || 1);
   if (!isCustom && (!Number.isInteger(memberQuantity) || memberQuantity < 1)) { showError(T.errRequiredFields); return; }
-  if (!Number.isFinite(costPerKg) || costPerKg < 0) { showError(T.errRequiredFields); return; }
+  if (costPerKg !== null && (!Number.isFinite(costPerKg) || costPerKg < 0)) { showError(T.errRequiredFields); return; }
 
   // Lap splices are enabled by opening the collapsed "Lap splices" details.
   const includeLap = !!document.getElementById('steel-lap-details')?.open;
@@ -58,6 +60,8 @@ window.__calcHandlers.steel = function (ctx) {
   let inputsValid = false;
   let description = '';
   let breakdownRows = [];          // { label, value } — details
+  let brcOrder = null;             // BRC mesh order line { label, value, pieceText }
+  const scheduleRows = [];         // bar-bending schedule: { dia, shape, count, cut, total }
   const byDiameter = {};           // dia -> total cut length (m), all members, incl. laps
   const addDiameter = (dia, lenMeters) => {
     const d = Number(dia);
@@ -71,7 +75,38 @@ window.__calcHandlers.steel = function (ctx) {
     return true;
   };
 
-  if (selectedElement === 'footing' || selectedElement === 'slab') {
+  const isBrc = selectedElement === 'brc';
+  if (isBrc) {
+    const brcMode = document.getElementById('brc-mode').value;
+    const areaLen = parseFloat(document.getElementById('brc-area-len').value);
+    const areaWid = parseFloat(document.getElementById('brc-area-wid').value);
+    const pieceW = parseFloat(document.getElementById('brc-width').value);
+    const pieceL = parseFloat(document.getElementById('brc-length').value);
+    const overlapPct = parseFloat(document.getElementById('brc-overlap').value);
+    const brcCostRaw = document.getElementById('brc-cost').value.trim();
+    const piecePrice = brcCostRaw === '' ? null : Number(brcCostRaw);
+    if (![areaLen, areaWid, pieceW, pieceL, overlapPct].every(Number.isFinite) ||
+        areaLen <= 0 || areaWid <= 0 || pieceW <= 0 || pieceL <= 0 || overlapPct < 0 ||
+        (piecePrice !== null && (!Number.isFinite(piecePrice) || piecePrice < 0))) {
+      showError(T.errRequiredFields); return;
+    }
+    const totalArea = areaLen * areaWid * memberQuantity;
+    const pieceArea = pieceW * pieceL;
+    const count = Math.ceil((totalArea * (1 + overlapPct / 100)) / pieceArea);
+    const brcUnit = brcMode === 'sheet' ? T.brcSheets : T.brcRolls;
+    description = `${areaLen}\u00d7${areaWid} m`;
+    breakdownRows = [
+      { label: T.brcArea, value: `${totalArea.toFixed(1)} m²` },
+      { label: T.brcSoldAs, value: `${pieceW}\u00d7${pieceL} m · ${pieceArea.toFixed(1)} m²` },
+      { label: T.brcOverlap, value: `${overlapPct}%` }
+    ];
+    brcOrder = { label: T.brcTotal, value: `${count} ${brcUnit}`, pieceText: `${count} × ${pieceArea.toFixed(1)} m²`, price: piecePrice };
+    results.totalWeight = 0;
+    results.totalCost = piecePrice === null ? null : count * piecePrice;
+    inputsValid = true;
+  }
+
+  if (!isBrc && (selectedElement === 'footing' || selectedElement === 'slab')) {
     const mode = document.querySelector(`input[name="${selectedElement}-mode"]:checked`).value;
     const length = parseFloat(document.getElementById(`${selectedElement}-length`).value);
     const width = parseFloat(document.getElementById(`${selectedElement}-width`).value);
@@ -112,19 +147,21 @@ window.__calcHandlers.steel = function (ctx) {
     const weightAlongWidth = widLapResult.totalLength * weightPerMeter(diameterWid) * wastageFactor;
 
     breakdownRows.push({
-      label: `${T.lengthwiseBars} (Ø${diameterLen}mm)`,
+      label: `${T.lengthwiseBars} (<bdi dir="ltr">Ø${diameterLen}mm</bdi>)`,
       value: `${barsAlongLength} ${T.barsLabel} · ${weightAlongLength.toFixed(2)} kg${wasteNote}`
     });
     breakdownRows.push({
-      label: `${T.widthwiseBars} (Ø${diameterWid}mm)`,
+      label: `${T.widthwiseBars} (<bdi dir="ltr">Ø${diameterWid}mm</bdi>)`,
       value: `${barsAlongWidth} ${T.barsLabel} · ${weightAlongWidth.toFixed(2)} kg${wasteNote}`
     });
+    scheduleRows.push({ dia: diameterLen, shape: T.shapeStraight, count: barsAlongLength, cut: length, total: lenLapResult.totalLength });
+    scheduleRows.push({ dia: diameterWid, shape: T.shapeStraight, count: barsAlongWidth, cut: width, total: widLapResult.totalLength });
 
     addDiameter(diameterLen, lenLapResult.totalLength * memberQuantity);
     addDiameter(diameterWid, widLapResult.totalLength * memberQuantity);
 
     results.totalWeight = (weightAlongLength + weightAlongWidth) * memberQuantity;
-    results.totalCost = results.totalWeight * costPerKg;
+    results.totalCost = costPerKg === null ? null : results.totalWeight * costPerKg;
     inputsValid = true;
   }
   else if (selectedElement === 'one_way') {
@@ -142,13 +179,14 @@ window.__calcHandlers.steel = function (ctx) {
 
       const weight = lapResult.totalLength * weightPerMeter(diameter) * wastageFactor;
       breakdownRows.push({
-        label: `${T.oneWay} (Ø${diameter}mm)`,
+        label: `${T.oneWay} (<bdi dir="ltr">Ø${diameter}mm</bdi>)`,
         value: `${numBars} ${T.barsLabel} · ${weight.toFixed(2)} kg${wasteNote}`
       });
+      scheduleRows.push({ dia: diameter, shape: T.shapeStraight, count: numBars, cut: barLength, total: lapResult.totalLength });
 
       addDiameter(diameter, lapResult.totalLength * memberQuantity);
       results.totalWeight = weight * memberQuantity;
-      results.totalCost = results.totalWeight * costPerKg;
+      results.totalCost = costPerKg === null ? null : results.totalWeight * costPerKg;
       inputsValid = true;
     }
   }
@@ -169,9 +207,10 @@ window.__calcHandlers.steel = function (ctx) {
 
       const weight = lapResult.totalLength * weightPerMeter(diameter) * wastageFactor;
       breakdownRows.push({
-        label: `Ø${diameter}mm`,
+        label: `<bdi dir="ltr">Ø${diameter}mm</bdi>`,
         value: `${count} ${T.barsLabel} × ${barLength} m · ${weight.toFixed(2)} kg (${T.withWastage})`
       });
+      scheduleRows.push({ dia: diameter, shape: T.shapeStraight, count: count, cut: barLength, total: lapResult.totalLength });
       addDiameter(diameter, lapResult.totalLength);
       results.totalWeight = (results.totalWeight || 0) + weight;
       descPairs.push(`Ø${diameter}:${count}`);
@@ -179,7 +218,7 @@ window.__calcHandlers.steel = function (ctx) {
     });
     if (!anyRow) { showError(T.errCustomRows); return; }
     description = descPairs.join('; ');
-    results.totalCost = results.totalWeight * costPerKg;
+    results.totalCost = costPerKg === null ? null : results.totalWeight * costPerKg;
     inputsValid = true;
   }
   else if (selectedElement === 'beam' || selectedElement === 'column') {
@@ -201,9 +240,10 @@ window.__calcHandlers.steel = function (ctx) {
     const mainWeight = lapResult.totalLength * weightPerMeter(diameter) * wastageFactor;
     addDiameter(diameter, lapResult.totalLength * memberQuantity);
     breakdownRows.push({
-      label: `${T.mainBarDetails} (Ø${diameter}mm)`,
+      label: `${T.mainBarDetails} (<bdi dir="ltr">Ø${diameter}mm</bdi>)`,
       value: `${numBars} ${T.barsLabel} · ${mainWeight.toFixed(2)} kg${wasteNote}`
     });
+    scheduleRows.push({ dia: diameter, shape: T.shapeStraight, count: numBars, cut: length, total: lapResult.totalLength });
 
     let stirrupWeight = 0;
     const includeStirrups = document.getElementById(`${selectedElement}-include-stirrups`).checked;
@@ -224,13 +264,18 @@ window.__calcHandlers.steel = function (ctx) {
       stirrupWeight = stirrupTotalLength * weightPerMeter(stirrupDiameter) * wastageFactor;
       addDiameter(stirrupDiameter, stirrupTotalLength * memberQuantity);
       breakdownRows.push({
-        label: `${T.stirrupDetails} (Ø${stirrupDiameter}mm)`,
+        label: `${T.stirrupDetails} (<bdi dir="ltr">Ø${stirrupDiameter}mm</bdi>)`,
         value: `${numStirrups} ${T.barsLabel} · ${stirrupWeight.toFixed(2)} kg${wasteNote}`
+      });
+      scheduleRows.push({
+        dia: stirrupDiameter,
+        shape: `${T.shapeRing} ${elWidth - 2 * cover}×${elDepth - 2 * cover} mm`,
+        count: numStirrups, cut: singleStirrupLength, total: stirrupTotalLength
       });
     }
 
     results.totalWeight = (mainWeight + stirrupWeight) * memberQuantity;
-    results.totalCost = results.totalWeight * costPerKg;
+    results.totalCost = costPerKg === null ? null : results.totalWeight * costPerKg;
     inputsValid = true;
   }
 
@@ -239,13 +284,25 @@ window.__calcHandlers.steel = function (ctx) {
     return;
   }
 
-  const elementKey = { one_way: 'oneWay' }[selectedElement] || selectedElement;
+  const elementKey = { one_way: 'oneWay', brc: 'brcMesh' }[selectedElement] || selectedElement;
   const elementName = isCustom ? T.customBars : (T[elementKey] || selectedElement);
   lastCalcData.steel = {
     element: elementName,
     description: description,
-    weight: `${results.totalWeight.toFixed(2)} kg`,
-    cost: `${currency}${results.totalCost.toFixed(2)}`
+    weight: isBrc ? brcOrder.pieceText : `${results.totalWeight.toFixed(2)} kg`,
+    cost: results.totalCost === null ? T.costNotEntered : `${currency}${results.totalCost.toFixed(2)}`,
+    quoteLines: isBrc
+      ? [{ item: `${elementName} · ${brcOrder.value}`, qty: brcOrder.pieceText, unitPrice: brcOrder.price }]
+      : Object.keys(byDiameter).map(Number).sort((a, b) => b - a).map(d => {
+          const meters = byDiameter[d];
+          const weight = meters * weightPerMeter(d) * wastageFactor;
+          const barsToBuy = Math.ceil(meters / standardBarLength);
+          return {
+            item: `Ø${d} mm`,
+            qty: `${weight.toFixed(2)} kg ≈ ${barsToBuy} ${T.barsLabel} (${standardBarLength} m)`,
+            unitPrice: costPerKg
+          };
+        })
   };
 
   if (!window.__langRecalc) sessionResults.steel.push(lastCalcData.steel);
@@ -267,13 +324,14 @@ window.__calcHandlers.steel = function (ctx) {
     const barsToBuy = Math.ceil(meters / standardBarLength);
     rows.push({
       kind: 'order',
-      label: `Ø${d} mm`,
-      value: `${weight.toFixed(2)} kg · ${barsToBuy} ${T.barsLabel} × ${standardBarLength} m`
+      label: `<bdi dir="ltr">Ø${d} mm</bdi>`,
+      value: `${weight.toFixed(2)} kg ≈ ${barsToBuy} ${T.barsLabel} (${standardBarLength} m)`
     });
   });
 
-  rows.push({ kind: 'order', label: T.totalWeight, value: `${results.totalWeight.toFixed(2)} kg` });
-  rows.push({ kind: 'cost', label: T.totalCost, value: `${currency}${results.totalCost.toFixed(2)}` });
+  rows.push({ kind: 'order', label: isBrc && brcOrder ? brcOrder.label : T.totalWeight,
+              value: isBrc && brcOrder ? brcOrder.value : `${results.totalWeight.toFixed(2)} kg` });
+  rows.push({ kind: 'cost', label: T.totalCost, value: results.totalCost === null ? T.costNotEntered : `${currency}${results.totalCost.toFixed(2)}` });
 
   let resultsHTML = `
     <div class="result-card">
@@ -292,12 +350,47 @@ window.__calcHandlers.steel = function (ctx) {
             <i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i>
             <span data-lang="pdfBtn">${T.pdfBtn}</span>
           </button>
+<button type="button" class="btn btn-secondary result-action-btn quote-btn" title="${T.quoteBtn}">
+                                    <i data-lucide="file-text" class="w-4 h-4 pointer-events-none"></i>
+                                    <span data-lang="quoteBtn">${T.quoteBtn}</span>
+                                </button>
         </div>
       </div>
       <div class="result-content">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-start">
           ${rows.map(r => `<div class="result-item" data-kind="${r.kind}"><span><strong class="font-semibold block">${r.label}</strong> ${r.value}</span></div>`).join('\n          ')}
         </div>
+        ${scheduleRows.length ? `
+        <details class="bar-schedule card p-3 mt-2 sm:col-span-2 text-sm text-start">
+          <summary class="font-semibold">${T.barSchedule}</summary>
+          <div class="table-wrapper mt-2">
+            <table class="w-full text-start">
+              <thead>
+                <tr>
+                  <th class="text-start">${T.schedMark}</th>
+                  <th class="text-start">${T.schedDia}</th>
+                  <th class="text-start">${T.schedShape}</th>
+                  <th class="text-start">${T.schedBars}</th>
+                  <th class="text-start">${T.schedCutLen}</th>
+                  <th class="text-start">${T.schedTotalLen}</th>
+                  <th class="text-start">${T.schedWeight}</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${scheduleRows.map((r, i) => `<tr>
+                  <td>${i + 1}</td>
+                  <td><bdi dir="ltr">Ø${r.dia} mm</bdi></td>
+                  <td>${r.shape}</td>
+                  <td>${r.count}</td>
+                  <td>${r.cut.toFixed(2)}</td>
+                  <td>${r.total.toFixed(2)}</td>
+                  <td>${(r.total * weightPerMeter(r.dia)).toFixed(2)}</td>
+                </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs mt-2" style="color: var(--muted);">${fill(T.schedNote, { n: memberQuantity })}</p>
+        </details>` : ''}
       </div>
     </div>`;
 
